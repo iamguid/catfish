@@ -1,0 +1,13 @@
+{
+  "name": "catfish",
+  "version": "0.0.1",
+  "description": "Easy to use gRPC client code generation tool",
+  "main": "index.js",
+  "repository": "https://github.com/iamguid/catfish.git",
+  "author": "Vladislav <iam.guid@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "typescript": "5.0.4"
+  }
+}
