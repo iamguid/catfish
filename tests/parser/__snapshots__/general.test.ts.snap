@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`General proto parser test Should parse empty.proto 1`] = `
+{
+  "enums": [],
+  "imports": [],
+  "messages": [
+    {
+      "enums": [],
+      "fields": [],
+      "index": 0,
+      "messages": [],
+      "name": "Empty",
+      "namespace": "",
+      "options": [],
+    },
+  ],
+  "options": [
+    {
+      "go_package": "google.golang.org/protobuf/types/known/emptypb",
+    },
+    {
+      "java_package": "com.google.protobuf",
+    },
+    {
+      "java_outer_classname": "EmptyProto",
+    },
+    {
+      "java_multiple_files": true,
+    },
+    {
+      "objc_class_prefix": "GPB",
+    },
+    {
+      "csharp_namespace": "Google.Protobuf.WellKnownTypes",
+    },
+    {
+      "cc_enable_arenas": true,
+    },
+  ],
+  "package": "google.protobuf",
+  "services": [],
+}
+`;

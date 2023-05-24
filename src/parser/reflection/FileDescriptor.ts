@@ -20,7 +20,7 @@ export class FileDescriptor implements IDescriptor {
     /**
      * Package name declared in .proto file.
      */
-    public package: string;
+    public package: string = "";
 
     /**
      * Contains all options that defined in .proto file.
