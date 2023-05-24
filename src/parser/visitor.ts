@@ -30,27 +30,27 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
     visitProto(ctx: ProtoContext): FileDescriptor {
         const topLevelDefs = ctx.topLevelDef_list();
 
-        const packge = ctx.packageStatement(0).fullIdent().getText() || "";
+        const packge = ctx.packageStatement(0).fullIdent().getText();
         this.fileDescriptor.package = packge;
 
         ctx.importStatement_list().forEach(importStatement => {
             this.visitImportStatement(importStatement);
         });
 
-        const options = ctx.optionStatement_list()
+        const options = (ctx.optionStatement_list() ?? [])
             .map(optionStatement => extractOptions(optionStatement));
 
         const services = topLevelDefs
             .filter(topLevelDef => Boolean(topLevelDef.serviceDef()))
-            .map((topLevelDef, index) => this.visitServiceDef(topLevelDef.serviceDef()!, index));
+            .map((topLevelDef, index) => this.visitServiceDef(topLevelDef.serviceDef(), index));
 
         const messages = topLevelDefs
             .filter(topLevelDef => Boolean(topLevelDef.messageDef()))
-            .map((topLevelDef, index) => this.visitMessageDef(topLevelDef.messageDef()!, index))
+            .map((topLevelDef, index) => this.visitMessageDef(topLevelDef.messageDef(), index))
 
         const enums = topLevelDefs
             .filter(topLevelDef => Boolean(topLevelDef.enumDef()))
-            .map((topLevelDef, index) => this.visitEnumDef(topLevelDef.enumDef()!, index))
+            .map((topLevelDef, index) => this.visitEnumDef(topLevelDef.enumDef(), index))
 
         this.fileDescriptor.options.push(...options);
         this.fileDescriptor.services.push(...services);
@@ -61,7 +61,7 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
     }
 
     visitImportStatement(ctx: ImportStatementContext): FileDescriptor {
-        const importType = ctx.getToken(Protobuf3Parser.WEAK, 0).getText();
+        const importType = ctx.getToken(Protobuf3Parser.WEAK, 0)?.getText() ?? 'public';
         const importPath = trimChar(ctx.strLit().getText(), "\"");
 
         let imprt: FileImport = {
@@ -86,12 +86,12 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         this.namespace.push(serviceName);
         const methods = serviceElements
             .filter(serviceElement => Boolean(serviceElement.rpc()))
-            .map((serviceElement, index) => this.visitRpc(serviceElement.rpc()!, index))
+            .map((serviceElement, index) => this.visitRpc(serviceElement.rpc(), index))
         this.namespace.pop();
 
         const options = serviceElements
             .filter(serviceElement => Boolean(serviceElement.optionStatement()))
-            .map(serviceElement => extractOptions(serviceElement.optionStatement()!));
+            .map(serviceElement => extractOptions(serviceElement.optionStatement()));
 
         return new ServiceDescriptor({
             index,
@@ -124,15 +124,16 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         const messageBody = ctx.messageBody();
         const messageElements = messageBody.messageElement_list();
         const messageName = ctx.messageName().getText();
+
         this.namespace.push(messageName);
 
         const nestedMessages = messageElements
             .filter(messageElement => Boolean(messageElement.messageDef()))
-            .map((messageElement, index) => this.visitMessageDef(messageElement.messageDef()!, index));
+            .map((messageElement, index) => this.visitMessageDef(messageElement.messageDef(), index));
 
         const nestedEnums = messageElements
             .filter(messageElement => Boolean(messageElement.enumDef()))
-            .map((messageElement, index) => this.visitEnumDef(messageElement.enumDef()!, index));
+            .map((messageElement, index) => this.visitEnumDef(messageElement.enumDef(), index));
 
         const fields = messageElements
             .filter(messageElement => {
@@ -142,11 +143,11 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
             })
             .reduce((current: FieldDescriptor[], messageElement: MessageElementContext, index) => {
                 if (Boolean(messageElement.field())) {
-                    current.push(this.visitField(messageElement.field()!, index));
+                    current.push(this.visitField(messageElement.field(), index));
                 }
 
                 if (Boolean(messageElement.mapField())) {
-                    current.push(this.visitMapField(messageElement.mapField()!, index));
+                    current.push(this.visitMapField(messageElement.mapField(), index));
                 }
 
                 if (Boolean(messageElement.oneof())) {
@@ -185,9 +186,9 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         const fieldName = ctx.fieldName().getText();
         const filedType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
         const fieldNumber = Number.parseInt(ctx.fieldNumber().getText(), 10);
-        const isRepeated = Boolean(ctx.REPEATED().getText());
+        const isRepeated = Boolean(ctx.REPEATED()?.getText());
 
-        const options = ctx.fieldOptions().fieldOption_list()
+        const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
 
         return new FieldDescriptor({
@@ -195,7 +196,7 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
             name: fieldName,
             namespace,
             fileDescriptor: this.fileDescriptor,
-            options: options || [],
+            options: options,
             type: filedType,
             repeated: isRepeated,
             fieldNumber 
@@ -210,7 +211,7 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         const valueType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
         const mapField: MapField = { keyType, valueType }
 
-        const options = ctx.fieldOptions().fieldOption_list()
+        const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
 
         return new FieldDescriptor({
@@ -232,7 +233,7 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         const filedType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
         const fieldNumber = Number.parseInt(ctx.fieldNumber().getText(), 10);
 
-        const options = ctx.fieldOptions().fieldOption_list()
+        const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
 
         return new FieldDescriptor({
@@ -256,12 +257,12 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         this.namespace.push(enumName);
         const fields = enumElements
             .filter(enumElement => Boolean(enumElement.enumField()))
-            .map((enumElement, index) => this.visitEnumField(enumElement.enumField()!, index))
+            .map((enumElement, index) => this.visitEnumField(enumElement.enumField(), index))
         this.namespace.pop();
 
         const options = enumElements
             .filter(enumElement => Boolean(enumElement.optionStatement()))
-            .map(enumElement => extractOptions(enumElement.optionStatement()!))
+            .map(enumElement => extractOptions(enumElement.optionStatement()))
 
         return new EnumDescriptor({
             index,
@@ -277,7 +278,7 @@ export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3V
         const fieldName = ctx.ident().getText();
         const fieldValue = Number.parseInt(ctx.intLit().getText());
 
-        const options = ctx.enumValueOptions().enumValueOption_list()
+        const options = (ctx.enumValueOptions()?.enumValueOption_list() ?? [])
             .map(enumValueOption => extractOptions(enumValueOption))
 
         return new EnumFieldDescriptor({

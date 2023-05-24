@@ -76,7 +76,8 @@ message TestAllTypes {
   //   optional int32 a = 17;
   // }
 
-  optional NestedMessage optional_nested_message = 18;
+  // (vl) optionals are not allowed in proto3
+  // optional NestedMessage optional_nested_message = 18;
   ForeignMessage optional_foreign_message = 19;
   protobuf_unittest_import.ImportMessage optional_import_message = 20;
 

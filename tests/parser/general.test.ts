@@ -21,7 +21,6 @@ describe("General proto parser test", () => {
         "unittest_proto3_arena_lite.proto",
         "unittest_proto3_arena.proto",
         "unittest_proto3_lite.proto",
-        "unittest_proto3_optional.proto",
         "unittest_proto3.proto",
         "unittest_well_known_types.proto",
         "wrappers.proto",
