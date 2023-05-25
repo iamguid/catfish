@@ -1,7 +1,7 @@
-import { IDescriptor } from "./IDescriptor";
+import { BaseDescriptor } from "./BaseDescriptor";
 
 export class DescriptorsRegistry {
-    public readonly descriptors: Map<string, IDescriptor> = new Map();
+    public readonly descriptors: Map<string, BaseDescriptor> = new Map();
 
     public get(fullname: string) {
         if (!this.descriptors.has(fullname)) {
@@ -11,7 +11,7 @@ export class DescriptorsRegistry {
         return this.descriptors.get(fullname)!;
     }
 
-    public set(fullname: string, descriptor: IDescriptor) {
+    public set(fullname: string, descriptor: BaseDescriptor) {
         if (this.descriptors.has(fullname)) {
             throw new Error(`Descriptor "${fullname}" already exists`)
         }

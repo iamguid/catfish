@@ -9,7 +9,8 @@
   "private": false,
   "scripts": {
     "test": "yarn jest",
-    "gen:antlr": "antlr -Dlanguage=TypeScript ./Protobuf3.g4 -visitor -o ./src/parser/generated"
+    "gen:antlr:proto2": "antlr -Dlanguage=TypeScript ./Protobuf2.g4 -visitor -o ./src/parser/generated",
+    "gen:antlr:proto3": "antlr -Dlanguage=TypeScript ./Protobuf3.g4 -visitor -o ./src/parser/generated"
   },
   "dependencies": {
     "antlr4": "4.13.0",

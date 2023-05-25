@@ -13,7 +13,7 @@ import { MethodDescriptor } from "./reflection/MethodDescriptor";
 import { ServiceDescriptor } from "./reflection/ServiceDescriptor";
 import { extractOptions, normalizeTypeName, trimChar } from "./utils";
 
-export class Visitor extends ParseTreeVisitor<IDescriptor> implements Protobuf3Visitor<IDescriptor> {
+export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf3Visitor<IDescriptor> {
     public fileDescriptor: FileDescriptor;
 
     private namespace: string[] = [];

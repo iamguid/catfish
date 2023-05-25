@@ -1,19 +1,15 @@
-// SPDX-License-Identifier: Apache-2.0
 /**
- * A Protocol Buffers 3 grammar
+ * A Protocol Buffers 2 grammar
  *
- * Original source: https://developers.google.com/protocol-buffers/docs/reference/proto3-spec
- * Original source is published under Apache License 2.0.
+ * Original source: https://developers.google.com/protocol-buffers/docs/reference/proto2-spec
  *
- * Changes from the source above:
- * - rewrite to antlr
- * - extract some group to rule.
+ * follow by the style of Protobuf3.g4 written by the author @anatawa12
  *
- * @author anatawa12
- * @see https://github.com/antlr/grammars-v4/blob/master/protobuf3/Protobuf3.g4
+ * @author Boyce-Lee
+ * @see https://github.com/antlr/grammars-v4/blob/master/protobuf2/Protobuf2.g4
  */
 
-grammar Protobuf3;
+grammar Protobuf2;
 
 proto
   : syntax
@@ -22,14 +18,14 @@ proto
       | packageStatement
       | optionStatement
       | topLevelDef
-      | emptyStatement
-    )*
+      | emptyStatement_
+    )* EOF
   ;
 
 // Syntax
 
 syntax
-  : SYNTAX EQ (PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE) SEMI
+  : SYNTAX EQ (PROTO2_LIT_SINGLE | PROTO2_LIT_DOBULE) SEMI
   ;
 
 // Import Statement
@@ -52,13 +48,17 @@ optionStatement
 
 optionName
   : fullIdent
-  | LP fullIdent RP ( DOT fullIdent )?
+  | ( ident | LP fullIdent RP ) ( DOT fullIdent )?
   ;
 
 // Normal Field
 
+fieldLabel
+  : REQUIRED | OPTIONAL | REPEATED
+  ;
+
 field
-  : ( REPEATED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
+  : fieldLabel type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
   ;
 
 fieldOptions
@@ -73,10 +73,16 @@ fieldNumber
   : intLit
   ;
 
+// Group field
+
+group
+  : fieldLabel GROUP groupName EQ fieldNumber messageBody
+  ;
+
 // Oneof and oneof field
 
 oneof
-  : ONEOF oneofName LC ( optionStatement | oneofField | emptyStatement )* RC
+  : ONEOF oneofName LC ( optionStatement | oneofField | emptyStatement_ )* RC
   ;
 
 oneofField
@@ -126,6 +132,12 @@ type_
   | enumType
   ;
 
+// Extensions
+
+extensions
+  : EXTENSIONS ranges SEMI
+  ;
+
 // Reserved
 
 reserved
@@ -150,6 +162,7 @@ topLevelDef
   : messageDef
   | enumDef
   | serviceDef
+  | extendDef
   ;
 
 // enum
@@ -165,11 +178,11 @@ enumBody
 enumElement
   : optionStatement
   | enumField
-  | emptyStatement
+  | emptyStatement_
   ;
 
 enumField
-  : ident EQ ( MINUS )? intLit enumValueOptions?SEMI
+  : ident EQ MINUS? intLit enumValueOptions?SEMI
   ;
 
 enumValueOptions
@@ -194,11 +207,26 @@ messageElement
   : field
   | enumDef
   | messageDef
+  | extendDef
   | optionStatement
   | oneof
   | mapField
+  | extensions
+  | group
   | reserved
-  | emptyStatement
+  | emptyStatement_
+  ;
+
+// extend
+
+extendDef
+  : EXTEND messageType LC extendElement* RC
+  ;
+
+extendElement
+  : field
+  | group
+  | emptyStatement_
   ;
 
 // service
@@ -210,24 +238,30 @@ serviceDef
 serviceElement
   : optionStatement
   | rpc
-  | emptyStatement
+  | stream
+  | emptyStatement_
   ;
 
 rpc
-  : RPC rpcName LP ( STREAM )? messageType RP
-        RETURNS LP ( STREAM )? messageType RP
-        (LC ( optionStatement | emptyStatement )* RC | SEMI)
+  : RPC rpcName LP STREAM? messageType RP
+        RETURNS LP STREAM? messageType RP
+        (LC ( optionStatement | emptyStatement_ )* RC | SEMI)
+  ;
+
+stream
+  : STREAM streamName LP messageType COMMA messageType RP
+    ( LC ( optionStatement | emptyStatement_ )* RC | SEMI )
   ;
 
 // lexical
 
 constant
-  : (MINUS | PLUS )? intLit
+  : fullIdent
+  | (MINUS | PLUS )? intLit
   | ( MINUS | PLUS )? floatLit
   | strLit
   | boolLit
   | blockLit
-  | fullIdent
   ;
 
 // not specified in specification but used in tests
@@ -235,7 +269,7 @@ blockLit
   : LC ( ident COLON constant )* RC
   ;
 
-emptyStatement: SEMI;
+emptyStatement_: SEMI;
 
 // Lexical elements
 
@@ -244,15 +278,17 @@ fullIdent: ident ( DOT ident )*;
 messageName: ident;
 enumName: ident;
 fieldName: ident;
+groupName: ident;
 oneofName: ident;
 mapName: ident;
 serviceName: ident;
 rpcName: ident;
-messageType: ( DOT )? ( ident DOT )* messageName;
-enumType: ( DOT )? ( ident DOT )* enumName;
+streamName: ident;
+messageType: DOT? ( ident DOT )* messageName;
+enumType: DOT? ( ident DOT )* enumName;
 
 intLit: INT_LIT;
-strLit: STR_LIT | PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE;
+strLit: STR_LIT | PROTO2_LIT_SINGLE | PROTO2_LIT_DOBULE;
 boolLit: BOOL_LIT;
 floatLit: FLOAT_LIT;
 
@@ -264,6 +300,9 @@ PUBLIC: 'public';
 PACKAGE: 'package';
 OPTION: 'option';
 REPEATED: 'repeated';
+OPTIONAL: 'optional';
+REQUIRED: 'required';
+GROUP: 'group';
 ONEOF: 'oneof';
 MAP: 'map';
 INT32: 'int32';
@@ -282,17 +321,19 @@ DOUBLE: 'double';
 FLOAT: 'float';
 BYTES: 'bytes';
 RESERVED: 'reserved';
+EXTENSIONS: 'extensions';
 TO: 'to';
 MAX: 'max';
 ENUM: 'enum';
+EXTEND: 'extend';
 MESSAGE: 'message';
 SERVICE: 'service';
 RPC: 'rpc';
 STREAM: 'stream';
 RETURNS: 'returns';
 
-PROTO3_LIT_SINGLE: '"proto3"';
-PROTO3_LIT_DOBULE: '\'proto3\'';
+PROTO2_LIT_SINGLE: '"proto2"';
+PROTO2_LIT_DOBULE: '\'proto2\'';
 
 // symbols
 
@@ -312,7 +353,7 @@ COLON: ':';
 PLUS: '+';
 MINUS: '-';
 
-STR_LIT: ( '\'' ( CHAR_VALUE )*? '\'' ) |  ( '"' ( CHAR_VALUE )*? '"' );
+STR_LIT: '\'' CHAR_VALUE*? '\'' |  '"' CHAR_VALUE*? '"';
 fragment CHAR_VALUE: HEX_ESCAPE | OCT_ESCAPE | CHAR_ESCAPE | ~[\u0000\n\\];
 fragment HEX_ESCAPE: '\\' ( 'x' | 'X' ) HEX_DIGIT HEX_DIGIT;
 fragment OCT_ESCAPE: '\\' OCTAL_DIGIT OCTAL_DIGIT OCTAL_DIGIT;
@@ -320,12 +361,12 @@ fragment CHAR_ESCAPE: '\\' ( 'a' | 'b' | 'f' | 'n' | 'r' | 't' | 'v' | '\\' | '\
 
 BOOL_LIT: 'true' | 'false';
 
-FLOAT_LIT : ( DECIMALS DOT DECIMALS? EXPONENT? | DECIMALS EXPONENT | DOT DECIMALS EXPONENT? ) | 'inf' | 'nan';
+FLOAT_LIT : DECIMALS DOT DECIMALS? EXPONENT? | DECIMALS EXPONENT | DOT DECIMALS EXPONENT? | 'inf' | 'nan';
 fragment EXPONENT  : ( 'e' | 'E' ) (PLUS | MINUS)? DECIMALS;
 fragment DECIMALS  : DECIMAL_DIGIT+;
 
 INT_LIT     : DECIMAL_LIT | OCTAL_LIT | HEX_LIT;
-fragment DECIMAL_LIT : ( [1-9] ) DECIMAL_DIGIT*;
+fragment DECIMAL_LIT : [1-9] DECIMAL_DIGIT*;
 fragment OCTAL_LIT   : '0' OCTAL_DIGIT*;
 fragment HEX_LIT     : '0' ( 'x' | 'X' ) HEX_DIGIT+ ;
 
@@ -349,6 +390,9 @@ keywords
   | PACKAGE
   | OPTION
   | REPEATED
+  | OPTIONAL
+  | REQUIRED
+  | GROUP
   | ONEOF
   | MAP
   | INT32
@@ -367,12 +411,15 @@ keywords
   | FLOAT
   | BYTES
   | RESERVED
+  | EXTENSIONS
   | TO
   | MAX
   | ENUM
   | MESSAGE
+  | EXTEND
   | SERVICE
   | RPC
+  | STREAM
   | STREAM
   | RETURNS
   | BOOL_LIT
