@@ -37,7 +37,7 @@
 
 syntax = "proto2";
 
-import "google/protobuf/unittest_mset_wire_format.proto";
+import "unittest_mset_wire_format.proto";
 
 package protobuf_unittest;
 

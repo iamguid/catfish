@@ -45,8 +45,8 @@ option py_generic_services = true;
 // A custom file option (defined below).
 option (file_opt1) = 9876543210;
 
-import "google/protobuf/any.proto";
-import "google/protobuf/descriptor.proto";
+import "any.proto";
+import "descriptor.proto";
 
 // We don't put this in a package within proto2 because we need to make sure
 // that the generated code doesn't depend on being in the proto2 namespace.

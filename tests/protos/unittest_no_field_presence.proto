@@ -30,12 +30,12 @@
 
 // A proto file used to test a message type with no explicit field presence.
 
-syntax = "proto3";
+syntax = "proto2";
 
 // We want to test embedded proto2 messages, so include some proto2 types.
 package proto2_nofieldpresence_unittest;
 
-import "google/protobuf/unittest.proto";
+import "unittest.proto";
 
 // This proto includes every type of field in both singular and repeated
 // forms.

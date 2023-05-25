@@ -38,7 +38,7 @@ syntax = "proto2";
 
 package protobuf_unittest;
 
-import "google/protobuf/unittest_optimize_for.proto";
+import "unittest_optimize_for.proto";
 
 // We optimize for speed here, but we are importing a proto that is optimized
 // for code size.

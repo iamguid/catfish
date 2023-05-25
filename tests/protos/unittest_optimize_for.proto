@@ -38,7 +38,7 @@ syntax = "proto2";
 
 package protobuf_unittest;
 
-import "google/protobuf/unittest.proto";
+import "unittest.proto";
 
 option optimize_for = CODE_SIZE;
 
