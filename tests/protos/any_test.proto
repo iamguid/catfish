@@ -32,7 +32,7 @@ syntax = "proto3";
 
 package protobuf_unittest;
 
-import "any.proto";
+import "google/protobuf/any.proto";
 
 option java_outer_classname = "TestAnyProto";
 

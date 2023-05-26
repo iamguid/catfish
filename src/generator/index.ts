@@ -1,4 +1,4 @@
-import { simplePlugin } from "./plugins/SimplePlugin";
+import protobufModelsPlugin from "./plugins/protobuf-models";
 import { Project } from "./Project"
 
 const main = () => {
@@ -9,7 +9,7 @@ const main = () => {
 
     project
         .load()
-        .resgister(simplePlugin)
+        .resgister(protobufModelsPlugin)
         .generate();
 }
 

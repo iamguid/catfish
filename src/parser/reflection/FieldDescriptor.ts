@@ -8,7 +8,7 @@ export interface MapField {
 
 export class FieldDescriptor extends BaseDescriptor {
     public readonly options: Options[];
-    public readonly type: string;
+    public readonly type?: string;
     public readonly fieldNumber: number;
     public readonly repeated: boolean;
     public readonly map?: MapField;
@@ -16,7 +16,7 @@ export class FieldDescriptor extends BaseDescriptor {
 
     constructor(props: IBaseDescriptorProps & {
         options: Options[];
-        type: string;
+        type?: string;
         fieldNumber: number;
         repeated: boolean;
         map?: MapField;

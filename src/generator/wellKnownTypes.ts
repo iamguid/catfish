@@ -12,3 +12,18 @@ export const wellKnownTypesFilesMap: {[key: string]: string} = {
   'google/protobuf/type.proto': '@grpc-web-framework/runtime/well-known-types/type_models',
   'google/protobuf/wrappers.proto': '@grpc-web-framework/runtime/well-known-types/wrappers_models'
 };
+
+export const wellKnownTypesMap: { [key: string]: string } = {
+  'google.protobuf.compiler.Plugin': 'google.protobuf.compiler.Plugin',
+  'google.protobuf.Any': 'google.protobuf.Any',
+  'google.protobuf.Api': 'google.protobuf.Api',
+  'google.protobuf.Descriptor': 'google.protobuf.Descriptor',
+  'google.protobuf.Duration': 'google.protobuf.Duration',
+  'google.protobuf.Empty': 'google.protobuf.Empty',
+  'google.protobuf.FieldMask': 'google.protobuf.FieldMask',
+  'google.protobuf.SourceContext': 'google.protobuf.SourceContext',
+  'google.protobuf.Struct': 'google.protobuf.Struct',
+  'google.protobuf.Timestamp': 'google.protobuf.Timestamp',
+  'google.protobuf.Type': 'google.protobuf.Type',
+  'google.protobuf.Wrappers': 'google.protobuf.Wrappers'
+}

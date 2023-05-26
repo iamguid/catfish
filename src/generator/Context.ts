@@ -5,7 +5,8 @@ import { BaseDescriptor, FileDescriptor, parse } from "../parser"
 import { buildinProtoTypesToTsType } from './buildinProtoTypes';
 import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
-import { wellKnownTypesFilesMap } from './wellKnownTypes';
+import { filePathToPseudoNamespace } from './utils';
+import { wellKnownTypesFilesMap, wellKnownTypesMap } from './wellKnownTypes';
 
 export interface Import {
     name: string
@@ -42,6 +43,7 @@ export class Context {
                     try {
                         const parsed = parse(fs.readFileSync(path.join(this.config.protoDirPath, filePath), 'utf8'));
                         this.protoFiles.set(filePath, parsed);
+                        console.log(`File ${filePath} parsed`)
                     } catch (e) {
                         console.log(`Cannot parse file ${filePath}, ${(e as Error).message}`)
                     }
@@ -52,9 +54,12 @@ export class Context {
 
     // TODO: Make async
     resolve() {
-        console.log(this.protoFiles.keys());
         for (const [path, descriptor] of this.protoFiles.entries()) {
             this.filesPaths.set(descriptor, path);
+
+            if (!this.dependencies.has(descriptor)) {
+                this.dependencies.set(descriptor, []);
+            }
 
             // Resolve imports from proto files
             for (const imprt of descriptor.imports) {
@@ -68,11 +73,6 @@ export class Context {
                 }
                 
                 const dependency = this.protoFiles.get(imprt.path)!;
-                
-                if (!this.dependencies.has(descriptor)) {
-                    this.dependencies.set(descriptor, []);
-                }
-
                 const dependencies = this.dependencies.get(descriptor)!;
 
                 dependencies.push(dependency);
@@ -94,7 +94,7 @@ export class Context {
 
     getDependencies(descriptor: FileDescriptor) {
         if (!this.dependencies.has(descriptor)) {
-            throw new Error(`There is no dependencies of package ${descriptor.package}`)
+            throw new Error(`There is no dependencies of file ${this.getFilePathByDescriptor(descriptor)}`)
         }
 
         return this.dependencies.get(descriptor)!;
@@ -121,7 +121,7 @@ export class Context {
             return { dstFileDescriptor: fileDescriptor, typeDescriptor }
         } else {
             for (const dependency of this.getDependencies(fileDescriptor)) {
-                const resolvedType = dependency.registry.get(fullname);
+                const resolvedType = dependency.registry.tryGet(fullname);
 
                 if (resolvedType) {
                     return { dstFileDescriptor: dependency, typeDescriptor: resolvedType }
@@ -134,15 +134,25 @@ export class Context {
 
     // TODO: make cache
     private extractTypeInfo(fileDescriptor: FileDescriptor, protoType: string): TypeInfo {
-        const buildinTsType = buildinProtoTypesToTsType[protoType]
-        
+        const buildinTsType = buildinProtoTypesToTsType[protoType];
+        const wellKnownType = wellKnownTypesMap[protoType];
+
         if (buildinTsType ?? false) {
             return {
                 isBuiltin: true,
                 protoType,
                 tsType: buildinTsType,
             }
-        } else {
+        }
+        else if (wellKnownType ?? false) {
+            return {
+                isBuiltin: false,
+                protoType,
+                tsType: filePathToPseudoNamespace(protoType)
+            }
+        }
+        else {
+            console.log(this.getFilePathByDescriptor(fileDescriptor), protoType)
             const typeResolution = this.getProtoTypeDescriptor(fileDescriptor, protoType);
 
             return {

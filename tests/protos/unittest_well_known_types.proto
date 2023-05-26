@@ -36,16 +36,16 @@ option csharp_namespace = "Google.Protobuf.TestProtos";
 option java_multiple_files = true;
 option java_package = "com.google.protobuf.test";
 
-import "any.proto";
-import "api.proto";
-import "duration.proto";
-import "empty.proto";
-import "field_mask.proto";
-import "source_context.proto";
-import "struct.proto";
-import "timestamp.proto";
-import "type.proto";
-import "wrappers.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/api.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/source_context.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/type.proto";
+import "google/protobuf/wrappers.proto";
 
 // Test that we can include all well-known types.
 // Each wrapper type is included separately, as languages

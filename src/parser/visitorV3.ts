@@ -219,8 +219,7 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
             name: fieldName,
             namespace,
             fileDescriptor: this.fileDescriptor,
-            options: options || [],
-            type: "",
+            options,
             repeated: false,
             fieldNumber,
             map: mapField
