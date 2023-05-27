@@ -34,7 +34,7 @@
 //
 // A proto file which is imported by unittest.proto to test importing.
 
-syntax = "proto2";
+syntax = "proto3";
 
 // We don't put this in a package within proto2 because we need to make sure
 // that the generated code doesn't depend on being in the proto2 namespace.
@@ -52,10 +52,10 @@ option java_package = "com.google.protobuf.test";
 // one.
 
 // Test public import
-import public "google/protobuf/unittest_import_public.proto";
+import public "unittest_import_public.proto";
 
 message ImportMessage {
-  optional int32 d = 1;
+  int32 d = 1;
 }
 
 enum ImportEnum {

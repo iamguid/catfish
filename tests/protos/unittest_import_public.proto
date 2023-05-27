@@ -30,12 +30,12 @@
 
 // Author: liujisi@google.com (Pherl Liu)
 
-syntax = "proto2";
+syntax = "proto3";
 
 package protobuf_unittest_import;
 
 option java_package = "com.google.protobuf.test";
 
 message PublicImportMessage {
-  optional int32 e = 1;
+  int32 e = 1;
 }
