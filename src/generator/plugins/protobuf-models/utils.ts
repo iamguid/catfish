@@ -46,22 +46,24 @@ export const fieldDefault = (field: MessageFieldCtx) => {
     return "null";
   }
 
-  switch (field.fieldTypeInfo.protoType) {
-    case "int32":
-    case "uint32":
-    case "float":
-    case "double":
-      return "0";
-    case "int64":
-    case "uint64":
-      return "0n"
-    case "bool":
-      return "false";
-    case "string":
-      return "\"\"";
-    case "bytes":
-      return "new Uint8Array()"
+  switch (field.fieldTypeInfo?.protoType) {
+    case "double": return '0';
+    case "float": return '0';
+    case "int32": return '0';
+    case "int64": return '0n';
+    case "uint32": return '0';
+    case "uint64": return '0n';
+    case "sint32": return '0';
+    case "sint64": return '0n';
+    case "fixed32": return '0';
+    case "fixed64": return '0n';
+    case "sfixed32": return '0';
+    case "sfixed64": return '0n';
+    case "enum": return '0';
+    case "bool": return 'false';
+    case "string": return '""';
+    case "bytes": return 'new Uint8Array()';
   }
 
-  throw new Error(`Cannot get default TS type for proto type ${field.fieldTypeInfo.protoType}`)
+  throw new Error(`Cannot get default TS type for proto type ${field.fieldTypeInfo?.protoType}`)
 }

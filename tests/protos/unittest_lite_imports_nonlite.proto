@@ -36,13 +36,10 @@ syntax = "proto3";
 
 package protobuf_unittest;
 
-import "unittest.proto";
+import "unittest_proto3.proto";
 
 option optimize_for = LITE_RUNTIME;
 
 message TestLiteImportsNonlite {
   TestAllTypes message = 1;
-
-  // Verifies that transitive required fields generates valid code.
-  TestRequired message_with_required = 2;
 }

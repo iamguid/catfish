@@ -1,8 +1,9 @@
-export const wellKnownTypesFilesMap: {[key: string]: string} = {
-  'google/protobuf/compiler/plugin.proto': '@grpc-web-framework/runtime/well-known-types/plugin_models',
+import fs from 'node:fs';
+import path from 'node:path';
+
+export const wellKnownTypesToRuntimeMap: {[key: string]: string} = {
   'google/protobuf/any.proto': '@grpc-web-framework/runtime/well-known-types/any_models',
   'google/protobuf/api.proto': '@grpc-web-framework/runtime/well-known-types/api_models',
-  'google/protobuf/descriptor.proto': '@grpc-web-framework/runtime/well-known-types/descriptor_models',
   'google/protobuf/duration.proto': '@grpc-web-framework/runtime/well-known-types/duration_models',
   'google/protobuf/empty.proto': '@grpc-web-framework/runtime/well-known-types/empty_models',
   'google/protobuf/field_mask.proto': '@grpc-web-framework/runtime/well-known-types/field_mask_models',
@@ -13,17 +14,15 @@ export const wellKnownTypesFilesMap: {[key: string]: string} = {
   'google/protobuf/wrappers.proto': '@grpc-web-framework/runtime/well-known-types/wrappers_models'
 };
 
-export const wellKnownTypesMap: { [key: string]: string } = {
-  'google.protobuf.compiler.Plugin': 'google.protobuf.compiler.Plugin',
-  'google.protobuf.Any': 'google.protobuf.Any',
-  'google.protobuf.Api': 'google.protobuf.Api',
-  'google.protobuf.Descriptor': 'google.protobuf.Descriptor',
-  'google.protobuf.Duration': 'google.protobuf.Duration',
-  'google.protobuf.Empty': 'google.protobuf.Empty',
-  'google.protobuf.FieldMask': 'google.protobuf.FieldMask',
-  'google.protobuf.SourceContext': 'google.protobuf.SourceContext',
-  'google.protobuf.Struct': 'google.protobuf.Struct',
-  'google.protobuf.Timestamp': 'google.protobuf.Timestamp',
-  'google.protobuf.Type': 'google.protobuf.Type',
-  'google.protobuf.Wrappers': 'google.protobuf.Wrappers'
+export const wellKnownTypesToProtoFilesMap: { [key: string]: string } = {
+  'google/protobuf/any.proto': path.join(__dirname, '../wktproto/any.proto'),
+  'google/protobuf/api.proto': path.join(__dirname, '../wktproto/api.proto'),
+  'google/protobuf/duration.proto': path.join(__dirname, '../wktproto/duration.proto'),
+  'google/protobuf/empty.proto': path.join(__dirname, '../wktproto/empty.proto'),
+  'google/protobuf/field_mask.proto': path.join(__dirname, '../wktproto/field_mask.proto'),
+  'google/protobuf/source_context.proto': path.join(__dirname, '../wktproto/source_context.proto'),
+  'google/protobuf/struct.proto': path.join(__dirname, '../wktproto/struct.proto'),
+  'google/protobuf/timestamp.proto': path.join(__dirname, '../wktproto/timestamp.proto'),
+  'google/protobuf/type.proto': path.join(__dirname, '../wktproto/type.proto'),
+  'google/protobuf/wrappers.proto': path.join(__dirname, '../wktproto/wrappers.proto'),
 }

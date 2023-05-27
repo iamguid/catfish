@@ -1,3 +1,4 @@
+import { Templates } from "../../Templates";
 import { headerTemplate } from "../../templates/header.template";
 import { importsTemplate } from "../../templates/imports.template";
 import { enumTemplate, messageFieldGetterBodyTemplate, messageIfaceTemplate, messageModelTemplate, messagesRecursiveTemplate, modelsTemplate } from "./models.template";

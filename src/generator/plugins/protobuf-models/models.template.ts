@@ -46,9 +46,9 @@ export const messageIfaceTemplate = (ctx: { message: MessageCtx }) => `
         case field.isMap:
           return `${field.fieldName}: Record<${field.mapType?.keyTypeInfo.tsType}, ${field.mapType?.valueTypeInfo.tsType}>;`
         case field.isOneof:
-          return `${field.fieldName}?: ${field.fieldTypeInfo.tsType};`
+          return `${field.fieldName}?: ${field.fieldTypeInfo?.tsType};`
         default:
-          return `${field.fieldName}: ${field.fieldTypeInfo.tsType}; `
+          return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}; `
       }
     }).join('\n')}
   }
@@ -63,10 +63,10 @@ export const messageFieldGetterBodyTemplate = ({ field }: { field: MessageFieldC
     useDefault = false;
   }
 
-  const isBoolean = field.fieldTypeInfo.protoType == "bool";
+  const isBoolean = field.fieldTypeInfo?.protoType == "bool";
   const isFloatOrDouble =
-    field.fieldTypeInfo.protoType == "float" ||
-    field.fieldTypeInfo.protoType == "double";
+    field.fieldTypeInfo?.protoType == "float" ||
+    field.fieldTypeInfo?.protoType == "double";
 
   const cardinality = field.isRepeated ? "Repeated" : "";
   const withDefault = useDefault ? "WithDefault" : "";
@@ -145,15 +145,15 @@ export const messageModelTemplate = (ctx: { message: MessageCtx }): string => {
           }
           case field.isMessageType: {
             return `
-              public get ${field.fieldName} (): ${field.fieldTypeInfo.tsType} {
+              public get ${field.fieldName} (): ${field.fieldTypeInfo?.tsType} {
                 return jspb.Message.get${field.isRepeated ? 'Repeated' : ''}WrapperField(
                   this,
-                  ${field.fieldTypeInfo.tsType},
+                  ${field.fieldTypeInfo?.tsType},
                   ${field.fieldNumber}
                 );
               }
 
-              public set ${field.fieldName} (value: ${field.fieldTypeInfo.tsType}): void {
+              public set ${field.fieldName} (value: ${field.fieldTypeInfo?.tsType}): void {
                 return jspb.Message.set${field.isOneof ? 'Oneof' : ''}${field.isRepeated ? 'Repeated' : ''}WrapperField(
                   this,
                   ${field.fieldNumber},
@@ -165,11 +165,11 @@ export const messageModelTemplate = (ctx: { message: MessageCtx }): string => {
           }
           default: {
             return `
-              public get ${field.fieldName} (): ${field.fieldTypeInfo.tsType} {
+              public get ${field.fieldName} (): ${field.fieldTypeInfo?.tsType} {
                 ${templates.render('models.messageFieldGetterBody', { field })}
               }
 
-              public set ${field.fieldName} (value: ${field.fieldTypeInfo.tsType}) {
+              public set ${field.fieldName} (value: ${field.fieldTypeInfo?.tsType}) {
               }
             `
           }

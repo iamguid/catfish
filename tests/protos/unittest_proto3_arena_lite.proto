@@ -32,7 +32,7 @@ syntax = "proto3";
 
 package proto3_arena_lite_unittest;
 
-// import "unittest_import.proto";
+import "unittest_import.proto";
 
 option cc_enable_arenas = true;
 option optimize_for = LITE_RUNTIME;

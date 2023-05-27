@@ -6,7 +6,7 @@ import { buildinProtoTypesToTsType } from './buildinProtoTypes';
 import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
 import { filePathToPseudoNamespace } from './utils';
-import { wellKnownTypesFilesMap, wellKnownTypesMap } from './wellKnownTypes';
+import { wellKnownTypesToRuntimeMap, wellKnownTypesToProtoFilesMap } from './wellKnownTypes';
 
 export interface Import {
     name: string
@@ -25,17 +25,29 @@ export interface TypeInfo {
     resolution?: TypeResolution
 }
 
+export interface Dependency {
+    type: 'weak' | 'public'
+    descriptor: FileDescriptor
+}
+
 export class Context {
     private readonly protoFiles = new Map<string, FileDescriptor>; // key - relative path to proto file
     private readonly filesPaths = new Map<FileDescriptor, string>; // value - relative path to proto file
-    private readonly dependencies = new Map<FileDescriptor, FileDescriptor[]>;
+    private readonly dependencies = new Map<FileDescriptor, Dependency[]>;
     
     constructor(private readonly config: ProjectOptions) {
     }
 
     // TODO: Make async
     load() {
-        return walkByFiles({
+        // Load protobuf well known types
+        for (const [googlePath, realPath] of Object.entries(wellKnownTypesToProtoFilesMap)) {
+            const parsed = parse(fs.readFileSync(realPath, 'utf8'));
+            this.protoFiles.set(googlePath, parsed);
+        }
+
+        // Load project files
+        walkByFiles({
             basePath: this.config.protoDirPath,
             filePath: "",
             each: ({ filePath }) => {
@@ -43,9 +55,8 @@ export class Context {
                     try {
                         const parsed = parse(fs.readFileSync(path.join(this.config.protoDirPath, filePath), 'utf8'));
                         this.protoFiles.set(filePath, parsed);
-                        console.log(`File ${filePath} parsed`)
                     } catch (e) {
-                        console.log(`Cannot parse file ${filePath}, ${(e as Error).message}`)
+                        console.error(`Cannot parse file ${filePath}, ${(e as Error).message}`)
                     }
                 }
             },
@@ -54,57 +65,76 @@ export class Context {
 
     // TODO: Make async
     resolve() {
-        for (const [path, descriptor] of this.protoFiles.entries()) {
-            this.filesPaths.set(descriptor, path);
+        const resolveRecursive = (path: string, descriptor: FileDescriptor): Dependency[] => {
+            const result: Dependency[] = [];
 
-            if (!this.dependencies.has(descriptor)) {
-                this.dependencies.set(descriptor, []);
-            }
-
-            // Resolve imports from proto files
             for (const imprt of descriptor.imports) {
-                // Skip Well Known Types imports, resolve it later
-                if (imprt.path in wellKnownTypesFilesMap) {
-                    continue;
-                }
-
                 if (!this.protoFiles.has(imprt.path)) {
                     throw new Error(`Cannot resolve import ${imprt.path} in file ${path}`)
                 }
                 
                 const dependency = this.protoFiles.get(imprt.path)!;
-                const dependencies = this.dependencies.get(descriptor)!;
 
-                dependencies.push(dependency);
+                if (imprt.type === 'public') {
+                    result.push({ type: 'public', descriptor: dependency });
+                    result.push(...resolveRecursive(imprt.path, dependency));
+                } else {
+                    result.push({ type: 'weak', descriptor: dependency });
+                }
+            }
+
+            return result;
+        }
+
+        for (const [path, descriptor] of this.protoFiles.entries()) {
+            this.filesPaths.set(descriptor, path);
+
+            if (!this.dependencies.has(descriptor)) {
+                this.dependencies.set(descriptor, resolveRecursive(path, descriptor));
             }
         }
     }
 
-    getFiles() {
-        return Array.from(this.protoFiles.values());
+    getFiles(includeWKT = false) {
+        const files = Array.from(this.protoFiles.values());
+
+        if (includeWKT) {
+            return files;
+        } else {
+            return files.filter(f => {
+                const filePath = this.getFilePathByDescriptor(f)
+                return !(filePath in wellKnownTypesToProtoFilesMap)
+            })
+        }
     }
 
     getFilePathByDescriptor(descriptor: FileDescriptor) {
         if (!this.filesPaths.has(descriptor)) {
-            throw new Error(`Cannot resolve file path by descriptor of package ${descriptor.package}`)
+            throw new Error(`Cannot resolve file path by descriptor for file ${this.getFilePathByDescriptor(descriptor)}`)
         }
 
         return this.filesPaths.get(descriptor)!;
     }
 
-    getDependencies(descriptor: FileDescriptor) {
+    getDependencies(descriptor: FileDescriptor, includePublic = false) {
         if (!this.dependencies.has(descriptor)) {
             throw new Error(`There is no dependencies of file ${this.getFilePathByDescriptor(descriptor)}`)
         }
 
-        return this.dependencies.get(descriptor)!;
+        const dependencies = this.dependencies.get(descriptor)!;
+
+        if (includePublic) {
+            return dependencies.map(d => d.descriptor);
+        } else {
+            return dependencies.filter(d => d.type !== 'public').map(d => d.descriptor)
+        }
     }
 
     getProtoTypeDescriptor(descriptor: FileDescriptor, fullname: string) {
         const resolvedType = this.resolveType(descriptor, fullname);
 
         if (!resolvedType) {
-            throw new Error(`There is no type descriptor with fullname ${fullname} in package ${descriptor.package}`)
+            throw new Error(`There is no type descriptor ${fullname} for file ${this.getFilePathByDescriptor(descriptor)}`)
         }
 
         return resolvedType;
@@ -120,8 +150,8 @@ export class Context {
             const typeDescriptor = fileDescriptor.registry.get(fullname);
             return { dstFileDescriptor: fileDescriptor, typeDescriptor }
         } else {
-            for (const dependency of this.getDependencies(fileDescriptor)) {
-                const resolvedType = dependency.registry.tryGet(fullname);
+            for (const dependency of this.getDependencies(fileDescriptor, true)) {
+                let resolvedType = dependency.registry.tryGet(fullname);
 
                 if (resolvedType) {
                     return { dstFileDescriptor: dependency, typeDescriptor: resolvedType }
@@ -135,7 +165,6 @@ export class Context {
     // TODO: make cache
     private extractTypeInfo(fileDescriptor: FileDescriptor, protoType: string): TypeInfo {
         const buildinTsType = buildinProtoTypesToTsType[protoType];
-        const wellKnownType = wellKnownTypesMap[protoType];
 
         if (buildinTsType ?? false) {
             return {
@@ -144,15 +173,7 @@ export class Context {
                 tsType: buildinTsType,
             }
         }
-        else if (wellKnownType ?? false) {
-            return {
-                isBuiltin: false,
-                protoType,
-                tsType: filePathToPseudoNamespace(protoType)
-            }
-        }
         else {
-            console.log(this.getFilePathByDescriptor(fileDescriptor), protoType)
             const typeResolution = this.getProtoTypeDescriptor(fileDescriptor, protoType);
 
             return {

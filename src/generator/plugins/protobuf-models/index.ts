@@ -1,18 +1,22 @@
 import { EnumDescriptor, FieldDescriptor, FileDescriptor, MessageDescriptor } from '../../../parser';
 import { buildinProtoTypesToTsType } from '../../buildinProtoTypes';
 import { Context, Import } from '../../Context';
-import { Plugin } from '../../Plugin';
+import { Plugin, PluginOutputFile } from '../../Plugin';
 import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix } from '../../utils';
+import { templates } from './templates';
 import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx } from './types';
 
 const plugin: Plugin<void> = (context, projectOptions) => {
+    const result: PluginOutputFile[] = []
+
     for (const file of context.getFiles()) {
         const pluginContext = buildFileContext(context, file);
+        const resultFileContent = templates.render('models', pluginContext);
+        const resultFilePath = replaceProtoSuffix(context.getFilePathByDescriptor(file), 'models.ts');
+        result.push({ path: resultFilePath, content: resultFileContent });
     }
 
-    return {
-        files: []
-    }
+    return { files: result }
 }
 
 const buildFileContext = (context: Context, descriptor: FileDescriptor): FileCtx => {
@@ -27,7 +31,7 @@ const buildFileContext = (context: Context, descriptor: FileDescriptor): FileCtx
 
 const getImports = (context: Context, descriptor: FileDescriptor): Import[] => {
     const imports: Import[] = [];
-    const dependencies = context.getDependencies(descriptor);
+    const dependencies = context.getDependencies(descriptor, true);
 
     for (const dependency of dependencies) {
         const filePath = context.getFilePathByDescriptor(dependency);

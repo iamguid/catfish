@@ -1,4 +1,4 @@
-class Templates<TKeyValue extends Record<string, (args: any[]) => string>> {
+export class Templates<TKeyValue extends Record<string, (args: any[]) => string>> {
   public registry: Record<string, any> = {};
 
   register<TName extends string, TTemplate>(
