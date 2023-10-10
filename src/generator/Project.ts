@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import prettier from 'prettier';
 
 import { Context } from './Context';
 import { Plugin } from './Plugin';
@@ -33,7 +34,8 @@ export class Project {
             const result = plugin(this.context, this.options, options);
 
             for (const file of result.files) {
-                fs.writeFileSync(path.join(this.options.outDirPath, file.path), file.content)
+                const prettiedContent = prettier.format(file.content, { parser: 'typescript' })
+                fs.writeFileSync(path.join(this.options.outDirPath, file.path), prettiedContent)
             }
         }
     }
