@@ -30,10 +30,10 @@ describe("General protobuf-models generator test", () => {
         "unittest_well_known_types.proto",
         "wrappers.proto",
     ].forEach(protofile => {
-        it(`Should generate ${protofile}`, async () => {
+        it(`Should generate models for ${protofile}`, async () => {
             const project = new Project({
-                protoDirPath: './tests/protos',
-                outDirPath: './tests/generator/plugins/protobuf-models/generated',
+                protoDirPath: `${__dirname}/../../../protos`,
+                outDirPath: `${__dirname}/generated`,
             });
 
             project

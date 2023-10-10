@@ -1,16 +1,5 @@
-import protobufModelsPlugin from "./plugins/protobuf-models";
-import { Project } from "./Project"
-
-const main = () => {
-    const project = new Project({
-        protoDirPath: './tests/protos',
-        outDirPath: './generated_test',
-    });
-
-    project
-        .load()
-        .resgister(protobufModelsPlugin)
-        .generate();
-}
-
-main();
+export * from './Context';
+export * from './Plugin';
+export * from './Project';
+export * from './Templates';
+export * from './plugins';
