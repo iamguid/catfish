@@ -9,6 +9,7 @@ import { ImportStatementContext } from "./Protobuf3Parser";
 import { PackageStatementContext } from "./Protobuf3Parser";
 import { OptionStatementContext } from "./Protobuf3Parser";
 import { OptionNameContext } from "./Protobuf3Parser";
+import { FieldLabelContext } from "./Protobuf3Parser";
 import { FieldContext } from "./Protobuf3Parser";
 import { FieldOptionsContext } from "./Protobuf3Parser";
 import { FieldOptionContext } from "./Protobuf3Parser";
@@ -32,12 +33,13 @@ import { EnumValueOptionContext } from "./Protobuf3Parser";
 import { MessageDefContext } from "./Protobuf3Parser";
 import { MessageBodyContext } from "./Protobuf3Parser";
 import { MessageElementContext } from "./Protobuf3Parser";
+import { ExtendDefContext } from "./Protobuf3Parser";
 import { ServiceDefContext } from "./Protobuf3Parser";
 import { ServiceElementContext } from "./Protobuf3Parser";
 import { RpcContext } from "./Protobuf3Parser";
 import { ConstantContext } from "./Protobuf3Parser";
 import { BlockLitContext } from "./Protobuf3Parser";
-import { EmptyStatementContext } from "./Protobuf3Parser";
+import { EmptyStatement_Context } from "./Protobuf3Parser";
 import { IdentContext } from "./Protobuf3Parser";
 import { FullIdentContext } from "./Protobuf3Parser";
 import { MessageNameContext } from "./Protobuf3Parser";
@@ -121,6 +123,16 @@ export default class Protobuf3Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitOptionName?: (ctx: OptionNameContext) => void;
+	/**
+	 * Enter a parse tree produced by `Protobuf3Parser.fieldLabel`.
+	 * @param ctx the parse tree
+	 */
+	enterFieldLabel?: (ctx: FieldLabelContext) => void;
+	/**
+	 * Exit a parse tree produced by `Protobuf3Parser.fieldLabel`.
+	 * @param ctx the parse tree
+	 */
+	exitFieldLabel?: (ctx: FieldLabelContext) => void;
 	/**
 	 * Enter a parse tree produced by `Protobuf3Parser.field`.
 	 * @param ctx the parse tree
@@ -352,6 +364,16 @@ export default class Protobuf3Listener extends ParseTreeListener {
 	 */
 	exitMessageElement?: (ctx: MessageElementContext) => void;
 	/**
+	 * Enter a parse tree produced by `Protobuf3Parser.extendDef`.
+	 * @param ctx the parse tree
+	 */
+	enterExtendDef?: (ctx: ExtendDefContext) => void;
+	/**
+	 * Exit a parse tree produced by `Protobuf3Parser.extendDef`.
+	 * @param ctx the parse tree
+	 */
+	exitExtendDef?: (ctx: ExtendDefContext) => void;
+	/**
 	 * Enter a parse tree produced by `Protobuf3Parser.serviceDef`.
 	 * @param ctx the parse tree
 	 */
@@ -402,15 +424,15 @@ export default class Protobuf3Listener extends ParseTreeListener {
 	 */
 	exitBlockLit?: (ctx: BlockLitContext) => void;
 	/**
-	 * Enter a parse tree produced by `Protobuf3Parser.emptyStatement`.
+	 * Enter a parse tree produced by `Protobuf3Parser.emptyStatement_`.
 	 * @param ctx the parse tree
 	 */
-	enterEmptyStatement?: (ctx: EmptyStatementContext) => void;
+	enterEmptyStatement_?: (ctx: EmptyStatement_Context) => void;
 	/**
-	 * Exit a parse tree produced by `Protobuf3Parser.emptyStatement`.
+	 * Exit a parse tree produced by `Protobuf3Parser.emptyStatement_`.
 	 * @param ctx the parse tree
 	 */
-	exitEmptyStatement?: (ctx: EmptyStatementContext) => void;
+	exitEmptyStatement_?: (ctx: EmptyStatement_Context) => void;
 	/**
 	 * Enter a parse tree produced by `Protobuf3Parser.ident`.
 	 * @param ctx the parse tree

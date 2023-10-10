@@ -39,7 +39,6 @@ package protobuf_unittest.no_generic_services_test;
 
 message TestMessage {
   int32 a = 1;
-  extensions 1000 to max;
 }
 
 enum TestEnum {

@@ -11,6 +11,7 @@ export class FieldDescriptor extends BaseDescriptor {
     public readonly type?: string;
     public readonly fieldNumber: number;
     public readonly repeated: boolean;
+    public readonly optional: boolean;
     public readonly map?: MapField;
     public readonly oneofName?: string;
 
@@ -19,6 +20,7 @@ export class FieldDescriptor extends BaseDescriptor {
         type?: string;
         fieldNumber: number;
         repeated: boolean;
+        optional: boolean;
         map?: MapField;
         oneofName?: string;
     }) {
@@ -27,6 +29,7 @@ export class FieldDescriptor extends BaseDescriptor {
         this.type = props.type;
         this.fieldNumber = props.fieldNumber;
         this.repeated = props.repeated;
+        this.optional = props.optional;
         this.map = props.map;
         this.oneofName = props.oneofName;
     }
@@ -37,6 +40,7 @@ export class FieldDescriptor extends BaseDescriptor {
             type: this.type,
             fieldNumber: this.fieldNumber,
             repeated: this.repeated,
+            optional: this.optional,
             map: this.map,
             oneofName: this.oneofName
         })

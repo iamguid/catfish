@@ -186,7 +186,10 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
         const fieldName = ctx.fieldName().getText();
         const filedType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
         const fieldNumber = Number.parseInt(ctx.fieldNumber().getText(), 10);
-        const isRepeated = Boolean(ctx.REPEATED()?.getText());
+
+        const fieldLabelCtx = ctx.fieldLabel();
+        const isOptional = Boolean(fieldLabelCtx?.OPTIONAL()?.getText());
+        const isRepeated = Boolean(fieldLabelCtx?.REPEATED()?.getText());
 
         const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
@@ -199,6 +202,7 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
             options: options,
             type: filedType,
             repeated: isRepeated,
+            optional: isOptional,
             fieldNumber 
         });
     }
@@ -221,6 +225,7 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
             fileDescriptor: this.fileDescriptor,
             options,
             repeated: false,
+            optional: false,
             fieldNumber,
             map: mapField
         });
@@ -244,6 +249,7 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
             options: options || [],
             type: filedType,
             repeated: false,
+            optional: false,
             fieldNumber 
         });
     }

@@ -9,6 +9,7 @@ import { ImportStatementContext } from "./Protobuf3Parser";
 import { PackageStatementContext } from "./Protobuf3Parser";
 import { OptionStatementContext } from "./Protobuf3Parser";
 import { OptionNameContext } from "./Protobuf3Parser";
+import { FieldLabelContext } from "./Protobuf3Parser";
 import { FieldContext } from "./Protobuf3Parser";
 import { FieldOptionsContext } from "./Protobuf3Parser";
 import { FieldOptionContext } from "./Protobuf3Parser";
@@ -32,12 +33,13 @@ import { EnumValueOptionContext } from "./Protobuf3Parser";
 import { MessageDefContext } from "./Protobuf3Parser";
 import { MessageBodyContext } from "./Protobuf3Parser";
 import { MessageElementContext } from "./Protobuf3Parser";
+import { ExtendDefContext } from "./Protobuf3Parser";
 import { ServiceDefContext } from "./Protobuf3Parser";
 import { ServiceElementContext } from "./Protobuf3Parser";
 import { RpcContext } from "./Protobuf3Parser";
 import { ConstantContext } from "./Protobuf3Parser";
 import { BlockLitContext } from "./Protobuf3Parser";
-import { EmptyStatementContext } from "./Protobuf3Parser";
+import { EmptyStatement_Context } from "./Protobuf3Parser";
 import { IdentContext } from "./Protobuf3Parser";
 import { FullIdentContext } from "./Protobuf3Parser";
 import { MessageNameContext } from "./Protobuf3Parser";
@@ -100,6 +102,12 @@ export default class Protobuf3Visitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitOptionName?: (ctx: OptionNameContext) => Result;
+	/**
+	 * Visit a parse tree produced by `Protobuf3Parser.fieldLabel`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitFieldLabel?: (ctx: FieldLabelContext) => Result;
 	/**
 	 * Visit a parse tree produced by `Protobuf3Parser.field`.
 	 * @param ctx the parse tree
@@ -239,6 +247,12 @@ export default class Protobuf3Visitor<Result> extends ParseTreeVisitor<Result> {
 	 */
 	visitMessageElement?: (ctx: MessageElementContext) => Result;
 	/**
+	 * Visit a parse tree produced by `Protobuf3Parser.extendDef`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitExtendDef?: (ctx: ExtendDefContext) => Result;
+	/**
 	 * Visit a parse tree produced by `Protobuf3Parser.serviceDef`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -269,11 +283,11 @@ export default class Protobuf3Visitor<Result> extends ParseTreeVisitor<Result> {
 	 */
 	visitBlockLit?: (ctx: BlockLitContext) => Result;
 	/**
-	 * Visit a parse tree produced by `Protobuf3Parser.emptyStatement`.
+	 * Visit a parse tree produced by `Protobuf3Parser.emptyStatement_`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitEmptyStatement?: (ctx: EmptyStatementContext) => Result;
+	visitEmptyStatement_?: (ctx: EmptyStatement_Context) => Result;
 	/**
 	 * Visit a parse tree produced by `Protobuf3Parser.ident`.
 	 * @param ctx the parse tree

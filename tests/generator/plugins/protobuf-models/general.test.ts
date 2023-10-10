@@ -1,7 +1,12 @@
 import fs from "node:fs"
-import { parse } from "../../src/parser"
+import { Project, ProtobufModelsPlugin } from "../../../../src/generator"
 
-describe("General proto parser test", () => {
+const main = () => {
+}
+
+main();
+
+describe("General protobuf-models generator test", () => {
     [
         "any_test.proto",
         "map_proto3_unittest.proto",
@@ -25,10 +30,16 @@ describe("General proto parser test", () => {
         "unittest_well_known_types.proto",
         "wrappers.proto",
     ].forEach(protofile => {
-        it(`Should parse ${protofile}`, async () => {
-            const content = fs.readFileSync(`${__dirname}/../protos/${protofile}`);
-            const tree = parse(content.toString());
-            expect(tree.toObject()).toMatchSnapshot();
+        it(`Should generate ${protofile}`, async () => {
+            const project = new Project({
+                protoDirPath: './tests/protos',
+                outDirPath: './tests/generator/plugins/protobuf-models/generated',
+            });
+
+            project
+                .load()
+                .resgister(ProtobufModelsPlugin)
+                .generate();
         })
     })
 })

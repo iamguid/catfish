@@ -39,3 +39,4 @@
 
 syntax = "proto3";
 
+package protobuf_unittest_empty;
