@@ -9,7 +9,7 @@
 
 import * as google_protobuf_any_models from "google/protobuf/any_models";
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface ITestAny {
   int32_value: number;
@@ -18,55 +18,34 @@ export interface ITestAny {
   text: string;
 }
 
-export class TestAny extends jspb.Message implements ITestAny {
-  private static repeatedFields: number[] = [3];
+export class TestAny implements ITestAny {
+  int32_value: number = 0;
+  any_value: google.protobuf.Any = null;
+  repeated_any_value: google.protobuf.Any = [];
+  text: string = "";
 
-  contructor(opt_data: any) {
-    jspb.Message.initialize(
-      this,
-      opt_data,
-      0,
-      -1,
-      TestAny.repeatedFields,
-      null
-    );
+  constructor(obj?: Partial<ITestAny>) {
+    if (obj?.int32_value ?? false) {
+      this.int32_value = obj.int32_value;
+    }
+    if (obj?.any_value ?? false) {
+      this.any_value = obj.any_value;
+    }
+    if (obj?.repeated_any_value ?? false) {
+      this.repeated_any_value = obj.repeated_any_value;
+    }
+    if (obj?.text ?? false) {
+      this.text = obj.text;
+    }
   }
 
-  public get int32_value(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set int32_value(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-  public get any_value(): google.protobuf.Any {
-    return jspb.Message.getWrapperField(this, google.protobuf.Any, 2);
+  clone(): TestAny {
+    return new TestAny(this);
   }
-
-  public set any_value(value: google.protobuf.Any): void {
-    return jspb.Message.setWrapperField(
-      this,
-      2,
-
-      value
-    );
-  }
-
-  public get repeated_any_value(): google.protobuf.Any {
-    return jspb.Message.getRepeatedWrapperField(this, google.protobuf.Any, 3);
-  }
-
-  public set repeated_any_value(value: google.protobuf.Any): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      3,
-
-      value
-    );
-  }
-
-  public get text(): string {
-    return jspb.Message.getFieldWithDefault(this, 4, "");
-  }
-
-  public set text(value: string) {}
 }

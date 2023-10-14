@@ -7,22 +7,30 @@
 // package: protobuf_unittest.no_generic_services_test
 // file: unittest_no_generic_services.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface ITestMessage {
   a: number;
 }
 
-export class TestMessage extends jspb.Message implements ITestMessage {
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class TestMessage implements ITestMessage {
+  a: number = 0;
+
+  constructor(obj?: Partial<ITestMessage>) {
+    if (obj?.a ?? false) {
+      this.a = obj.a;
+    }
   }
 
-  public get a(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set a(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): TestMessage {
+    return new TestMessage(this);
+  }
 }
 
 export enum TestEnum {

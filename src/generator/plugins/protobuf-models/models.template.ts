@@ -1,5 +1,8 @@
+import { protoTypeToPjsFn } from ".";
+import { FieldContext } from "../../../parser/generated/Protobuf2Parser";
+import { TypeInfo } from "../../Context";
 import { templates } from "./templates";
-import { EnumCtx, FileCtx, MessageCtx, MessageFieldCtx } from "./types";
+import { EnumCtx, FileCtx, MessageCtx, MessageFieldCtx, TypeInfoCtx } from "./types";
 import { fieldDefault, getOneofGroupsArray, getOneofGroupsArrayIndex, getRepeatedFieldsArray, renderOneofGroupsArray } from "./utils";
 
 export const modelsTemplate = (ctx: FileCtx): string => `
@@ -12,7 +15,7 @@ export const modelsTemplate = (ctx: FileCtx): string => `
     imports: ctx.imports
   })}
 
-  import * as jspb from "google-protobuf"
+  import * as pjs from "protobufjs/minimal"
 
   ${templates.render('models.messagesRecursive', {
     messages: ctx.messges,
@@ -22,6 +25,8 @@ export const modelsTemplate = (ctx: FileCtx): string => `
 
 export const messagesRecursiveTemplate = (ctx: { messages: MessageCtx[], enums: EnumCtx[] }): string => `
   ${ctx.messages.map((message) => `
+    ${ctx.enums.map((enm) => templates.render('models.enum', { enm })).join('\n')}
+
     ${templates.render('models.messageIface', { message })}
 
     ${templates.render('models.messageModel', { message })}
@@ -34,10 +39,34 @@ export const messagesRecursiveTemplate = (ctx: { messages: MessageCtx[], enums: 
         })}
       }
     ` : ''}
-
-    ${ctx.enums.map((enm) => templates.render('models.enum', { enm })).join('\n')}
   `).join('\n')}
 `;
+
+export const messageModelTemplate = (ctx: { message: MessageCtx }): string => {
+  return `
+    export class ${ctx.message.modelName} implements ${ctx.message.ifaceName} {
+      ${templates.render('models.messageModelFields', {
+        message: ctx.message
+      })}
+
+      ${templates.render('models.messageModelConstructor', {
+        message: ctx.message
+      })}
+
+      ${templates.render('models.messageModelSerialize', {
+        message: ctx.message
+      })}
+
+      ${templates.render('models.messageModelDeserialize', {
+        message: ctx.message
+      })}
+
+      clone(): ${ctx.message.modelName} {
+        return new ${ctx.message.modelName}(this);
+      }
+    }
+  `;
+}
 
 export const messageIfaceTemplate = (ctx: { message: MessageCtx }) => `
   export interface ${ctx.message.ifaceName} {
@@ -48,139 +77,116 @@ export const messageIfaceTemplate = (ctx: { message: MessageCtx }) => `
         case field.isOneof:
           return `${field.fieldName}?: ${field.fieldTypeInfo?.tsType};`
         default:
-          return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}; `
+          return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''};`
       }
     }).join('\n')}
   }
 `;
-
-export const messageFieldGetterBodyTemplate = ({ field }: { field: MessageFieldCtx }) => {
-  let useDefault = true;
-
-  // Repeated fields get initialized to their default in the constructor
-  // (why?), so we emit a plain getField() call for them.
-  if (field.isRepeated) {
-    useDefault = false;
-  }
-
-  const isBoolean = field.fieldTypeInfo?.protoType == "bool";
-  const isFloatOrDouble =
-    field.fieldTypeInfo?.protoType == "float" ||
-    field.fieldTypeInfo?.protoType == "double";
-
-  const cardinality = field.isRepeated ? "Repeated" : "";
-  const withDefault = useDefault ? "WithDefault" : "";
-  const defaultArg = useDefault ? fieldDefault(field) : "";
-
-  let type = "";
-  if (isFloatOrDouble) {
-    type = "FloatingPoint";
-  }
-  if (isBoolean) {
-    type = "Boolean";
-  }
-
-  // Prints the appropriate function, among:
-  // - getField
-  // - getBooleanField
-  // - getFloatingPointField => Replaced by getOptionalFloatingPointField to
-  //   preserve backward compatibility.
-  // - getFieldWithDefault
-  // - getBooleanFieldWithDefault
-  // - getFloatingPointFieldWithDefault
-  // - getRepeatedField
-  // - getRepeatedBooleanField
-  // - getRepeatedFloatingPointField
-  if (isFloatOrDouble && !field.isRepeated && !useDefault) {
-    return `
-      return jspb.Message.getOptionalFloatingPointField(
-        this,
-        ${field.fieldNumber}
-      )
-    `
-  } else {
-    return `
-      return jspb.Message.get${cardinality}${type}Field${withDefault}(
-        this,
-        ${field.fieldNumber},
-        ${defaultArg}
-      )
-    `
-  }
-}
-
-export const messageModelTemplate = (ctx: { message: MessageCtx }): string => {
-  const repeatedFieldsArray = getRepeatedFieldsArray(ctx.message);
-  const oneofGroupsArray = getOneofGroupsArray(ctx.message);
-
-  return `
-    export class ${ctx.message.modelName} implements ${ctx.message.ifaceName} extends jspb.Message {
-      ${repeatedFieldsArray.length > 0 ? `private static repeatedFields: number[] = [${repeatedFieldsArray.join(', ')}];` : ''}
-      ${oneofGroupsArray.length > 0 ? `private static oneofFieldsGroups: number[] = ${renderOneofGroupsArray(oneofGroupsArray)};` : ''}
-
-      contructor(opt_data: any) {
-        jspb.Message.initialize(
-          this,
-          opt_data,
-          0,
-          ${ctx.message.pivot},
-          ${repeatedFieldsArray.length > 0 ? `${ctx.message.modelName}.repeatedFields,` : `null,`}
-          ${oneofGroupsArray.length > 0 ? `${ctx.message.modelName}.oneofFieldsGroups` : `null`}
-        )
-      }
-
-      ${ctx.message.fields.map((field) => {
-        switch (true) {
-          case field.isMap: {
-            return `
-              public get ${field.fieldName}(): jspb.Map<${field.mapType?.keyTypeInfo.tsType}, ${field.mapType?.valueTypeInfo.tsType}> {
-                return jspb.Message.getMapField(
-                  this,
-                  ${field.fieldNumber},
-                  false,
-                  ${field.mapType!.valueTypeIsMessage ? field.mapType?.valueTypeInfo.tsType : 'null'}
-                );
-              }
-            `
-          }
-          case field.isMessageType: {
-            return `
-              public get ${field.fieldName} (): ${field.fieldTypeInfo?.tsType} {
-                return jspb.Message.get${field.isRepeated ? 'Repeated' : ''}WrapperField(
-                  this,
-                  ${field.fieldTypeInfo?.tsType},
-                  ${field.fieldNumber}
-                );
-              }
-
-              public set ${field.fieldName} (value: ${field.fieldTypeInfo?.tsType}): void {
-                return jspb.Message.set${field.isOneof ? 'Oneof' : ''}${field.isRepeated ? 'Repeated' : ''}WrapperField(
-                  this,
-                  ${field.fieldNumber},
-                  ${field.oneofName ? `${ctx.message.modelName}.oneofFieldsGroups[${getOneofGroupsArrayIndex(ctx.message, field.oneofName)}], ` : ''}
-                  value
-                )
-              }
-            `
-          }
-          default: {
-            return `
-              public get ${field.fieldName} (): ${field.fieldTypeInfo?.tsType} {
-                ${templates.render('models.messageFieldGetterBody', { field })}
-              }
-
-              public set ${field.fieldName} (value: ${field.fieldTypeInfo?.tsType}) {
-              }
-            `
-          }
-        }
-      }).join('\n')}
-    }
-  `;
-}
 
 export const enumTemplate = ({ enm }: { enm: EnumCtx }) => `
   export enum ${enm.name} {
     ${enm.fields.map((field) => `${field.fieldName} = ${field.fieldValue},`).join('\n')}
   }
 `;
+
+export const messageModelConstructorTemplate = (ctx: { message: MessageCtx }): string => {
+  return `
+    constructor(obj?: Partial<${ctx.message.ifaceName}>) {
+      if (!obj) return;
+
+      ${ctx.message.fields.map((field) => {
+          return `if (obj?.${field.fieldName} !== ${fieldDefault(field)}) { this.${field.fieldName} = obj.${field.fieldName} }`
+      }).join('\n')}
+    }
+  `
+}
+
+export const messageModelFieldsTemplate = (ctx: { message: MessageCtx }): string => {
+  return ctx.message.fields.map((field) => {
+    switch (true) {
+      case field.isMap:
+        return `${field.fieldName}: Record<${field.mapType?.keyTypeInfo.tsType}, ${field.mapType?.valueTypeInfo.tsType}> = ${field.isOptional ? 'undefined' : '{}'};`
+      case field.isOneof:
+        return `${field.fieldName}?: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : fieldDefault(field)};`
+      default:
+        return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : fieldDefault(field)};`
+    }
+  }).join('\n')
+}
+
+export const messageModelEncodeTemplate = (ctx: { message: MessageCtx }): string => {
+  return `
+    encode(w: pjs.Writer = pjs.Writer.create()): Uint8Array {
+      ${ctx.message.fields.map(field => {
+        switch (true) {
+          case field.isMap:
+            return ``
+          case field.isOneof:
+            return ``
+          default:
+            return ``
+        }
+      }).join('\n')}
+      
+      return w;
+    }
+  `
+}
+
+export const messageModelDecodeTemplate = (ctx: { message: MessageCtx }): string => {
+  return `
+    decode(b: Uint8Array): void {
+      const reader = pjs.Reader.create(b);
+      while (reader.pos < reader.len) {
+        const tag = reader.uint32();
+        switch (tag) {
+          ${ctx.message.fields.map(field => {
+            switch (true) {
+              case field.isMap:
+                return `
+                  case ${field.fieldTag}:
+                    const ${field.fieldName}Key = ${templates.render('models.decodeField', { typeInfo: field.mapType!.keyTypeInfo })}
+                    const ${field.fieldName}Value = ${templates.render('models.decodeField', { typeInfo: field.mapType!.valueTypeInfo })}
+
+                    ${field.isOptional ? `
+                    if (this.${field.fieldName} === undefined) {
+                      this.${field.fieldName} = new Map();
+                    }` : ''}
+
+                    this.${field.fieldName}.set(${field.fieldName}Key, ${field.fieldName}Value)
+                    continue;
+                `
+              case field.isRepeated:
+                return `
+                  case ${field.fieldTag}:
+                    const ${field.fieldName}Value = ${templates.render('models.decodeField', { typeInfo: field.fieldTypeInfo! })}
+
+                    ${field.isOptional ? `
+                    if (this.${field.fieldName} === undefined) {
+                      this.${field.fieldName} = [];
+                    }` : ''}
+
+                    this.${field.fieldName}.push(${field.fieldName}Value)
+                    continue;
+                `
+              default:
+                return `
+                  case ${field.fieldTag}:
+                    this.${field.fieldName} = ${templates.render('models.decodeField', { typeInfo: field.fieldTypeInfo! })}
+                    continue;
+                `
+            }
+          }).join('\n')}
+        }
+      }
+    }
+  `
+}
+
+export const decodeFieldTemplate = (ctx: { typeInfo: TypeInfoCtx }): string => {
+  if (ctx.typeInfo.isBuiltin) {
+    return `pjs.${protoTypeToPjsFn(ctx.typeInfo.protoType)}()`
+  }
+
+  return ctx.typeInfo.modelFullImportName!
+}

@@ -5,24 +5,19 @@ import { BaseDescriptor, FileDescriptor, parse } from "../parser"
 import { buildinProtoTypesToTsType } from './buildinProtoTypes';
 import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
-import { filePathToPseudoNamespace } from './utils';
-import { wellKnownTypesToRuntimeMap, wellKnownTypesToProtoFilesMap } from './wellKnownTypes';
+import { wellKnownTypesToProtoFilesMap } from './wellKnownTypes';
+import { filePathToPseudoNamespace, replaceProtoSuffix } from './utils';
 
 export interface Import {
     name: string
     path: string
 }
 
-export interface TypeResolution {
-    dstFileDescriptor: FileDescriptor
-    typeDescriptor: BaseDescriptor
-}
-
 export interface TypeInfo {
     isBuiltin: boolean
     protoType: string
     tsType: string
-    resolution?: TypeResolution
+    descriptor?: BaseDescriptor
 }
 
 export interface Dependency {
@@ -145,16 +140,15 @@ export class Context {
     }
     
     // TODO: Make cache
-    private resolveType(fileDescriptor: FileDescriptor, fullname: string): TypeResolution | null {
+    private resolveType(fileDescriptor: FileDescriptor, fullname: string): BaseDescriptor | null {
         if (fileDescriptor.registry.descriptors.has(fullname)) {
-            const typeDescriptor = fileDescriptor.registry.get(fullname);
-            return { dstFileDescriptor: fileDescriptor, typeDescriptor }
+            return fileDescriptor.registry.get(fullname);
         } else {
             for (const dependency of this.getDependencies(fileDescriptor, true)) {
                 let resolvedType = dependency.registry.tryGet(fullname);
 
                 if (resolvedType) {
-                    return { dstFileDescriptor: dependency, typeDescriptor: resolvedType }
+                    return resolvedType
                 }
             }
         }
@@ -174,13 +168,13 @@ export class Context {
             }
         }
         else {
-            const typeResolution = this.getProtoTypeDescriptor(fileDescriptor, protoType);
+            const descriptor = this.getProtoTypeDescriptor(fileDescriptor, protoType);
 
             return {
                 isBuiltin: false,
                 protoType,
                 tsType: protoType,
-                resolution: typeResolution
+                descriptor,
             }
         }
     }

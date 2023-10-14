@@ -13,30 +13,28 @@ import * as unittest_import_models from "unittest_import_models";
 
 import * as unittest_import_public_models from "unittest_import_public_models";
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface ITestLiteImportsNonlite {
   message: TestAllTypes;
 }
 
-export class TestLiteImportsNonlite
-  extends jspb.Message
-  implements ITestLiteImportsNonlite
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class TestLiteImportsNonlite implements ITestLiteImportsNonlite {
+  message: TestAllTypes = null;
+
+  constructor(obj?: Partial<ITestLiteImportsNonlite>) {
+    if (obj?.message ?? false) {
+      this.message = obj.message;
+    }
   }
 
-  public get message(): TestAllTypes {
-    return jspb.Message.getWrapperField(this, TestAllTypes, 1);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set message(value: TestAllTypes): void {
-    return jspb.Message.setWrapperField(
-      this,
-      1,
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-      value
-    );
+  clone(): TestLiteImportsNonlite {
+    return new TestLiteImportsNonlite(this);
   }
 }

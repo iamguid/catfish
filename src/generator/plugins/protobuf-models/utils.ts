@@ -67,3 +67,30 @@ export const fieldDefault = (field: MessageFieldCtx) => {
 
   throw new Error(`Cannot get default TS type for proto type ${field.fieldTypeInfo?.protoType}`)
 }
+
+// Based on https://github.com/protobufjs/protobuf.js/blob/master/src/types.js#L37
+export const getBasicWireType = (protoType: string): number => {
+  switch (protoType) {
+    case "int32":
+    case "uint32":
+    case "sint32":
+    case "int64":
+    case "uint64":
+    case "sint64":
+    case "bool":
+      return 0;
+    case "double":
+    case "fixed64":
+    case "sfixed64":
+      return 1;
+    case "string":
+    case "bytes":
+      return 2;
+    case "float":
+    case "fixed64":
+    case "sfixed64":
+      return 5;
+    default:
+      return 2;
+  }
+}

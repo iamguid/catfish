@@ -19,7 +19,7 @@ import * as google_protobuf_timestamp_models from "google/protobuf/timestamp_mod
 
 import * as google_protobuf_wrappers_models from "google/protobuf/wrappers_models";
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface ITestAllTypesProto3 {
   optional_int32: number;
@@ -175,1347 +175,625 @@ export interface ITestAllTypesProto3 {
   field_name18__: number;
 }
 
-export class TestAllTypesProto3
-  extends jspb.Message
-  implements ITestAllTypesProto3
-{
-  private static repeatedFields: number[] = [
-    31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 48, 49, 51, 52,
-    54, 55, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 211, 212, 213, 214, 215, 216,
-    217, 218, 219, 311, 312, 313, 324, 315, 316, 317,
-  ];
-  private static oneofFieldsGroups: number[] = [
-    [111, 112, 113, 114, 115, 116, 117, 118, 119, 120],
-  ];
-
-  contructor(opt_data: any) {
-    jspb.Message.initialize(
-      this,
-      opt_data,
-      0,
-      -1,
-      TestAllTypesProto3.repeatedFields,
-      TestAllTypesProto3.oneofFieldsGroups
-    );
-  }
-
-  public get optional_int32(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
-  }
-
-  public set optional_int32(value: number) {}
-
-  public get optional_int64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 2, 0n);
-  }
-
-  public set optional_int64(value: BigInt) {}
-
-  public get optional_uint32(): number {
-    return jspb.Message.getFieldWithDefault(this, 3, 0);
-  }
-
-  public set optional_uint32(value: number) {}
-
-  public get optional_uint64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 4, 0n);
-  }
-
-  public set optional_uint64(value: BigInt) {}
-
-  public get optional_sint32(): number {
-    return jspb.Message.getFieldWithDefault(this, 5, 0);
-  }
-
-  public set optional_sint32(value: number) {}
-
-  public get optional_sint64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 6, 0n);
-  }
-
-  public set optional_sint64(value: BigInt) {}
-
-  public get optional_fixed32(): number {
-    return jspb.Message.getFieldWithDefault(this, 7, 0);
-  }
-
-  public set optional_fixed32(value: number) {}
-
-  public get optional_fixed64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 8, 0n);
-  }
-
-  public set optional_fixed64(value: BigInt) {}
-
-  public get optional_sfixed32(): number {
-    return jspb.Message.getFieldWithDefault(this, 9, 0);
-  }
-
-  public set optional_sfixed32(value: number) {}
-
-  public get optional_sfixed64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 10, 0n);
-  }
-
-  public set optional_sfixed64(value: BigInt) {}
-
-  public get optional_float(): number {
-    return jspb.Message.getFloatingPointFieldWithDefault(this, 11, 0);
-  }
-
-  public set optional_float(value: number) {}
-
-  public get optional_double(): number {
-    return jspb.Message.getFloatingPointFieldWithDefault(this, 12, 0);
-  }
-
-  public set optional_double(value: number) {}
-
-  public get optional_bool(): boolean {
-    return jspb.Message.getBooleanFieldWithDefault(this, 13, false);
-  }
-
-  public set optional_bool(value: boolean) {}
-
-  public get optional_string(): string {
-    return jspb.Message.getFieldWithDefault(this, 14, "");
-  }
-
-  public set optional_string(value: string) {}
-
-  public get optional_bytes(): Uint8Array {
-    return jspb.Message.getFieldWithDefault(this, 15, new Uint8Array());
-  }
-
-  public set optional_bytes(value: Uint8Array) {}
-
-  public get optional_nested_message(): TestAllTypesProto3.NestedMessage {
-    return jspb.Message.getWrapperField(
-      this,
-      TestAllTypesProto3.NestedMessage,
-      18
-    );
-  }
-
-  public set optional_nested_message(
-    value: TestAllTypesProto3.NestedMessage
-  ): void {
-    return jspb.Message.setWrapperField(
-      this,
-      18,
-
-      value
-    );
-  }
-
-  public get optional_foreign_message(): ForeignMessage {
-    return jspb.Message.getWrapperField(this, ForeignMessage, 19);
-  }
-
-  public set optional_foreign_message(value: ForeignMessage): void {
-    return jspb.Message.setWrapperField(
-      this,
-      19,
-
-      value
-    );
-  }
-
-  public get optional_nested_enum(): TestAllTypesProto3.NestedEnum {
-    return jspb.Message.getWrapperField(
-      this,
-      TestAllTypesProto3.NestedEnum,
-      21
-    );
-  }
-
-  public set optional_nested_enum(value: TestAllTypesProto3.NestedEnum): void {
-    return jspb.Message.setWrapperField(
-      this,
-      21,
-
-      value
-    );
-  }
-
-  public get optional_foreign_enum(): ForeignEnum {
-    return jspb.Message.getWrapperField(this, ForeignEnum, 22);
-  }
-
-  public set optional_foreign_enum(value: ForeignEnum): void {
-    return jspb.Message.setWrapperField(
-      this,
-      22,
-
-      value
-    );
-  }
-
-  public get optional_aliased_enum(): TestAllTypesProto3.AliasedEnum {
-    return jspb.Message.getWrapperField(
-      this,
-      TestAllTypesProto3.AliasedEnum,
-      23
-    );
-  }
-
-  public set optional_aliased_enum(
-    value: TestAllTypesProto3.AliasedEnum
-  ): void {
-    return jspb.Message.setWrapperField(
-      this,
-      23,
-
-      value
-    );
-  }
-
-  public get optional_string_piece(): string {
-    return jspb.Message.getFieldWithDefault(this, 24, "");
-  }
-
-  public set optional_string_piece(value: string) {}
-
-  public get optional_cord(): string {
-    return jspb.Message.getFieldWithDefault(this, 25, "");
-  }
-
-  public set optional_cord(value: string) {}
-
-  public get recursive_message(): TestAllTypesProto3 {
-    return jspb.Message.getWrapperField(this, TestAllTypesProto3, 27);
-  }
-
-  public set recursive_message(value: TestAllTypesProto3): void {
-    return jspb.Message.setWrapperField(
-      this,
-      27,
-
-      value
-    );
-  }
-
-  public get repeated_int32(): number {
-    return jspb.Message.getRepeatedField(this, 31);
-  }
-
-  public set repeated_int32(value: number) {}
-
-  public get repeated_int64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 32);
-  }
-
-  public set repeated_int64(value: BigInt) {}
-
-  public get repeated_uint32(): number {
-    return jspb.Message.getRepeatedField(this, 33);
-  }
-
-  public set repeated_uint32(value: number) {}
-
-  public get repeated_uint64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 34);
-  }
-
-  public set repeated_uint64(value: BigInt) {}
-
-  public get repeated_sint32(): number {
-    return jspb.Message.getRepeatedField(this, 35);
-  }
-
-  public set repeated_sint32(value: number) {}
-
-  public get repeated_sint64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 36);
-  }
-
-  public set repeated_sint64(value: BigInt) {}
-
-  public get repeated_fixed32(): number {
-    return jspb.Message.getRepeatedField(this, 37);
-  }
-
-  public set repeated_fixed32(value: number) {}
-
-  public get repeated_fixed64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 38);
-  }
-
-  public set repeated_fixed64(value: BigInt) {}
-
-  public get repeated_sfixed32(): number {
-    return jspb.Message.getRepeatedField(this, 39);
-  }
-
-  public set repeated_sfixed32(value: number) {}
-
-  public get repeated_sfixed64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 40);
-  }
-
-  public set repeated_sfixed64(value: BigInt) {}
-
-  public get repeated_float(): number {
-    return jspb.Message.getRepeatedFloatingPointField(this, 41);
-  }
-
-  public set repeated_float(value: number) {}
-
-  public get repeated_double(): number {
-    return jspb.Message.getRepeatedFloatingPointField(this, 42);
-  }
-
-  public set repeated_double(value: number) {}
-
-  public get repeated_bool(): boolean {
-    return jspb.Message.getRepeatedBooleanField(this, 43);
-  }
-
-  public set repeated_bool(value: boolean) {}
-
-  public get repeated_string(): string {
-    return jspb.Message.getRepeatedField(this, 44);
-  }
-
-  public set repeated_string(value: string) {}
-
-  public get repeated_bytes(): Uint8Array {
-    return jspb.Message.getRepeatedField(this, 45);
-  }
-
-  public set repeated_bytes(value: Uint8Array) {}
-
-  public get repeated_nested_message(): TestAllTypesProto3.NestedMessage {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      TestAllTypesProto3.NestedMessage,
-      48
-    );
-  }
-
-  public set repeated_nested_message(
-    value: TestAllTypesProto3.NestedMessage
-  ): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      48,
-
-      value
-    );
-  }
-
-  public get repeated_foreign_message(): ForeignMessage {
-    return jspb.Message.getRepeatedWrapperField(this, ForeignMessage, 49);
-  }
-
-  public set repeated_foreign_message(value: ForeignMessage): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      49,
-
-      value
-    );
-  }
-
-  public get repeated_nested_enum(): TestAllTypesProto3.NestedEnum {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      TestAllTypesProto3.NestedEnum,
-      51
-    );
-  }
-
-  public set repeated_nested_enum(value: TestAllTypesProto3.NestedEnum): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      51,
-
-      value
-    );
-  }
-
-  public get repeated_foreign_enum(): ForeignEnum {
-    return jspb.Message.getRepeatedWrapperField(this, ForeignEnum, 52);
-  }
-
-  public set repeated_foreign_enum(value: ForeignEnum): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      52,
-
-      value
-    );
-  }
-
-  public get repeated_string_piece(): string {
-    return jspb.Message.getRepeatedField(this, 54);
-  }
-
-  public set repeated_string_piece(value: string) {}
-
-  public get repeated_cord(): string {
-    return jspb.Message.getRepeatedField(this, 55);
-  }
-
-  public set repeated_cord(value: string) {}
-
-  public get packed_int32(): number {
-    return jspb.Message.getRepeatedField(this, 75);
-  }
-
-  public set packed_int32(value: number) {}
-
-  public get packed_int64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 76);
-  }
-
-  public set packed_int64(value: BigInt) {}
-
-  public get packed_uint32(): number {
-    return jspb.Message.getRepeatedField(this, 77);
-  }
-
-  public set packed_uint32(value: number) {}
-
-  public get packed_uint64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 78);
-  }
-
-  public set packed_uint64(value: BigInt) {}
-
-  public get packed_sint32(): number {
-    return jspb.Message.getRepeatedField(this, 79);
-  }
-
-  public set packed_sint32(value: number) {}
-
-  public get packed_sint64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 80);
-  }
-
-  public set packed_sint64(value: BigInt) {}
-
-  public get packed_fixed32(): number {
-    return jspb.Message.getRepeatedField(this, 81);
-  }
-
-  public set packed_fixed32(value: number) {}
-
-  public get packed_fixed64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 82);
-  }
-
-  public set packed_fixed64(value: BigInt) {}
-
-  public get packed_sfixed32(): number {
-    return jspb.Message.getRepeatedField(this, 83);
-  }
-
-  public set packed_sfixed32(value: number) {}
-
-  public get packed_sfixed64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 84);
-  }
-
-  public set packed_sfixed64(value: BigInt) {}
-
-  public get packed_float(): number {
-    return jspb.Message.getRepeatedFloatingPointField(this, 85);
-  }
-
-  public set packed_float(value: number) {}
-
-  public get packed_double(): number {
-    return jspb.Message.getRepeatedFloatingPointField(this, 86);
-  }
-
-  public set packed_double(value: number) {}
-
-  public get packed_bool(): boolean {
-    return jspb.Message.getRepeatedBooleanField(this, 87);
-  }
-
-  public set packed_bool(value: boolean) {}
-
-  public get packed_nested_enum(): TestAllTypesProto3.NestedEnum {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      TestAllTypesProto3.NestedEnum,
-      88
-    );
-  }
-
-  public set packed_nested_enum(value: TestAllTypesProto3.NestedEnum): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      88,
-
-      value
-    );
-  }
-
-  public get unpacked_int32(): number {
-    return jspb.Message.getRepeatedField(this, 89);
-  }
-
-  public set unpacked_int32(value: number) {}
-
-  public get unpacked_int64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 90);
-  }
-
-  public set unpacked_int64(value: BigInt) {}
-
-  public get unpacked_uint32(): number {
-    return jspb.Message.getRepeatedField(this, 91);
-  }
-
-  public set unpacked_uint32(value: number) {}
-
-  public get unpacked_uint64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 92);
-  }
-
-  public set unpacked_uint64(value: BigInt) {}
-
-  public get unpacked_sint32(): number {
-    return jspb.Message.getRepeatedField(this, 93);
-  }
-
-  public set unpacked_sint32(value: number) {}
-
-  public get unpacked_sint64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 94);
-  }
-
-  public set unpacked_sint64(value: BigInt) {}
-
-  public get unpacked_fixed32(): number {
-    return jspb.Message.getRepeatedField(this, 95);
-  }
-
-  public set unpacked_fixed32(value: number) {}
-
-  public get unpacked_fixed64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 96);
-  }
-
-  public set unpacked_fixed64(value: BigInt) {}
-
-  public get unpacked_sfixed32(): number {
-    return jspb.Message.getRepeatedField(this, 97);
-  }
-
-  public set unpacked_sfixed32(value: number) {}
-
-  public get unpacked_sfixed64(): BigInt {
-    return jspb.Message.getRepeatedField(this, 98);
-  }
-
-  public set unpacked_sfixed64(value: BigInt) {}
-
-  public get unpacked_float(): number {
-    return jspb.Message.getRepeatedFloatingPointField(this, 99);
-  }
-
-  public set unpacked_float(value: number) {}
-
-  public get unpacked_double(): number {
-    return jspb.Message.getRepeatedFloatingPointField(this, 100);
-  }
-
-  public set unpacked_double(value: number) {}
-
-  public get unpacked_bool(): boolean {
-    return jspb.Message.getRepeatedBooleanField(this, 101);
-  }
-
-  public set unpacked_bool(value: boolean) {}
-
-  public get unpacked_nested_enum(): TestAllTypesProto3.NestedEnum {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      TestAllTypesProto3.NestedEnum,
-      102
-    );
-  }
-
-  public set unpacked_nested_enum(value: TestAllTypesProto3.NestedEnum): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      102,
-
-      value
-    );
-  }
-
-  public get map_int32_int32(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 56, false, null);
-  }
-
-  public get map_int64_int64(): jspb.Map<BigInt, BigInt> {
-    return jspb.Message.getMapField(this, 57, false, null);
-  }
-
-  public get map_uint32_uint32(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 58, false, null);
-  }
-
-  public get map_uint64_uint64(): jspb.Map<BigInt, BigInt> {
-    return jspb.Message.getMapField(this, 59, false, null);
-  }
-
-  public get map_sint32_sint32(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 60, false, null);
-  }
-
-  public get map_sint64_sint64(): jspb.Map<BigInt, BigInt> {
-    return jspb.Message.getMapField(this, 61, false, null);
-  }
-
-  public get map_fixed32_fixed32(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 62, false, null);
-  }
-
-  public get map_fixed64_fixed64(): jspb.Map<BigInt, BigInt> {
-    return jspb.Message.getMapField(this, 63, false, null);
-  }
-
-  public get map_sfixed32_sfixed32(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 64, false, null);
-  }
-
-  public get map_sfixed64_sfixed64(): jspb.Map<BigInt, BigInt> {
-    return jspb.Message.getMapField(this, 65, false, null);
-  }
-
-  public get map_int32_float(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 66, false, null);
-  }
-
-  public get map_int32_double(): jspb.Map<number, number> {
-    return jspb.Message.getMapField(this, 67, false, null);
-  }
-
-  public get map_bool_bool(): jspb.Map<boolean, boolean> {
-    return jspb.Message.getMapField(this, 68, false, null);
-  }
-
-  public get map_string_string(): jspb.Map<string, string> {
-    return jspb.Message.getMapField(this, 69, false, null);
+export class TestAllTypesProto3 implements ITestAllTypesProto3 {
+  optional_int32: number = 0;
+  optional_int64: BigInt = 0n;
+  optional_uint32: number = 0;
+  optional_uint64: BigInt = 0n;
+  optional_sint32: number = 0;
+  optional_sint64: BigInt = 0n;
+  optional_fixed32: number = 0;
+  optional_fixed64: BigInt = 0n;
+  optional_sfixed32: number = 0;
+  optional_sfixed64: BigInt = 0n;
+  optional_float: number = 0;
+  optional_double: number = 0;
+  optional_bool: boolean = false;
+  optional_string: string = "";
+  optional_bytes: Uint8Array = new Uint8Array();
+  optional_nested_message: TestAllTypesProto3.NestedMessage = null;
+  optional_foreign_message: ForeignMessage = null;
+  optional_nested_enum: TestAllTypesProto3.NestedEnum = null;
+  optional_foreign_enum: ForeignEnum = null;
+  optional_aliased_enum: TestAllTypesProto3.AliasedEnum = null;
+  optional_string_piece: string = "";
+  optional_cord: string = "";
+  recursive_message: TestAllTypesProto3 = null;
+  repeated_int32: number = [];
+  repeated_int64: BigInt = [];
+  repeated_uint32: number = [];
+  repeated_uint64: BigInt = [];
+  repeated_sint32: number = [];
+  repeated_sint64: BigInt = [];
+  repeated_fixed32: number = [];
+  repeated_fixed64: BigInt = [];
+  repeated_sfixed32: number = [];
+  repeated_sfixed64: BigInt = [];
+  repeated_float: number = [];
+  repeated_double: number = [];
+  repeated_bool: boolean = [];
+  repeated_string: string = [];
+  repeated_bytes: Uint8Array = [];
+  repeated_nested_message: TestAllTypesProto3.NestedMessage = [];
+  repeated_foreign_message: ForeignMessage = [];
+  repeated_nested_enum: TestAllTypesProto3.NestedEnum = [];
+  repeated_foreign_enum: ForeignEnum = [];
+  repeated_string_piece: string = [];
+  repeated_cord: string = [];
+  packed_int32: number = [];
+  packed_int64: BigInt = [];
+  packed_uint32: number = [];
+  packed_uint64: BigInt = [];
+  packed_sint32: number = [];
+  packed_sint64: BigInt = [];
+  packed_fixed32: number = [];
+  packed_fixed64: BigInt = [];
+  packed_sfixed32: number = [];
+  packed_sfixed64: BigInt = [];
+  packed_float: number = [];
+  packed_double: number = [];
+  packed_bool: boolean = [];
+  packed_nested_enum: TestAllTypesProto3.NestedEnum = [];
+  unpacked_int32: number = [];
+  unpacked_int64: BigInt = [];
+  unpacked_uint32: number = [];
+  unpacked_uint64: BigInt = [];
+  unpacked_sint32: number = [];
+  unpacked_sint64: BigInt = [];
+  unpacked_fixed32: number = [];
+  unpacked_fixed64: BigInt = [];
+  unpacked_sfixed32: number = [];
+  unpacked_sfixed64: BigInt = [];
+  unpacked_float: number = [];
+  unpacked_double: number = [];
+  unpacked_bool: boolean = [];
+  unpacked_nested_enum: TestAllTypesProto3.NestedEnum = [];
+  map_int32_int32: Record<number, number> = {};
+  map_int64_int64: Record<BigInt, BigInt> = {};
+  map_uint32_uint32: Record<number, number> = {};
+  map_uint64_uint64: Record<BigInt, BigInt> = {};
+  map_sint32_sint32: Record<number, number> = {};
+  map_sint64_sint64: Record<BigInt, BigInt> = {};
+  map_fixed32_fixed32: Record<number, number> = {};
+  map_fixed64_fixed64: Record<BigInt, BigInt> = {};
+  map_sfixed32_sfixed32: Record<number, number> = {};
+  map_sfixed64_sfixed64: Record<BigInt, BigInt> = {};
+  map_int32_float: Record<number, number> = {};
+  map_int32_double: Record<number, number> = {};
+  map_bool_bool: Record<boolean, boolean> = {};
+  map_string_string: Record<string, string> = {};
+  map_string_bytes: Record<string, Uint8Array> = {};
+  map_string_nested_message: Record<string, TestAllTypesProto3.NestedMessage> =
+    {};
+  map_string_foreign_message: Record<string, ForeignMessage> = {};
+  map_string_nested_enum: Record<string, TestAllTypesProto3.NestedEnum> = {};
+  map_string_foreign_enum: Record<string, ForeignEnum> = {};
+  oneof_uint32?: number = 0;
+  oneof_nested_message?: TestAllTypesProto3.NestedMessage = null;
+  oneof_string?: string = "";
+  oneof_bytes?: Uint8Array = new Uint8Array();
+  oneof_bool?: boolean = false;
+  oneof_uint64?: BigInt = 0n;
+  oneof_float?: number = 0;
+  oneof_double?: number = 0;
+  oneof_enum?: TestAllTypesProto3.NestedEnum = null;
+  oneof_null_value?: google.protobuf.NullValue = null;
+  optional_bool_wrapper: google.protobuf.BoolValue = null;
+  optional_int32_wrapper: google.protobuf.Int32Value = null;
+  optional_int64_wrapper: google.protobuf.Int64Value = null;
+  optional_uint32_wrapper: google.protobuf.UInt32Value = null;
+  optional_uint64_wrapper: google.protobuf.UInt64Value = null;
+  optional_float_wrapper: google.protobuf.FloatValue = null;
+  optional_double_wrapper: google.protobuf.DoubleValue = null;
+  optional_string_wrapper: google.protobuf.StringValue = null;
+  optional_bytes_wrapper: google.protobuf.BytesValue = null;
+  repeated_bool_wrapper: google.protobuf.BoolValue = [];
+  repeated_int32_wrapper: google.protobuf.Int32Value = [];
+  repeated_int64_wrapper: google.protobuf.Int64Value = [];
+  repeated_uint32_wrapper: google.protobuf.UInt32Value = [];
+  repeated_uint64_wrapper: google.protobuf.UInt64Value = [];
+  repeated_float_wrapper: google.protobuf.FloatValue = [];
+  repeated_double_wrapper: google.protobuf.DoubleValue = [];
+  repeated_string_wrapper: google.protobuf.StringValue = [];
+  repeated_bytes_wrapper: google.protobuf.BytesValue = [];
+  optional_duration: google.protobuf.Duration = null;
+  optional_timestamp: google.protobuf.Timestamp = null;
+  optional_field_mask: google.protobuf.FieldMask = null;
+  optional_struct: google.protobuf.Struct = null;
+  optional_any: google.protobuf.Any = null;
+  optional_value: google.protobuf.Value = null;
+  optional_null_value: google.protobuf.NullValue = null;
+  repeated_duration: google.protobuf.Duration = [];
+  repeated_timestamp: google.protobuf.Timestamp = [];
+  repeated_fieldmask: google.protobuf.FieldMask = [];
+  repeated_struct: google.protobuf.Struct = [];
+  repeated_any: google.protobuf.Any = [];
+  repeated_value: google.protobuf.Value = [];
+  repeated_list_value: google.protobuf.ListValue = [];
+  fieldname1: number = 0;
+  field_name2: number = 0;
+  _field_name3: number = 0;
+  field__name4_: number = 0;
+  field0name5: number = 0;
+  field_0_name6: number = 0;
+  fieldName7: number = 0;
+  fieldName8: number = 0;
+  field_Name9: number = 0;
+  field_Name10: number = 0;
+  fIELD_NAME11: number = 0;
+  fIELD_name12: number = 0;
+  __field_name13: number = 0;
+  __Field_name14: number = 0;
+  field__name15: number = 0;
+  field__Name16: number = 0;
+  field_name17__: number = 0;
+  field_name18__: number = 0;
+
+  constructor(obj?: Partial<ITestAllTypesProto3>) {
+    if (obj?.optional_int32 ?? false) {
+      this.optional_int32 = obj.optional_int32;
+    }
+    if (obj?.optional_int64 ?? false) {
+      this.optional_int64 = obj.optional_int64;
+    }
+    if (obj?.optional_uint32 ?? false) {
+      this.optional_uint32 = obj.optional_uint32;
+    }
+    if (obj?.optional_uint64 ?? false) {
+      this.optional_uint64 = obj.optional_uint64;
+    }
+    if (obj?.optional_sint32 ?? false) {
+      this.optional_sint32 = obj.optional_sint32;
+    }
+    if (obj?.optional_sint64 ?? false) {
+      this.optional_sint64 = obj.optional_sint64;
+    }
+    if (obj?.optional_fixed32 ?? false) {
+      this.optional_fixed32 = obj.optional_fixed32;
+    }
+    if (obj?.optional_fixed64 ?? false) {
+      this.optional_fixed64 = obj.optional_fixed64;
+    }
+    if (obj?.optional_sfixed32 ?? false) {
+      this.optional_sfixed32 = obj.optional_sfixed32;
+    }
+    if (obj?.optional_sfixed64 ?? false) {
+      this.optional_sfixed64 = obj.optional_sfixed64;
+    }
+    if (obj?.optional_float ?? false) {
+      this.optional_float = obj.optional_float;
+    }
+    if (obj?.optional_double ?? false) {
+      this.optional_double = obj.optional_double;
+    }
+    if (obj?.optional_bool ?? false) {
+      this.optional_bool = obj.optional_bool;
+    }
+    if (obj?.optional_string ?? false) {
+      this.optional_string = obj.optional_string;
+    }
+    if (obj?.optional_bytes ?? false) {
+      this.optional_bytes = obj.optional_bytes;
+    }
+    if (obj?.optional_nested_message ?? false) {
+      this.optional_nested_message = obj.optional_nested_message;
+    }
+    if (obj?.optional_foreign_message ?? false) {
+      this.optional_foreign_message = obj.optional_foreign_message;
+    }
+    if (obj?.optional_nested_enum ?? false) {
+      this.optional_nested_enum = obj.optional_nested_enum;
+    }
+    if (obj?.optional_foreign_enum ?? false) {
+      this.optional_foreign_enum = obj.optional_foreign_enum;
+    }
+    if (obj?.optional_aliased_enum ?? false) {
+      this.optional_aliased_enum = obj.optional_aliased_enum;
+    }
+    if (obj?.optional_string_piece ?? false) {
+      this.optional_string_piece = obj.optional_string_piece;
+    }
+    if (obj?.optional_cord ?? false) {
+      this.optional_cord = obj.optional_cord;
+    }
+    if (obj?.recursive_message ?? false) {
+      this.recursive_message = obj.recursive_message;
+    }
+    if (obj?.repeated_int32 ?? false) {
+      this.repeated_int32 = obj.repeated_int32;
+    }
+    if (obj?.repeated_int64 ?? false) {
+      this.repeated_int64 = obj.repeated_int64;
+    }
+    if (obj?.repeated_uint32 ?? false) {
+      this.repeated_uint32 = obj.repeated_uint32;
+    }
+    if (obj?.repeated_uint64 ?? false) {
+      this.repeated_uint64 = obj.repeated_uint64;
+    }
+    if (obj?.repeated_sint32 ?? false) {
+      this.repeated_sint32 = obj.repeated_sint32;
+    }
+    if (obj?.repeated_sint64 ?? false) {
+      this.repeated_sint64 = obj.repeated_sint64;
+    }
+    if (obj?.repeated_fixed32 ?? false) {
+      this.repeated_fixed32 = obj.repeated_fixed32;
+    }
+    if (obj?.repeated_fixed64 ?? false) {
+      this.repeated_fixed64 = obj.repeated_fixed64;
+    }
+    if (obj?.repeated_sfixed32 ?? false) {
+      this.repeated_sfixed32 = obj.repeated_sfixed32;
+    }
+    if (obj?.repeated_sfixed64 ?? false) {
+      this.repeated_sfixed64 = obj.repeated_sfixed64;
+    }
+    if (obj?.repeated_float ?? false) {
+      this.repeated_float = obj.repeated_float;
+    }
+    if (obj?.repeated_double ?? false) {
+      this.repeated_double = obj.repeated_double;
+    }
+    if (obj?.repeated_bool ?? false) {
+      this.repeated_bool = obj.repeated_bool;
+    }
+    if (obj?.repeated_string ?? false) {
+      this.repeated_string = obj.repeated_string;
+    }
+    if (obj?.repeated_bytes ?? false) {
+      this.repeated_bytes = obj.repeated_bytes;
+    }
+    if (obj?.repeated_nested_message ?? false) {
+      this.repeated_nested_message = obj.repeated_nested_message;
+    }
+    if (obj?.repeated_foreign_message ?? false) {
+      this.repeated_foreign_message = obj.repeated_foreign_message;
+    }
+    if (obj?.repeated_nested_enum ?? false) {
+      this.repeated_nested_enum = obj.repeated_nested_enum;
+    }
+    if (obj?.repeated_foreign_enum ?? false) {
+      this.repeated_foreign_enum = obj.repeated_foreign_enum;
+    }
+    if (obj?.repeated_string_piece ?? false) {
+      this.repeated_string_piece = obj.repeated_string_piece;
+    }
+    if (obj?.repeated_cord ?? false) {
+      this.repeated_cord = obj.repeated_cord;
+    }
+    if (obj?.packed_int32 ?? false) {
+      this.packed_int32 = obj.packed_int32;
+    }
+    if (obj?.packed_int64 ?? false) {
+      this.packed_int64 = obj.packed_int64;
+    }
+    if (obj?.packed_uint32 ?? false) {
+      this.packed_uint32 = obj.packed_uint32;
+    }
+    if (obj?.packed_uint64 ?? false) {
+      this.packed_uint64 = obj.packed_uint64;
+    }
+    if (obj?.packed_sint32 ?? false) {
+      this.packed_sint32 = obj.packed_sint32;
+    }
+    if (obj?.packed_sint64 ?? false) {
+      this.packed_sint64 = obj.packed_sint64;
+    }
+    if (obj?.packed_fixed32 ?? false) {
+      this.packed_fixed32 = obj.packed_fixed32;
+    }
+    if (obj?.packed_fixed64 ?? false) {
+      this.packed_fixed64 = obj.packed_fixed64;
+    }
+    if (obj?.packed_sfixed32 ?? false) {
+      this.packed_sfixed32 = obj.packed_sfixed32;
+    }
+    if (obj?.packed_sfixed64 ?? false) {
+      this.packed_sfixed64 = obj.packed_sfixed64;
+    }
+    if (obj?.packed_float ?? false) {
+      this.packed_float = obj.packed_float;
+    }
+    if (obj?.packed_double ?? false) {
+      this.packed_double = obj.packed_double;
+    }
+    if (obj?.packed_bool ?? false) {
+      this.packed_bool = obj.packed_bool;
+    }
+    if (obj?.packed_nested_enum ?? false) {
+      this.packed_nested_enum = obj.packed_nested_enum;
+    }
+    if (obj?.unpacked_int32 ?? false) {
+      this.unpacked_int32 = obj.unpacked_int32;
+    }
+    if (obj?.unpacked_int64 ?? false) {
+      this.unpacked_int64 = obj.unpacked_int64;
+    }
+    if (obj?.unpacked_uint32 ?? false) {
+      this.unpacked_uint32 = obj.unpacked_uint32;
+    }
+    if (obj?.unpacked_uint64 ?? false) {
+      this.unpacked_uint64 = obj.unpacked_uint64;
+    }
+    if (obj?.unpacked_sint32 ?? false) {
+      this.unpacked_sint32 = obj.unpacked_sint32;
+    }
+    if (obj?.unpacked_sint64 ?? false) {
+      this.unpacked_sint64 = obj.unpacked_sint64;
+    }
+    if (obj?.unpacked_fixed32 ?? false) {
+      this.unpacked_fixed32 = obj.unpacked_fixed32;
+    }
+    if (obj?.unpacked_fixed64 ?? false) {
+      this.unpacked_fixed64 = obj.unpacked_fixed64;
+    }
+    if (obj?.unpacked_sfixed32 ?? false) {
+      this.unpacked_sfixed32 = obj.unpacked_sfixed32;
+    }
+    if (obj?.unpacked_sfixed64 ?? false) {
+      this.unpacked_sfixed64 = obj.unpacked_sfixed64;
+    }
+    if (obj?.unpacked_float ?? false) {
+      this.unpacked_float = obj.unpacked_float;
+    }
+    if (obj?.unpacked_double ?? false) {
+      this.unpacked_double = obj.unpacked_double;
+    }
+    if (obj?.unpacked_bool ?? false) {
+      this.unpacked_bool = obj.unpacked_bool;
+    }
+    if (obj?.unpacked_nested_enum ?? false) {
+      this.unpacked_nested_enum = obj.unpacked_nested_enum;
+    }
+    if (obj?.map_int32_int32 ?? false) {
+      this.map_int32_int32 = obj.map_int32_int32;
+    }
+    if (obj?.map_int64_int64 ?? false) {
+      this.map_int64_int64 = obj.map_int64_int64;
+    }
+    if (obj?.map_uint32_uint32 ?? false) {
+      this.map_uint32_uint32 = obj.map_uint32_uint32;
+    }
+    if (obj?.map_uint64_uint64 ?? false) {
+      this.map_uint64_uint64 = obj.map_uint64_uint64;
+    }
+    if (obj?.map_sint32_sint32 ?? false) {
+      this.map_sint32_sint32 = obj.map_sint32_sint32;
+    }
+    if (obj?.map_sint64_sint64 ?? false) {
+      this.map_sint64_sint64 = obj.map_sint64_sint64;
+    }
+    if (obj?.map_fixed32_fixed32 ?? false) {
+      this.map_fixed32_fixed32 = obj.map_fixed32_fixed32;
+    }
+    if (obj?.map_fixed64_fixed64 ?? false) {
+      this.map_fixed64_fixed64 = obj.map_fixed64_fixed64;
+    }
+    if (obj?.map_sfixed32_sfixed32 ?? false) {
+      this.map_sfixed32_sfixed32 = obj.map_sfixed32_sfixed32;
+    }
+    if (obj?.map_sfixed64_sfixed64 ?? false) {
+      this.map_sfixed64_sfixed64 = obj.map_sfixed64_sfixed64;
+    }
+    if (obj?.map_int32_float ?? false) {
+      this.map_int32_float = obj.map_int32_float;
+    }
+    if (obj?.map_int32_double ?? false) {
+      this.map_int32_double = obj.map_int32_double;
+    }
+    if (obj?.map_bool_bool ?? false) {
+      this.map_bool_bool = obj.map_bool_bool;
+    }
+    if (obj?.map_string_string ?? false) {
+      this.map_string_string = obj.map_string_string;
+    }
+    if (obj?.map_string_bytes ?? false) {
+      this.map_string_bytes = obj.map_string_bytes;
+    }
+    if (obj?.map_string_nested_message ?? false) {
+      this.map_string_nested_message = obj.map_string_nested_message;
+    }
+    if (obj?.map_string_foreign_message ?? false) {
+      this.map_string_foreign_message = obj.map_string_foreign_message;
+    }
+    if (obj?.map_string_nested_enum ?? false) {
+      this.map_string_nested_enum = obj.map_string_nested_enum;
+    }
+    if (obj?.map_string_foreign_enum ?? false) {
+      this.map_string_foreign_enum = obj.map_string_foreign_enum;
+    }
+    if (obj?.oneof_uint32 ?? false) {
+      this.oneof_uint32 = obj.oneof_uint32;
+    }
+    if (obj?.oneof_nested_message ?? false) {
+      this.oneof_nested_message = obj.oneof_nested_message;
+    }
+    if (obj?.oneof_string ?? false) {
+      this.oneof_string = obj.oneof_string;
+    }
+    if (obj?.oneof_bytes ?? false) {
+      this.oneof_bytes = obj.oneof_bytes;
+    }
+    if (obj?.oneof_bool ?? false) {
+      this.oneof_bool = obj.oneof_bool;
+    }
+    if (obj?.oneof_uint64 ?? false) {
+      this.oneof_uint64 = obj.oneof_uint64;
+    }
+    if (obj?.oneof_float ?? false) {
+      this.oneof_float = obj.oneof_float;
+    }
+    if (obj?.oneof_double ?? false) {
+      this.oneof_double = obj.oneof_double;
+    }
+    if (obj?.oneof_enum ?? false) {
+      this.oneof_enum = obj.oneof_enum;
+    }
+    if (obj?.oneof_null_value ?? false) {
+      this.oneof_null_value = obj.oneof_null_value;
+    }
+    if (obj?.optional_bool_wrapper ?? false) {
+      this.optional_bool_wrapper = obj.optional_bool_wrapper;
+    }
+    if (obj?.optional_int32_wrapper ?? false) {
+      this.optional_int32_wrapper = obj.optional_int32_wrapper;
+    }
+    if (obj?.optional_int64_wrapper ?? false) {
+      this.optional_int64_wrapper = obj.optional_int64_wrapper;
+    }
+    if (obj?.optional_uint32_wrapper ?? false) {
+      this.optional_uint32_wrapper = obj.optional_uint32_wrapper;
+    }
+    if (obj?.optional_uint64_wrapper ?? false) {
+      this.optional_uint64_wrapper = obj.optional_uint64_wrapper;
+    }
+    if (obj?.optional_float_wrapper ?? false) {
+      this.optional_float_wrapper = obj.optional_float_wrapper;
+    }
+    if (obj?.optional_double_wrapper ?? false) {
+      this.optional_double_wrapper = obj.optional_double_wrapper;
+    }
+    if (obj?.optional_string_wrapper ?? false) {
+      this.optional_string_wrapper = obj.optional_string_wrapper;
+    }
+    if (obj?.optional_bytes_wrapper ?? false) {
+      this.optional_bytes_wrapper = obj.optional_bytes_wrapper;
+    }
+    if (obj?.repeated_bool_wrapper ?? false) {
+      this.repeated_bool_wrapper = obj.repeated_bool_wrapper;
+    }
+    if (obj?.repeated_int32_wrapper ?? false) {
+      this.repeated_int32_wrapper = obj.repeated_int32_wrapper;
+    }
+    if (obj?.repeated_int64_wrapper ?? false) {
+      this.repeated_int64_wrapper = obj.repeated_int64_wrapper;
+    }
+    if (obj?.repeated_uint32_wrapper ?? false) {
+      this.repeated_uint32_wrapper = obj.repeated_uint32_wrapper;
+    }
+    if (obj?.repeated_uint64_wrapper ?? false) {
+      this.repeated_uint64_wrapper = obj.repeated_uint64_wrapper;
+    }
+    if (obj?.repeated_float_wrapper ?? false) {
+      this.repeated_float_wrapper = obj.repeated_float_wrapper;
+    }
+    if (obj?.repeated_double_wrapper ?? false) {
+      this.repeated_double_wrapper = obj.repeated_double_wrapper;
+    }
+    if (obj?.repeated_string_wrapper ?? false) {
+      this.repeated_string_wrapper = obj.repeated_string_wrapper;
+    }
+    if (obj?.repeated_bytes_wrapper ?? false) {
+      this.repeated_bytes_wrapper = obj.repeated_bytes_wrapper;
+    }
+    if (obj?.optional_duration ?? false) {
+      this.optional_duration = obj.optional_duration;
+    }
+    if (obj?.optional_timestamp ?? false) {
+      this.optional_timestamp = obj.optional_timestamp;
+    }
+    if (obj?.optional_field_mask ?? false) {
+      this.optional_field_mask = obj.optional_field_mask;
+    }
+    if (obj?.optional_struct ?? false) {
+      this.optional_struct = obj.optional_struct;
+    }
+    if (obj?.optional_any ?? false) {
+      this.optional_any = obj.optional_any;
+    }
+    if (obj?.optional_value ?? false) {
+      this.optional_value = obj.optional_value;
+    }
+    if (obj?.optional_null_value ?? false) {
+      this.optional_null_value = obj.optional_null_value;
+    }
+    if (obj?.repeated_duration ?? false) {
+      this.repeated_duration = obj.repeated_duration;
+    }
+    if (obj?.repeated_timestamp ?? false) {
+      this.repeated_timestamp = obj.repeated_timestamp;
+    }
+    if (obj?.repeated_fieldmask ?? false) {
+      this.repeated_fieldmask = obj.repeated_fieldmask;
+    }
+    if (obj?.repeated_struct ?? false) {
+      this.repeated_struct = obj.repeated_struct;
+    }
+    if (obj?.repeated_any ?? false) {
+      this.repeated_any = obj.repeated_any;
+    }
+    if (obj?.repeated_value ?? false) {
+      this.repeated_value = obj.repeated_value;
+    }
+    if (obj?.repeated_list_value ?? false) {
+      this.repeated_list_value = obj.repeated_list_value;
+    }
+    if (obj?.fieldname1 ?? false) {
+      this.fieldname1 = obj.fieldname1;
+    }
+    if (obj?.field_name2 ?? false) {
+      this.field_name2 = obj.field_name2;
+    }
+    if (obj?._field_name3 ?? false) {
+      this._field_name3 = obj._field_name3;
+    }
+    if (obj?.field__name4_ ?? false) {
+      this.field__name4_ = obj.field__name4_;
+    }
+    if (obj?.field0name5 ?? false) {
+      this.field0name5 = obj.field0name5;
+    }
+    if (obj?.field_0_name6 ?? false) {
+      this.field_0_name6 = obj.field_0_name6;
+    }
+    if (obj?.fieldName7 ?? false) {
+      this.fieldName7 = obj.fieldName7;
+    }
+    if (obj?.fieldName8 ?? false) {
+      this.fieldName8 = obj.fieldName8;
+    }
+    if (obj?.field_Name9 ?? false) {
+      this.field_Name9 = obj.field_Name9;
+    }
+    if (obj?.field_Name10 ?? false) {
+      this.field_Name10 = obj.field_Name10;
+    }
+    if (obj?.fIELD_NAME11 ?? false) {
+      this.fIELD_NAME11 = obj.fIELD_NAME11;
+    }
+    if (obj?.fIELD_name12 ?? false) {
+      this.fIELD_name12 = obj.fIELD_name12;
+    }
+    if (obj?.__field_name13 ?? false) {
+      this.__field_name13 = obj.__field_name13;
+    }
+    if (obj?.__Field_name14 ?? false) {
+      this.__Field_name14 = obj.__Field_name14;
+    }
+    if (obj?.field__name15 ?? false) {
+      this.field__name15 = obj.field__name15;
+    }
+    if (obj?.field__Name16 ?? false) {
+      this.field__Name16 = obj.field__Name16;
+    }
+    if (obj?.field_name17__ ?? false) {
+      this.field_name17__ = obj.field_name17__;
+    }
+    if (obj?.field_name18__ ?? false) {
+      this.field_name18__ = obj.field_name18__;
+    }
+  }
+
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
+  }
+
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): TestAllTypesProto3 {
+    return new TestAllTypesProto3(this);
   }
-
-  public get map_string_bytes(): jspb.Map<string, Uint8Array> {
-    return jspb.Message.getMapField(this, 70, false, null);
-  }
-
-  public get map_string_nested_message(): jspb.Map<
-    string,
-    TestAllTypesProto3.NestedMessage
-  > {
-    return jspb.Message.getMapField(
-      this,
-      71,
-      false,
-      TestAllTypesProto3.NestedMessage
-    );
-  }
-
-  public get map_string_foreign_message(): jspb.Map<string, ForeignMessage> {
-    return jspb.Message.getMapField(this, 72, false, ForeignMessage);
-  }
-
-  public get map_string_nested_enum(): jspb.Map<
-    string,
-    TestAllTypesProto3.NestedEnum
-  > {
-    return jspb.Message.getMapField(
-      this,
-      73,
-      false,
-      TestAllTypesProto3.NestedEnum
-    );
-  }
-
-  public get map_string_foreign_enum(): jspb.Map<string, ForeignEnum> {
-    return jspb.Message.getMapField(this, 74, false, ForeignEnum);
-  }
-
-  public get oneof_uint32(): number {
-    return jspb.Message.getFieldWithDefault(this, 111, 0);
-  }
-
-  public set oneof_uint32(value: number) {}
-
-  public get oneof_nested_message(): TestAllTypesProto3.NestedMessage {
-    return jspb.Message.getWrapperField(
-      this,
-      TestAllTypesProto3.NestedMessage,
-      112
-    );
-  }
-
-  public set oneof_nested_message(
-    value: TestAllTypesProto3.NestedMessage
-  ): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      112,
-      TestAllTypesProto3.oneofFieldsGroups[0],
-      value
-    );
-  }
-
-  public get oneof_string(): string {
-    return jspb.Message.getFieldWithDefault(this, 113, "");
-  }
-
-  public set oneof_string(value: string) {}
-
-  public get oneof_bytes(): Uint8Array {
-    return jspb.Message.getFieldWithDefault(this, 114, new Uint8Array());
-  }
-
-  public set oneof_bytes(value: Uint8Array) {}
-
-  public get oneof_bool(): boolean {
-    return jspb.Message.getBooleanFieldWithDefault(this, 115, false);
-  }
-
-  public set oneof_bool(value: boolean) {}
-
-  public get oneof_uint64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 116, 0n);
-  }
-
-  public set oneof_uint64(value: BigInt) {}
-
-  public get oneof_float(): number {
-    return jspb.Message.getFloatingPointFieldWithDefault(this, 117, 0);
-  }
-
-  public set oneof_float(value: number) {}
-
-  public get oneof_double(): number {
-    return jspb.Message.getFloatingPointFieldWithDefault(this, 118, 0);
-  }
-
-  public set oneof_double(value: number) {}
-
-  public get oneof_enum(): TestAllTypesProto3.NestedEnum {
-    return jspb.Message.getWrapperField(
-      this,
-      TestAllTypesProto3.NestedEnum,
-      119
-    );
-  }
-
-  public set oneof_enum(value: TestAllTypesProto3.NestedEnum): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      119,
-      TestAllTypesProto3.oneofFieldsGroups[0],
-      value
-    );
-  }
-
-  public get oneof_null_value(): google.protobuf.NullValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.NullValue, 120);
-  }
-
-  public set oneof_null_value(value: google.protobuf.NullValue): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      120,
-      TestAllTypesProto3.oneofFieldsGroups[0],
-      value
-    );
-  }
-
-  public get optional_bool_wrapper(): google.protobuf.BoolValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.BoolValue, 201);
-  }
-
-  public set optional_bool_wrapper(value: google.protobuf.BoolValue): void {
-    return jspb.Message.setWrapperField(
-      this,
-      201,
-
-      value
-    );
-  }
-
-  public get optional_int32_wrapper(): google.protobuf.Int32Value {
-    return jspb.Message.getWrapperField(this, google.protobuf.Int32Value, 202);
-  }
-
-  public set optional_int32_wrapper(value: google.protobuf.Int32Value): void {
-    return jspb.Message.setWrapperField(
-      this,
-      202,
-
-      value
-    );
-  }
-
-  public get optional_int64_wrapper(): google.protobuf.Int64Value {
-    return jspb.Message.getWrapperField(this, google.protobuf.Int64Value, 203);
-  }
-
-  public set optional_int64_wrapper(value: google.protobuf.Int64Value): void {
-    return jspb.Message.setWrapperField(
-      this,
-      203,
-
-      value
-    );
-  }
-
-  public get optional_uint32_wrapper(): google.protobuf.UInt32Value {
-    return jspb.Message.getWrapperField(this, google.protobuf.UInt32Value, 204);
-  }
-
-  public set optional_uint32_wrapper(value: google.protobuf.UInt32Value): void {
-    return jspb.Message.setWrapperField(
-      this,
-      204,
-
-      value
-    );
-  }
-
-  public get optional_uint64_wrapper(): google.protobuf.UInt64Value {
-    return jspb.Message.getWrapperField(this, google.protobuf.UInt64Value, 205);
-  }
-
-  public set optional_uint64_wrapper(value: google.protobuf.UInt64Value): void {
-    return jspb.Message.setWrapperField(
-      this,
-      205,
-
-      value
-    );
-  }
-
-  public get optional_float_wrapper(): google.protobuf.FloatValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.FloatValue, 206);
-  }
-
-  public set optional_float_wrapper(value: google.protobuf.FloatValue): void {
-    return jspb.Message.setWrapperField(
-      this,
-      206,
-
-      value
-    );
-  }
-
-  public get optional_double_wrapper(): google.protobuf.DoubleValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.DoubleValue, 207);
-  }
-
-  public set optional_double_wrapper(value: google.protobuf.DoubleValue): void {
-    return jspb.Message.setWrapperField(
-      this,
-      207,
-
-      value
-    );
-  }
-
-  public get optional_string_wrapper(): google.protobuf.StringValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.StringValue, 208);
-  }
-
-  public set optional_string_wrapper(value: google.protobuf.StringValue): void {
-    return jspb.Message.setWrapperField(
-      this,
-      208,
-
-      value
-    );
-  }
-
-  public get optional_bytes_wrapper(): google.protobuf.BytesValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.BytesValue, 209);
-  }
-
-  public set optional_bytes_wrapper(value: google.protobuf.BytesValue): void {
-    return jspb.Message.setWrapperField(
-      this,
-      209,
-
-      value
-    );
-  }
-
-  public get repeated_bool_wrapper(): google.protobuf.BoolValue {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.BoolValue,
-      211
-    );
-  }
-
-  public set repeated_bool_wrapper(value: google.protobuf.BoolValue): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      211,
-
-      value
-    );
-  }
-
-  public get repeated_int32_wrapper(): google.protobuf.Int32Value {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.Int32Value,
-      212
-    );
-  }
-
-  public set repeated_int32_wrapper(value: google.protobuf.Int32Value): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      212,
-
-      value
-    );
-  }
-
-  public get repeated_int64_wrapper(): google.protobuf.Int64Value {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.Int64Value,
-      213
-    );
-  }
-
-  public set repeated_int64_wrapper(value: google.protobuf.Int64Value): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      213,
-
-      value
-    );
-  }
-
-  public get repeated_uint32_wrapper(): google.protobuf.UInt32Value {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.UInt32Value,
-      214
-    );
-  }
-
-  public set repeated_uint32_wrapper(value: google.protobuf.UInt32Value): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      214,
-
-      value
-    );
-  }
-
-  public get repeated_uint64_wrapper(): google.protobuf.UInt64Value {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.UInt64Value,
-      215
-    );
-  }
-
-  public set repeated_uint64_wrapper(value: google.protobuf.UInt64Value): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      215,
-
-      value
-    );
-  }
-
-  public get repeated_float_wrapper(): google.protobuf.FloatValue {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.FloatValue,
-      216
-    );
-  }
-
-  public set repeated_float_wrapper(value: google.protobuf.FloatValue): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      216,
-
-      value
-    );
-  }
-
-  public get repeated_double_wrapper(): google.protobuf.DoubleValue {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.DoubleValue,
-      217
-    );
-  }
-
-  public set repeated_double_wrapper(value: google.protobuf.DoubleValue): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      217,
-
-      value
-    );
-  }
-
-  public get repeated_string_wrapper(): google.protobuf.StringValue {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.StringValue,
-      218
-    );
-  }
-
-  public set repeated_string_wrapper(value: google.protobuf.StringValue): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      218,
-
-      value
-    );
-  }
-
-  public get repeated_bytes_wrapper(): google.protobuf.BytesValue {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.BytesValue,
-      219
-    );
-  }
-
-  public set repeated_bytes_wrapper(value: google.protobuf.BytesValue): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      219,
-
-      value
-    );
-  }
-
-  public get optional_duration(): google.protobuf.Duration {
-    return jspb.Message.getWrapperField(this, google.protobuf.Duration, 301);
-  }
-
-  public set optional_duration(value: google.protobuf.Duration): void {
-    return jspb.Message.setWrapperField(
-      this,
-      301,
-
-      value
-    );
-  }
-
-  public get optional_timestamp(): google.protobuf.Timestamp {
-    return jspb.Message.getWrapperField(this, google.protobuf.Timestamp, 302);
-  }
-
-  public set optional_timestamp(value: google.protobuf.Timestamp): void {
-    return jspb.Message.setWrapperField(
-      this,
-      302,
-
-      value
-    );
-  }
-
-  public get optional_field_mask(): google.protobuf.FieldMask {
-    return jspb.Message.getWrapperField(this, google.protobuf.FieldMask, 303);
-  }
-
-  public set optional_field_mask(value: google.protobuf.FieldMask): void {
-    return jspb.Message.setWrapperField(
-      this,
-      303,
-
-      value
-    );
-  }
-
-  public get optional_struct(): google.protobuf.Struct {
-    return jspb.Message.getWrapperField(this, google.protobuf.Struct, 304);
-  }
-
-  public set optional_struct(value: google.protobuf.Struct): void {
-    return jspb.Message.setWrapperField(
-      this,
-      304,
-
-      value
-    );
-  }
-
-  public get optional_any(): google.protobuf.Any {
-    return jspb.Message.getWrapperField(this, google.protobuf.Any, 305);
-  }
-
-  public set optional_any(value: google.protobuf.Any): void {
-    return jspb.Message.setWrapperField(
-      this,
-      305,
-
-      value
-    );
-  }
-
-  public get optional_value(): google.protobuf.Value {
-    return jspb.Message.getWrapperField(this, google.protobuf.Value, 306);
-  }
-
-  public set optional_value(value: google.protobuf.Value): void {
-    return jspb.Message.setWrapperField(
-      this,
-      306,
-
-      value
-    );
-  }
-
-  public get optional_null_value(): google.protobuf.NullValue {
-    return jspb.Message.getWrapperField(this, google.protobuf.NullValue, 307);
-  }
-
-  public set optional_null_value(value: google.protobuf.NullValue): void {
-    return jspb.Message.setWrapperField(
-      this,
-      307,
-
-      value
-    );
-  }
-
-  public get repeated_duration(): google.protobuf.Duration {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.Duration,
-      311
-    );
-  }
-
-  public set repeated_duration(value: google.protobuf.Duration): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      311,
-
-      value
-    );
-  }
-
-  public get repeated_timestamp(): google.protobuf.Timestamp {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.Timestamp,
-      312
-    );
-  }
-
-  public set repeated_timestamp(value: google.protobuf.Timestamp): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      312,
-
-      value
-    );
-  }
-
-  public get repeated_fieldmask(): google.protobuf.FieldMask {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.FieldMask,
-      313
-    );
-  }
-
-  public set repeated_fieldmask(value: google.protobuf.FieldMask): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      313,
-
-      value
-    );
-  }
-
-  public get repeated_struct(): google.protobuf.Struct {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.Struct,
-      324
-    );
-  }
-
-  public set repeated_struct(value: google.protobuf.Struct): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      324,
-
-      value
-    );
-  }
-
-  public get repeated_any(): google.protobuf.Any {
-    return jspb.Message.getRepeatedWrapperField(this, google.protobuf.Any, 315);
-  }
-
-  public set repeated_any(value: google.protobuf.Any): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      315,
-
-      value
-    );
-  }
-
-  public get repeated_value(): google.protobuf.Value {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.Value,
-      316
-    );
-  }
-
-  public set repeated_value(value: google.protobuf.Value): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      316,
-
-      value
-    );
-  }
-
-  public get repeated_list_value(): google.protobuf.ListValue {
-    return jspb.Message.getRepeatedWrapperField(
-      this,
-      google.protobuf.ListValue,
-      317
-    );
-  }
-
-  public set repeated_list_value(value: google.protobuf.ListValue): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      317,
-
-      value
-    );
-  }
-
-  public get fieldname1(): number {
-    return jspb.Message.getFieldWithDefault(this, 401, 0);
-  }
-
-  public set fieldname1(value: number) {}
-
-  public get field_name2(): number {
-    return jspb.Message.getFieldWithDefault(this, 402, 0);
-  }
-
-  public set field_name2(value: number) {}
-
-  public get _field_name3(): number {
-    return jspb.Message.getFieldWithDefault(this, 403, 0);
-  }
-
-  public set _field_name3(value: number) {}
-
-  public get field__name4_(): number {
-    return jspb.Message.getFieldWithDefault(this, 404, 0);
-  }
-
-  public set field__name4_(value: number) {}
-
-  public get field0name5(): number {
-    return jspb.Message.getFieldWithDefault(this, 405, 0);
-  }
-
-  public set field0name5(value: number) {}
-
-  public get field_0_name6(): number {
-    return jspb.Message.getFieldWithDefault(this, 406, 0);
-  }
-
-  public set field_0_name6(value: number) {}
-
-  public get fieldName7(): number {
-    return jspb.Message.getFieldWithDefault(this, 407, 0);
-  }
-
-  public set fieldName7(value: number) {}
-
-  public get fieldName8(): number {
-    return jspb.Message.getFieldWithDefault(this, 408, 0);
-  }
-
-  public set fieldName8(value: number) {}
-
-  public get field_Name9(): number {
-    return jspb.Message.getFieldWithDefault(this, 409, 0);
-  }
-
-  public set field_Name9(value: number) {}
-
-  public get field_Name10(): number {
-    return jspb.Message.getFieldWithDefault(this, 410, 0);
-  }
-
-  public set field_Name10(value: number) {}
-
-  public get fIELD_NAME11(): number {
-    return jspb.Message.getFieldWithDefault(this, 411, 0);
-  }
-
-  public set fIELD_NAME11(value: number) {}
-
-  public get fIELD_name12(): number {
-    return jspb.Message.getFieldWithDefault(this, 412, 0);
-  }
-
-  public set fIELD_name12(value: number) {}
-
-  public get __field_name13(): number {
-    return jspb.Message.getFieldWithDefault(this, 413, 0);
-  }
-
-  public set __field_name13(value: number) {}
-
-  public get __Field_name14(): number {
-    return jspb.Message.getFieldWithDefault(this, 414, 0);
-  }
-
-  public set __Field_name14(value: number) {}
-
-  public get field__name15(): number {
-    return jspb.Message.getFieldWithDefault(this, 415, 0);
-  }
-
-  public set field__name15(value: number) {}
-
-  public get field__Name16(): number {
-    return jspb.Message.getFieldWithDefault(this, 416, 0);
-  }
-
-  public set field__Name16(value: number) {}
-
-  public get field_name17__(): number {
-    return jspb.Message.getFieldWithDefault(this, 417, 0);
-  }
-
-  public set field_name17__(value: number) {}
-
-  public get field_name18__(): number {
-    return jspb.Message.getFieldWithDefault(this, 418, 0);
-  }
-
-  public set field_name18__(value: number) {}
 }
 
 export namespace TestAllTypesProto3 {
@@ -1524,28 +802,27 @@ export namespace TestAllTypesProto3 {
     corecursive: TestAllTypesProto3;
   }
 
-  export class NestedMessage extends jspb.Message implements INestedMessage {
-    contructor(opt_data: any) {
-      jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  export class NestedMessage implements INestedMessage {
+    a: number = 0;
+    corecursive: TestAllTypesProto3 = null;
+
+    constructor(obj?: Partial<INestedMessage>) {
+      if (obj?.a ?? false) {
+        this.a = obj.a;
+      }
+      if (obj?.corecursive ?? false) {
+        this.corecursive = obj.corecursive;
+      }
     }
 
-    public get a(): number {
-      return jspb.Message.getFieldWithDefault(this, 1, 0);
+    serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+      return w;
     }
 
-    public set a(value: number) {}
+    deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-    public get corecursive(): TestAllTypesProto3 {
-      return jspb.Message.getWrapperField(this, TestAllTypesProto3, 2);
-    }
-
-    public set corecursive(value: TestAllTypesProto3): void {
-      return jspb.Message.setWrapperField(
-        this,
-        2,
-
-        value
-      );
+    clone(): NestedMessage {
+      return new NestedMessage(this);
     }
   }
 
@@ -1576,16 +853,24 @@ export interface IForeignMessage {
   c: number;
 }
 
-export class ForeignMessage extends jspb.Message implements IForeignMessage {
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class ForeignMessage implements IForeignMessage {
+  c: number = 0;
+
+  constructor(obj?: Partial<IForeignMessage>) {
+    if (obj?.c ?? false) {
+      this.c = obj.c;
+    }
   }
 
-  public get c(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set c(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): ForeignMessage {
+    return new ForeignMessage(this);
+  }
 }
 
 export enum ForeignEnum {
@@ -1596,12 +881,17 @@ export enum ForeignEnum {
 
 export interface INullHypothesisProto3 {}
 
-export class NullHypothesisProto3
-  extends jspb.Message
-  implements INullHypothesisProto3
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class NullHypothesisProto3 implements INullHypothesisProto3 {
+  constructor(obj?: Partial<INullHypothesisProto3>) {}
+
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
+  }
+
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): NullHypothesisProto3 {
+    return new NullHypothesisProto3(this);
   }
 }
 
@@ -1613,9 +903,17 @@ export enum ForeignEnum {
 
 export interface IEnumOnlyProto3 {}
 
-export class EnumOnlyProto3 extends jspb.Message implements IEnumOnlyProto3 {
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class EnumOnlyProto3 implements IEnumOnlyProto3 {
+  constructor(obj?: Partial<IEnumOnlyProto3>) {}
+
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
+  }
+
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): EnumOnlyProto3 {
+    return new EnumOnlyProto3(this);
   }
 }
 

@@ -7,4 +7,4 @@
 // package: protobuf_unittest.lazy_imports
 // file: unittest_lazy_dependencies_enum.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";

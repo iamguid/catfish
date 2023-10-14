@@ -7,4 +7,4 @@
 // package: protobuf_unittest_empty
 // file: unittest_empty.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";

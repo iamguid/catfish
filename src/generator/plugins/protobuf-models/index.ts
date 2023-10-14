@@ -1,10 +1,11 @@
-import { EnumDescriptor, FieldDescriptor, FileDescriptor, MessageDescriptor } from '../../../parser';
+import { BaseDescriptor, EnumDescriptor, FieldDescriptor, FileDescriptor, MessageDescriptor } from '../../../parser';
 import { buildinProtoTypesToTsType } from '../../buildinProtoTypes';
 import { Context, Import } from '../../Context';
 import { Plugin, PluginOutputFile } from '../../Plugin';
 import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix } from '../../utils';
 import { templates } from './templates';
-import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx } from './types';
+import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx, TypeInfoCtx } from './types';
+import { getBasicWireType } from './utils';
 
 const plugin: Plugin<void> = (context, projectOptions) => {
     const result: PluginOutputFile[] = []
@@ -82,23 +83,47 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
 
     if (field.map) {
         mapType = {
-            keyTypeInfo: context.getTypeInfo(descriptor, field.map.keyType),
-            valueTypeInfo: context.getTypeInfo(descriptor, field.map.valueType),
+            keyTypeInfo: getTypeInfoCtx(context, descriptor, field.map.keyType),
+            valueTypeInfo: getTypeInfoCtx(context, descriptor, field.map.valueType),
             valueTypeIsMessage: !(field.map.valueType in buildinProtoTypesToTsType)
         }
     }
 
+    const fieldTypeInfo = field.type ? getTypeInfoCtx(context, descriptor, field.type) : null;
+
     return {
         fieldName: lowerCaseFirst(field.name),
         fieldNumber: field.fieldNumber,
-        fieldTypeInfo: field.type ? context.getTypeInfo(descriptor, field.type) : null,
+        fieldTag: ((field.fieldNumber << 3) | getBasicWireType(field.type!)) >>> 0,
+        fieldTypeInfo,
         isMessageType: !(field.type! in buildinProtoTypesToTsType),
         isMap: Boolean(field.map),
         isOneof: Boolean(field.oneofName),
         isRepeated: field.repeated,
+        isOptional: field.optional,
         mapType,
         oneofName: field.oneofName,
     }
+}
+
+export const getModelFullImportName = (context: Context, descriptor: BaseDescriptor) => {
+    const filePath = context.getFilePathByDescriptor(descriptor.fileDescriptor);
+    const modelsFilePath = replaceProtoSuffix(filePath, 'models');
+    const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
+    return `${modelsFileImportName}.${descriptor.fullpath}`
+}
+
+export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor, type: string): TypeInfoCtx => {
+    const typeInfo = context.getTypeInfo(fileDescriptor, type);
+
+    if (typeInfo.descriptor) {
+        return {
+            ...typeInfo,
+            modelFullImportName: getModelFullImportName(context, typeInfo.descriptor)
+        }
+    }
+
+    return typeInfo
 }
 
 // Returns the max index in the underlying data storage array beyond which the
@@ -120,6 +145,13 @@ const getPivot = (messageDescriptor: MessageDescriptor): number => {
     }
 
     return pivot;
+}
+
+export const protoTypeToPjsFn = (protoType: string) => {
+  switch (protoType) {
+    case 'enum': return 'int32';
+    default: return protoType
+  }
 }
 
 export default plugin;

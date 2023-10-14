@@ -7,23 +7,28 @@
 // package: protobuf_unittest_import
 // file: unittest_import_public_lite.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface IPublicImportMessageLite {
   e: number;
 }
 
-export class PublicImportMessageLite
-  extends jspb.Message
-  implements IPublicImportMessageLite
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class PublicImportMessageLite implements IPublicImportMessageLite {
+  e: number = 0;
+
+  constructor(obj?: Partial<IPublicImportMessageLite>) {
+    if (obj?.e ?? false) {
+      this.e = obj.e;
+    }
   }
 
-  public get e(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set e(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): PublicImportMessageLite {
+    return new PublicImportMessageLite(this);
+  }
 }

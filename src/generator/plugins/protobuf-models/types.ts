@@ -19,10 +19,12 @@ export type EnumCtx = {
 
 export type MessageFieldCtx = {
     fieldName: string
-    fieldTypeInfo: TypeInfo | null
+    fieldTypeInfo: TypeInfoCtx | null
     fieldNumber: number
+    fieldTag: number
     isMessageType: boolean
     isRepeated: boolean
+    isOptional: boolean
     isMap: boolean
     isOneof: boolean
     oneofName?: string
@@ -45,4 +47,8 @@ export type FileCtx = {
     imports: Import[]
     messges: MessageCtx[]
     enums: EnumCtx[]
+}
+
+export type TypeInfoCtx = TypeInfo & {
+    modelFullImportName?: string
 }

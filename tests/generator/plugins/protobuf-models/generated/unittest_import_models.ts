@@ -9,22 +9,30 @@
 
 import * as unittest_import_public_models from "unittest_import_public_models";
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface IImportMessage {
   d: number;
 }
 
-export class ImportMessage extends jspb.Message implements IImportMessage {
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class ImportMessage implements IImportMessage {
+  d: number = 0;
+
+  constructor(obj?: Partial<IImportMessage>) {
+    if (obj?.d ?? false) {
+      this.d = obj.d;
+    }
   }
 
-  public get d(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set d(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): ImportMessage {
+    return new ImportMessage(this);
+  }
 }
 
 export enum ImportEnum {

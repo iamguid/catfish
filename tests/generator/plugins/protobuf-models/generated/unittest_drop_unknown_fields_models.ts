@@ -7,35 +7,34 @@
 // package: unittest_drop_unknown_fields
 // file: unittest_drop_unknown_fields.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface IFoo {
   int32_value: number;
   enum_value: Foo.NestedEnum;
 }
 
-export class Foo extends jspb.Message implements IFoo {
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class Foo implements IFoo {
+  int32_value: number = 0;
+  enum_value: Foo.NestedEnum = null;
+
+  constructor(obj?: Partial<IFoo>) {
+    if (obj?.int32_value ?? false) {
+      this.int32_value = obj.int32_value;
+    }
+    if (obj?.enum_value ?? false) {
+      this.enum_value = obj.enum_value;
+    }
   }
 
-  public get int32_value(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set int32_value(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-  public get enum_value(): Foo.NestedEnum {
-    return jspb.Message.getWrapperField(this, Foo.NestedEnum, 2);
-  }
-
-  public set enum_value(value: Foo.NestedEnum): void {
-    return jspb.Message.setWrapperField(
-      this,
-      2,
-
-      value
-    );
+  clone(): Foo {
+    return new Foo(this);
   }
 }
 
@@ -47,38 +46,32 @@ export interface IFooWithExtraFields {
   extra_int32_value: number;
 }
 
-export class FooWithExtraFields
-  extends jspb.Message
-  implements IFooWithExtraFields
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class FooWithExtraFields implements IFooWithExtraFields {
+  int32_value: number = 0;
+  enum_value: FooWithExtraFields.NestedEnum = null;
+  extra_int32_value: number = 0;
+
+  constructor(obj?: Partial<IFooWithExtraFields>) {
+    if (obj?.int32_value ?? false) {
+      this.int32_value = obj.int32_value;
+    }
+    if (obj?.enum_value ?? false) {
+      this.enum_value = obj.enum_value;
+    }
+    if (obj?.extra_int32_value ?? false) {
+      this.extra_int32_value = obj.extra_int32_value;
+    }
   }
 
-  public get int32_value(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set int32_value(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-  public get enum_value(): FooWithExtraFields.NestedEnum {
-    return jspb.Message.getWrapperField(this, FooWithExtraFields.NestedEnum, 2);
+  clone(): FooWithExtraFields {
+    return new FooWithExtraFields(this);
   }
-
-  public set enum_value(value: FooWithExtraFields.NestedEnum): void {
-    return jspb.Message.setWrapperField(
-      this,
-      2,
-
-      value
-    );
-  }
-
-  public get extra_int32_value(): number {
-    return jspb.Message.getFieldWithDefault(this, 3, 0);
-  }
-
-  public set extra_int32_value(value: number) {}
 }
 
 export namespace FooWithExtraFields {}

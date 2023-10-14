@@ -7,219 +7,156 @@
 // package: protobuf_unittest
 // file: unittest_proto3_optional.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface ITestProto3Optional {
-  optional_int32: number;
-  optional_int64: BigInt;
-  optional_uint32: number;
-  optional_uint64: BigInt;
-  optional_sint32: number;
-  optional_sint64: BigInt;
-  optional_fixed32: number;
-  optional_fixed64: BigInt;
-  optional_sfixed32: number;
-  optional_sfixed64: BigInt;
-  optional_float: number;
-  optional_double: number;
-  optional_bool: boolean;
-  optional_string: string;
-  optional_bytes: Uint8Array;
-  optional_cord: string;
-  optional_nested_message: TestProto3Optional.NestedMessage;
-  lazy_nested_message: TestProto3Optional.NestedMessage;
-  optional_nested_enum: TestProto3Optional.NestedEnum;
+  optional_int32: number | undefined;
+  optional_int64: BigInt | undefined;
+  optional_uint32: number | undefined;
+  optional_uint64: BigInt | undefined;
+  optional_sint32: number | undefined;
+  optional_sint64: BigInt | undefined;
+  optional_fixed32: number | undefined;
+  optional_fixed64: BigInt | undefined;
+  optional_sfixed32: number | undefined;
+  optional_sfixed64: BigInt | undefined;
+  optional_float: number | undefined;
+  optional_double: number | undefined;
+  optional_bool: boolean | undefined;
+  optional_string: string | undefined;
+  optional_bytes: Uint8Array | undefined;
+  optional_cord: string | undefined;
+  optional_nested_message: TestProto3Optional.NestedMessage | undefined;
+  lazy_nested_message: TestProto3Optional.NestedMessage | undefined;
+  optional_nested_enum: TestProto3Optional.NestedEnum | undefined;
   singular_int32: number;
   singular_int64: BigInt;
 }
 
-export class TestProto3Optional
-  extends jspb.Message
-  implements ITestProto3Optional
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class TestProto3Optional implements ITestProto3Optional {
+  optional_int32: number | undefined = undefined;
+  optional_int64: BigInt | undefined = undefined;
+  optional_uint32: number | undefined = undefined;
+  optional_uint64: BigInt | undefined = undefined;
+  optional_sint32: number | undefined = undefined;
+  optional_sint64: BigInt | undefined = undefined;
+  optional_fixed32: number | undefined = undefined;
+  optional_fixed64: BigInt | undefined = undefined;
+  optional_sfixed32: number | undefined = undefined;
+  optional_sfixed64: BigInt | undefined = undefined;
+  optional_float: number | undefined = undefined;
+  optional_double: number | undefined = undefined;
+  optional_bool: boolean | undefined = undefined;
+  optional_string: string | undefined = undefined;
+  optional_bytes: Uint8Array | undefined = undefined;
+  optional_cord: string | undefined = undefined;
+  optional_nested_message: TestProto3Optional.NestedMessage | undefined =
+    undefined;
+  lazy_nested_message: TestProto3Optional.NestedMessage | undefined = undefined;
+  optional_nested_enum: TestProto3Optional.NestedEnum | undefined = undefined;
+  singular_int32: number = 0;
+  singular_int64: BigInt = 0n;
+
+  constructor(obj?: Partial<ITestProto3Optional>) {
+    if (obj?.optional_int32 ?? false) {
+      this.optional_int32 = obj.optional_int32;
+    }
+    if (obj?.optional_int64 ?? false) {
+      this.optional_int64 = obj.optional_int64;
+    }
+    if (obj?.optional_uint32 ?? false) {
+      this.optional_uint32 = obj.optional_uint32;
+    }
+    if (obj?.optional_uint64 ?? false) {
+      this.optional_uint64 = obj.optional_uint64;
+    }
+    if (obj?.optional_sint32 ?? false) {
+      this.optional_sint32 = obj.optional_sint32;
+    }
+    if (obj?.optional_sint64 ?? false) {
+      this.optional_sint64 = obj.optional_sint64;
+    }
+    if (obj?.optional_fixed32 ?? false) {
+      this.optional_fixed32 = obj.optional_fixed32;
+    }
+    if (obj?.optional_fixed64 ?? false) {
+      this.optional_fixed64 = obj.optional_fixed64;
+    }
+    if (obj?.optional_sfixed32 ?? false) {
+      this.optional_sfixed32 = obj.optional_sfixed32;
+    }
+    if (obj?.optional_sfixed64 ?? false) {
+      this.optional_sfixed64 = obj.optional_sfixed64;
+    }
+    if (obj?.optional_float ?? false) {
+      this.optional_float = obj.optional_float;
+    }
+    if (obj?.optional_double ?? false) {
+      this.optional_double = obj.optional_double;
+    }
+    if (obj?.optional_bool ?? false) {
+      this.optional_bool = obj.optional_bool;
+    }
+    if (obj?.optional_string ?? false) {
+      this.optional_string = obj.optional_string;
+    }
+    if (obj?.optional_bytes ?? false) {
+      this.optional_bytes = obj.optional_bytes;
+    }
+    if (obj?.optional_cord ?? false) {
+      this.optional_cord = obj.optional_cord;
+    }
+    if (obj?.optional_nested_message ?? false) {
+      this.optional_nested_message = obj.optional_nested_message;
+    }
+    if (obj?.lazy_nested_message ?? false) {
+      this.lazy_nested_message = obj.lazy_nested_message;
+    }
+    if (obj?.optional_nested_enum ?? false) {
+      this.optional_nested_enum = obj.optional_nested_enum;
+    }
+    if (obj?.singular_int32 ?? false) {
+      this.singular_int32 = obj.singular_int32;
+    }
+    if (obj?.singular_int64 ?? false) {
+      this.singular_int64 = obj.singular_int64;
+    }
   }
 
-  public get optional_int32(): number {
-    return jspb.Message.getFieldWithDefault(this, 1, 0);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set optional_int32(value: number) {}
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-  public get optional_int64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 2, 0n);
+  clone(): TestProto3Optional {
+    return new TestProto3Optional(this);
   }
-
-  public set optional_int64(value: BigInt) {}
-
-  public get optional_uint32(): number {
-    return jspb.Message.getFieldWithDefault(this, 3, 0);
-  }
-
-  public set optional_uint32(value: number) {}
-
-  public get optional_uint64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 4, 0n);
-  }
-
-  public set optional_uint64(value: BigInt) {}
-
-  public get optional_sint32(): number {
-    return jspb.Message.getFieldWithDefault(this, 5, 0);
-  }
-
-  public set optional_sint32(value: number) {}
-
-  public get optional_sint64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 6, 0n);
-  }
-
-  public set optional_sint64(value: BigInt) {}
-
-  public get optional_fixed32(): number {
-    return jspb.Message.getFieldWithDefault(this, 7, 0);
-  }
-
-  public set optional_fixed32(value: number) {}
-
-  public get optional_fixed64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 8, 0n);
-  }
-
-  public set optional_fixed64(value: BigInt) {}
-
-  public get optional_sfixed32(): number {
-    return jspb.Message.getFieldWithDefault(this, 9, 0);
-  }
-
-  public set optional_sfixed32(value: number) {}
-
-  public get optional_sfixed64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 10, 0n);
-  }
-
-  public set optional_sfixed64(value: BigInt) {}
-
-  public get optional_float(): number {
-    return jspb.Message.getFloatingPointFieldWithDefault(this, 11, 0);
-  }
-
-  public set optional_float(value: number) {}
-
-  public get optional_double(): number {
-    return jspb.Message.getFloatingPointFieldWithDefault(this, 12, 0);
-  }
-
-  public set optional_double(value: number) {}
-
-  public get optional_bool(): boolean {
-    return jspb.Message.getBooleanFieldWithDefault(this, 13, false);
-  }
-
-  public set optional_bool(value: boolean) {}
-
-  public get optional_string(): string {
-    return jspb.Message.getFieldWithDefault(this, 14, "");
-  }
-
-  public set optional_string(value: string) {}
-
-  public get optional_bytes(): Uint8Array {
-    return jspb.Message.getFieldWithDefault(this, 15, new Uint8Array());
-  }
-
-  public set optional_bytes(value: Uint8Array) {}
-
-  public get optional_cord(): string {
-    return jspb.Message.getFieldWithDefault(this, 16, "");
-  }
-
-  public set optional_cord(value: string) {}
-
-  public get optional_nested_message(): TestProto3Optional.NestedMessage {
-    return jspb.Message.getWrapperField(
-      this,
-      TestProto3Optional.NestedMessage,
-      18
-    );
-  }
-
-  public set optional_nested_message(
-    value: TestProto3Optional.NestedMessage
-  ): void {
-    return jspb.Message.setWrapperField(
-      this,
-      18,
-
-      value
-    );
-  }
-
-  public get lazy_nested_message(): TestProto3Optional.NestedMessage {
-    return jspb.Message.getWrapperField(
-      this,
-      TestProto3Optional.NestedMessage,
-      19
-    );
-  }
-
-  public set lazy_nested_message(
-    value: TestProto3Optional.NestedMessage
-  ): void {
-    return jspb.Message.setWrapperField(
-      this,
-      19,
-
-      value
-    );
-  }
-
-  public get optional_nested_enum(): TestProto3Optional.NestedEnum {
-    return jspb.Message.getWrapperField(
-      this,
-      TestProto3Optional.NestedEnum,
-      21
-    );
-  }
-
-  public set optional_nested_enum(value: TestProto3Optional.NestedEnum): void {
-    return jspb.Message.setWrapperField(
-      this,
-      21,
-
-      value
-    );
-  }
-
-  public get singular_int32(): number {
-    return jspb.Message.getFieldWithDefault(this, 22, 0);
-  }
-
-  public set singular_int32(value: number) {}
-
-  public get singular_int64(): BigInt {
-    return jspb.Message.getFieldWithDefault(this, 23, 0n);
-  }
-
-  public set singular_int64(value: BigInt) {}
 }
 
 export namespace TestProto3Optional {
   export interface INestedMessage {
-    bb: number;
+    bb: number | undefined;
   }
 
-  export class NestedMessage extends jspb.Message implements INestedMessage {
-    contructor(opt_data: any) {
-      jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  export class NestedMessage implements INestedMessage {
+    bb: number | undefined = undefined;
+
+    constructor(obj?: Partial<INestedMessage>) {
+      if (obj?.bb ?? false) {
+        this.bb = obj.bb;
+      }
     }
 
-    public get bb(): number {
-      return jspb.Message.getFieldWithDefault(this, 1, 0);
+    serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+      return w;
     }
 
-    public set bb(value: number) {}
+    deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+    clone(): NestedMessage {
+      return new NestedMessage(this);
+    }
   }
 
   export enum NestedEnum {
@@ -233,53 +170,31 @@ export namespace TestProto3Optional {
 
 export interface ITestProto3OptionalMessage {
   nested_message: TestProto3OptionalMessage.NestedMessage;
-  optional_nested_message: TestProto3OptionalMessage.NestedMessage;
+  optional_nested_message: TestProto3OptionalMessage.NestedMessage | undefined;
 }
 
-export class TestProto3OptionalMessage
-  extends jspb.Message
-  implements ITestProto3OptionalMessage
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
+  nested_message: TestProto3OptionalMessage.NestedMessage = null;
+  optional_nested_message: TestProto3OptionalMessage.NestedMessage | undefined =
+    undefined;
+
+  constructor(obj?: Partial<ITestProto3OptionalMessage>) {
+    if (obj?.nested_message ?? false) {
+      this.nested_message = obj.nested_message;
+    }
+    if (obj?.optional_nested_message ?? false) {
+      this.optional_nested_message = obj.optional_nested_message;
+    }
   }
 
-  public get nested_message(): TestProto3OptionalMessage.NestedMessage {
-    return jspb.Message.getWrapperField(
-      this,
-      TestProto3OptionalMessage.NestedMessage,
-      1
-    );
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set nested_message(
-    value: TestProto3OptionalMessage.NestedMessage
-  ): void {
-    return jspb.Message.setWrapperField(
-      this,
-      1,
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-      value
-    );
-  }
-
-  public get optional_nested_message(): TestProto3OptionalMessage.NestedMessage {
-    return jspb.Message.getWrapperField(
-      this,
-      TestProto3OptionalMessage.NestedMessage,
-      2
-    );
-  }
-
-  public set optional_nested_message(
-    value: TestProto3OptionalMessage.NestedMessage
-  ): void {
-    return jspb.Message.setWrapperField(
-      this,
-      2,
-
-      value
-    );
+  clone(): TestProto3OptionalMessage {
+    return new TestProto3OptionalMessage(this);
   }
 }
 
@@ -288,26 +203,39 @@ export namespace TestProto3OptionalMessage {
     s: string;
   }
 
-  export class NestedMessage extends jspb.Message implements INestedMessage {
-    contructor(opt_data: any) {
-      jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  export class NestedMessage implements INestedMessage {
+    s: string = "";
+
+    constructor(obj?: Partial<INestedMessage>) {
+      if (obj?.s ?? false) {
+        this.s = obj.s;
+      }
     }
 
-    public get s(): string {
-      return jspb.Message.getFieldWithDefault(this, 1, "");
+    serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+      return w;
     }
 
-    public set s(value: string) {}
+    deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+    clone(): NestedMessage {
+      return new NestedMessage(this);
+    }
   }
 }
 
 export interface IProto3OptionalExtensions {}
 
-export class Proto3OptionalExtensions
-  extends jspb.Message
-  implements IProto3OptionalExtensions
-{
-  contructor(opt_data: any) {
-    jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+export class Proto3OptionalExtensions implements IProto3OptionalExtensions {
+  constructor(obj?: Partial<IProto3OptionalExtensions>) {}
+
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
+  }
+
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
+
+  clone(): Proto3OptionalExtensions {
+    return new Proto3OptionalExtensions(this);
   }
 }

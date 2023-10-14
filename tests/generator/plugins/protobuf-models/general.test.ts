@@ -1,11 +1,6 @@
 import fs from "node:fs"
 import { Project, ProtobufModelsPlugin } from "../../../../src/generator"
 
-const main = () => {
-}
-
-main();
-
 describe("General protobuf-models generator test", () => {
     [
         "any_test.proto",

@@ -7,7 +7,7 @@
 // package: proto3_preserve_unknown_enum_unittest
 // file: unittest_preserve_unknown_enum.proto
 
-import * as jspb from "google-protobuf";
+import * as pjs from "protobufjs/minimal";
 
 export interface IMyMessage {
   e: MyEnum;
@@ -18,97 +18,43 @@ export interface IMyMessage {
   oneof_e_2?: MyEnum;
 }
 
-export class MyMessage extends jspb.Message implements IMyMessage {
-  private static repeatedFields: number[] = [2, 3, 4];
-  private static oneofFieldsGroups: number[] = [[5, 6]];
+export class MyMessage implements IMyMessage {
+  e: MyEnum = null;
+  repeated_e: MyEnum = [];
+  repeated_packed_e: MyEnum = [];
+  repeated_packed_unexpected_e: MyEnumPlusExtra = [];
+  oneof_e_1?: MyEnum = null;
+  oneof_e_2?: MyEnum = null;
 
-  contructor(opt_data: any) {
-    jspb.Message.initialize(
-      this,
-      opt_data,
-      0,
-      -1,
-      MyMessage.repeatedFields,
-      MyMessage.oneofFieldsGroups
-    );
+  constructor(obj?: Partial<IMyMessage>) {
+    if (obj?.e ?? false) {
+      this.e = obj.e;
+    }
+    if (obj?.repeated_e ?? false) {
+      this.repeated_e = obj.repeated_e;
+    }
+    if (obj?.repeated_packed_e ?? false) {
+      this.repeated_packed_e = obj.repeated_packed_e;
+    }
+    if (obj?.repeated_packed_unexpected_e ?? false) {
+      this.repeated_packed_unexpected_e = obj.repeated_packed_unexpected_e;
+    }
+    if (obj?.oneof_e_1 ?? false) {
+      this.oneof_e_1 = obj.oneof_e_1;
+    }
+    if (obj?.oneof_e_2 ?? false) {
+      this.oneof_e_2 = obj.oneof_e_2;
+    }
   }
 
-  public get e(): MyEnum {
-    return jspb.Message.getWrapperField(this, MyEnum, 1);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set e(value: MyEnum): void {
-    return jspb.Message.setWrapperField(
-      this,
-      1,
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-      value
-    );
-  }
-
-  public get repeated_e(): MyEnum {
-    return jspb.Message.getRepeatedWrapperField(this, MyEnum, 2);
-  }
-
-  public set repeated_e(value: MyEnum): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      2,
-
-      value
-    );
-  }
-
-  public get repeated_packed_e(): MyEnum {
-    return jspb.Message.getRepeatedWrapperField(this, MyEnum, 3);
-  }
-
-  public set repeated_packed_e(value: MyEnum): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      3,
-
-      value
-    );
-  }
-
-  public get repeated_packed_unexpected_e(): MyEnumPlusExtra {
-    return jspb.Message.getRepeatedWrapperField(this, MyEnumPlusExtra, 4);
-  }
-
-  public set repeated_packed_unexpected_e(value: MyEnumPlusExtra): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      4,
-
-      value
-    );
-  }
-
-  public get oneof_e_1(): MyEnum {
-    return jspb.Message.getWrapperField(this, MyEnum, 5);
-  }
-
-  public set oneof_e_1(value: MyEnum): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      5,
-      MyMessage.oneofFieldsGroups[0],
-      value
-    );
-  }
-
-  public get oneof_e_2(): MyEnum {
-    return jspb.Message.getWrapperField(this, MyEnum, 6);
-  }
-
-  public set oneof_e_2(value: MyEnum): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      6,
-      MyMessage.oneofFieldsGroups[0],
-      value
-    );
+  clone(): MyMessage {
+    return new MyMessage(this);
   }
 }
 
@@ -134,100 +80,43 @@ export interface IMyMessagePlusExtra {
   oneof_e_2?: MyEnumPlusExtra;
 }
 
-export class MyMessagePlusExtra
-  extends jspb.Message
-  implements IMyMessagePlusExtra
-{
-  private static repeatedFields: number[] = [2, 3, 4];
-  private static oneofFieldsGroups: number[] = [[5, 6]];
+export class MyMessagePlusExtra implements IMyMessagePlusExtra {
+  e: MyEnumPlusExtra = null;
+  repeated_e: MyEnumPlusExtra = [];
+  repeated_packed_e: MyEnumPlusExtra = [];
+  repeated_packed_unexpected_e: MyEnumPlusExtra = [];
+  oneof_e_1?: MyEnumPlusExtra = null;
+  oneof_e_2?: MyEnumPlusExtra = null;
 
-  contructor(opt_data: any) {
-    jspb.Message.initialize(
-      this,
-      opt_data,
-      0,
-      -1,
-      MyMessagePlusExtra.repeatedFields,
-      MyMessagePlusExtra.oneofFieldsGroups
-    );
+  constructor(obj?: Partial<IMyMessagePlusExtra>) {
+    if (obj?.e ?? false) {
+      this.e = obj.e;
+    }
+    if (obj?.repeated_e ?? false) {
+      this.repeated_e = obj.repeated_e;
+    }
+    if (obj?.repeated_packed_e ?? false) {
+      this.repeated_packed_e = obj.repeated_packed_e;
+    }
+    if (obj?.repeated_packed_unexpected_e ?? false) {
+      this.repeated_packed_unexpected_e = obj.repeated_packed_unexpected_e;
+    }
+    if (obj?.oneof_e_1 ?? false) {
+      this.oneof_e_1 = obj.oneof_e_1;
+    }
+    if (obj?.oneof_e_2 ?? false) {
+      this.oneof_e_2 = obj.oneof_e_2;
+    }
   }
 
-  public get e(): MyEnumPlusExtra {
-    return jspb.Message.getWrapperField(this, MyEnumPlusExtra, 1);
+  serialize(w: pjs.Writer = pjs.Writer.create()): pjs.Writer {
+    return w;
   }
 
-  public set e(value: MyEnumPlusExtra): void {
-    return jspb.Message.setWrapperField(
-      this,
-      1,
+  deserialize(b: pjs.Reader | Uint8Array, length?: number): void {}
 
-      value
-    );
-  }
-
-  public get repeated_e(): MyEnumPlusExtra {
-    return jspb.Message.getRepeatedWrapperField(this, MyEnumPlusExtra, 2);
-  }
-
-  public set repeated_e(value: MyEnumPlusExtra): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      2,
-
-      value
-    );
-  }
-
-  public get repeated_packed_e(): MyEnumPlusExtra {
-    return jspb.Message.getRepeatedWrapperField(this, MyEnumPlusExtra, 3);
-  }
-
-  public set repeated_packed_e(value: MyEnumPlusExtra): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      3,
-
-      value
-    );
-  }
-
-  public get repeated_packed_unexpected_e(): MyEnumPlusExtra {
-    return jspb.Message.getRepeatedWrapperField(this, MyEnumPlusExtra, 4);
-  }
-
-  public set repeated_packed_unexpected_e(value: MyEnumPlusExtra): void {
-    return jspb.Message.setRepeatedWrapperField(
-      this,
-      4,
-
-      value
-    );
-  }
-
-  public get oneof_e_1(): MyEnumPlusExtra {
-    return jspb.Message.getWrapperField(this, MyEnumPlusExtra, 5);
-  }
-
-  public set oneof_e_1(value: MyEnumPlusExtra): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      5,
-      MyMessagePlusExtra.oneofFieldsGroups[0],
-      value
-    );
-  }
-
-  public get oneof_e_2(): MyEnumPlusExtra {
-    return jspb.Message.getWrapperField(this, MyEnumPlusExtra, 6);
-  }
-
-  public set oneof_e_2(value: MyEnumPlusExtra): void {
-    return jspb.Message.setOneofWrapperField(
-      this,
-      6,
-      MyMessagePlusExtra.oneofFieldsGroups[0],
-      value
-    );
+  clone(): MyMessagePlusExtra {
+    return new MyMessagePlusExtra(this);
   }
 }
 
