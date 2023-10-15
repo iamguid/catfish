@@ -87,10 +87,54 @@ export const getBasicWireType = (protoType: string): number => {
     case "bytes":
       return 2;
     case "float":
-    case "fixed64":
-    case "sfixed64":
+    case "fixed32":
+    case "sfixed32":
       return 5;
     default:
       return 2;
+  }
+}
+
+export const getTsTypeByProtoType = (protoType: string) => {
+  switch (protoType) {
+    case 'double': return 'number';
+    case "float": return 'number';
+    case "int32": return 'number';
+    case "int64": return 'pjs.Long';
+    case "uint32": return 'number';
+    case "uint64": return 'pjs.Long';
+    case "sint32": return 'number';
+    case "sint64": return 'pjs.Long';
+    case "fixed32": return 'number';
+    case "fixed64": return 'pjs.Long';
+    case "sfixed32": return 'number';
+    case "sfixed64": return 'pjs.Long';
+    case "enum": return 'number';
+    case "bool": return 'boolean';
+    case "string": return 'string';
+    case "bytes": return 'Uint8Array';
+    default: return null;
+  }
+}
+
+export const getJsonTypeByProtoType = (protoType: string) => {
+  switch (protoType) {
+    case 'double': return 'number';
+    case "float": return 'number';
+    case "int32": return 'number';
+    case "int64": return 'string';
+    case "uint32": return 'number';
+    case "uint64": return 'string';
+    case "sint32": return 'number';
+    case "sint64": return 'string';
+    case "fixed32": return 'number';
+    case "fixed64": return 'string';
+    case "sfixed32": return 'number';
+    case "sfixed64": return 'string';
+    case "enum": return 'number';
+    case "bool": return 'boolean';
+    case "string": return 'string';
+    case "bytes": return 'string';
+    default: return null;
   }
 }

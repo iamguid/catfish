@@ -9,162 +9,295 @@
 
 import * as pjs from "protobufjs/minimal";
 
+export interface IScalarTypesObj {
+  fInt32: number;
+  fInt64: string;
+  fUint32: number;
+  fUint64: string;
+  fSint32: number;
+  fSint64: string;
+  fFixed32: number;
+  fFixed64: string;
+  fSfixed32: number;
+  fSfixed64: string;
+  fFloat: number;
+  fDouble: number;
+  fBool: boolean;
+  fString: string;
+  fBytes: string;
+}
+
 export interface IScalarTypes {
-  f_int32: number;
-  f_int64: BigInt;
-  f_uint32: number;
-  f_uint64: BigInt;
-  f_sint32: number;
-  f_sint64: BigInt;
-  f_fixed32: number;
-  f_fixed64: BigInt;
-  f_sfixed32: number;
-  f_sfixed64: BigInt;
-  f_float: number;
-  f_double: number;
-  f_bool: boolean;
-  f_string: string;
-  f_bytes: Uint8Array;
+  fInt32: number;
+  fInt64: pjs.Long;
+  fUint32: number;
+  fUint64: pjs.Long;
+  fSint32: number;
+  fSint64: pjs.Long;
+  fFixed32: number;
+  fFixed64: pjs.Long;
+  fSfixed32: number;
+  fSfixed64: pjs.Long;
+  fFloat: number;
+  fDouble: number;
+  fBool: boolean;
+  fString: string;
+  fBytes: Uint8Array;
 }
 
 export class ScalarTypes implements IScalarTypes {
-  f_int32: number = 0;
-  f_int64: BigInt = 0n;
-  f_uint32: number = 0;
-  f_uint64: BigInt = 0n;
-  f_sint32: number = 0;
-  f_sint64: BigInt = 0n;
-  f_fixed32: number = 0;
-  f_fixed64: BigInt = 0n;
-  f_sfixed32: number = 0;
-  f_sfixed64: BigInt = 0n;
-  f_float: number = 0;
-  f_double: number = 0;
-  f_bool: boolean = false;
-  f_string: string = "";
-  f_bytes: Uint8Array = new Uint8Array();
+  fInt32: number = 0;
+  fInt64: pjs.Long = 0n;
+  fUint32: number = 0;
+  fUint64: pjs.Long = 0n;
+  fSint32: number = 0;
+  fSint64: pjs.Long = 0n;
+  fFixed32: number = 0;
+  fFixed64: pjs.Long = 0n;
+  fSfixed32: number = 0;
+  fSfixed64: pjs.Long = 0n;
+  fFloat: number = 0;
+  fDouble: number = 0;
+  fBool: boolean = false;
+  fString: string = "";
+  fBytes: Uint8Array = new Uint8Array();
 
   constructor(obj?: Partial<IScalarTypes>) {
     if (!obj) return;
 
-    if (obj?.f_int32 !== 0) {
-      this.f_int32 = obj.f_int32;
+    if (obj.fInt32 !== undefined) {
+      this.fInt32 = obj.fInt32;
     }
-    if (obj?.f_int64 !== 0n) {
-      this.f_int64 = obj.f_int64;
+    if (obj.fInt64 !== undefined) {
+      this.fInt64 = obj.fInt64;
     }
-    if (obj?.f_uint32 !== 0) {
-      this.f_uint32 = obj.f_uint32;
+    if (obj.fUint32 !== undefined) {
+      this.fUint32 = obj.fUint32;
     }
-    if (obj?.f_uint64 !== 0n) {
-      this.f_uint64 = obj.f_uint64;
+    if (obj.fUint64 !== undefined) {
+      this.fUint64 = obj.fUint64;
     }
-    if (obj?.f_sint32 !== 0) {
-      this.f_sint32 = obj.f_sint32;
+    if (obj.fSint32 !== undefined) {
+      this.fSint32 = obj.fSint32;
     }
-    if (obj?.f_sint64 !== 0n) {
-      this.f_sint64 = obj.f_sint64;
+    if (obj.fSint64 !== undefined) {
+      this.fSint64 = obj.fSint64;
     }
-    if (obj?.f_fixed32 !== 0) {
-      this.f_fixed32 = obj.f_fixed32;
+    if (obj.fFixed32 !== undefined) {
+      this.fFixed32 = obj.fFixed32;
     }
-    if (obj?.f_fixed64 !== 0n) {
-      this.f_fixed64 = obj.f_fixed64;
+    if (obj.fFixed64 !== undefined) {
+      this.fFixed64 = obj.fFixed64;
     }
-    if (obj?.f_sfixed32 !== 0) {
-      this.f_sfixed32 = obj.f_sfixed32;
+    if (obj.fSfixed32 !== undefined) {
+      this.fSfixed32 = obj.fSfixed32;
     }
-    if (obj?.f_sfixed64 !== 0n) {
-      this.f_sfixed64 = obj.f_sfixed64;
+    if (obj.fSfixed64 !== undefined) {
+      this.fSfixed64 = obj.fSfixed64;
     }
-    if (obj?.f_float !== 0) {
-      this.f_float = obj.f_float;
+    if (obj.fFloat !== undefined) {
+      this.fFloat = obj.fFloat;
     }
-    if (obj?.f_double !== 0) {
-      this.f_double = obj.f_double;
+    if (obj.fDouble !== undefined) {
+      this.fDouble = obj.fDouble;
     }
-    if (obj?.f_bool !== false) {
-      this.f_bool = obj.f_bool;
+    if (obj.fBool !== undefined) {
+      this.fBool = obj.fBool;
     }
-    if (obj?.f_string !== "") {
-      this.f_string = obj.f_string;
+    if (obj.fString !== undefined) {
+      this.fString = obj.fString;
     }
-    if (obj?.f_bytes !== new Uint8Array()) {
-      this.f_bytes = obj.f_bytes;
+    if (obj.fBytes !== undefined) {
+      this.fBytes = obj.fBytes;
     }
   }
 
-  serialize(w: pjs.Writer = pjs.Writer.create()): Uint8Array {
-    return w;
+  public static encode(
+    m: IScalarTypes,
+    w: pjs.Writer = pjs.Writer.create()
+  ): Uint8Array {
+    // int32 f_int32 = 1
+    if (m.fInt32 !== 0) {
+      w.uint32(8);
+      w.int32(m.fInt32);
+    }
+
+    // int64 f_int64 = 2
+    if (m.fInt64 !== 0n) {
+      w.uint32(16);
+      w.int64(m.fInt64);
+    }
+
+    // uint32 f_uint32 = 3
+    if (m.fUint32 !== 0) {
+      w.uint32(24);
+      w.uint32(m.fUint32);
+    }
+
+    // uint64 f_uint64 = 4
+    if (m.fUint64 !== 0n) {
+      w.uint32(32);
+      w.uint64(m.fUint64);
+    }
+
+    // sint32 f_sint32 = 5
+    if (m.fSint32 !== 0) {
+      w.uint32(40);
+      w.sint32(m.fSint32);
+    }
+
+    // sint64 f_sint64 = 6
+    if (m.fSint64 !== 0n) {
+      w.uint32(48);
+      w.sint64(m.fSint64);
+    }
+
+    // fixed32 f_fixed32 = 7
+    if (m.fFixed32 !== 0) {
+      w.uint32(61);
+      w.fixed32(m.fFixed32);
+    }
+
+    // fixed64 f_fixed64 = 8
+    if (m.fFixed64 !== 0n) {
+      w.uint32(65);
+      w.fixed64(m.fFixed64);
+    }
+
+    // sfixed32 f_sfixed32 = 9
+    if (m.fSfixed32 !== 0) {
+      w.uint32(77);
+      w.sfixed32(m.fSfixed32);
+    }
+
+    // sfixed64 f_sfixed64 = 10
+    if (m.fSfixed64 !== 0n) {
+      w.uint32(81);
+      w.sfixed64(m.fSfixed64);
+    }
+
+    // float f_float = 11
+    if (m.fFloat !== 0) {
+      w.uint32(93);
+      w.float(m.fFloat);
+    }
+
+    // double f_double = 12
+    if (m.fDouble !== 0) {
+      w.uint32(97);
+      w.double(m.fDouble);
+    }
+
+    // bool f_bool = 13
+    if (m.fBool !== false) {
+      w.uint32(104);
+      w.bool(m.fBool);
+    }
+
+    // string f_string = 14
+    if (m.fString !== "") {
+      w.uint32(114);
+      w.string(m.fString);
+    }
+
+    // bytes f_bytes = 15
+    if (m.fBytes !== new Uint8Array()) {
+      w.uint32(122);
+      w.bytes(m.fBytes);
+    }
+
+    return w.finish();
   }
 
-  decode(b: Uint8Array): void {
-    const reader = pjs.Reader.create(b);
-    while (reader.pos < reader.len) {
-      const tag = reader.uint32();
+  public static decode(b: Uint8Array): ScalarTypes {
+    const m = new ScalarTypes();
+    const r = pjs.Reader.create(b);
+    while (r.pos < r.len) {
+      const tag = r.uint32();
       switch (tag) {
+        // int32 f_int32 = 1
         case 8:
-          this.f_int32 = pjs.int32();
+          m.fInt32 = r.int32();
           continue;
 
+        // int64 f_int64 = 2
         case 16:
-          this.f_int64 = pjs.int64();
+          m.fInt64 = r.int64();
           continue;
 
+        // uint32 f_uint32 = 3
         case 24:
-          this.f_uint32 = pjs.uint32();
+          m.fUint32 = r.uint32();
           continue;
 
+        // uint64 f_uint64 = 4
         case 32:
-          this.f_uint64 = pjs.uint64();
+          m.fUint64 = r.uint64();
           continue;
 
+        // sint32 f_sint32 = 5
         case 40:
-          this.f_sint32 = pjs.sint32();
+          m.fSint32 = r.sint32();
           continue;
 
+        // sint64 f_sint64 = 6
         case 48:
-          this.f_sint64 = pjs.sint64();
+          m.fSint64 = r.sint64();
           continue;
 
-        case 58:
-          this.f_fixed32 = pjs.fixed32();
+        // fixed32 f_fixed32 = 7
+        case 61:
+          m.fFixed32 = r.fixed32();
           continue;
 
+        // fixed64 f_fixed64 = 8
         case 65:
-          this.f_fixed64 = pjs.fixed64();
+          m.fFixed64 = r.fixed64();
           continue;
 
-        case 74:
-          this.f_sfixed32 = pjs.sfixed32();
+        // sfixed32 f_sfixed32 = 9
+        case 77:
+          m.fSfixed32 = r.sfixed32();
           continue;
 
+        // sfixed64 f_sfixed64 = 10
         case 81:
-          this.f_sfixed64 = pjs.sfixed64();
+          m.fSfixed64 = r.sfixed64();
           continue;
 
+        // float f_float = 11
         case 93:
-          this.f_float = pjs.float();
+          m.fFloat = r.float();
           continue;
 
+        // double f_double = 12
         case 97:
-          this.f_double = pjs.double();
+          m.fDouble = r.double();
           continue;
 
+        // bool f_bool = 13
         case 104:
-          this.f_bool = pjs.bool();
+          m.fBool = r.bool();
           continue;
 
+        // string f_string = 14
         case 114:
-          this.f_string = pjs.string();
+          m.fString = r.string();
           continue;
 
+        // bytes f_bytes = 15
         case 122:
-          this.f_bytes = pjs.bytes();
+          m.fBytes = r.bytes();
           continue;
       }
     }
+
+    return m;
   }
+
+  public static toJSON(m: IScalarTypes): IScalarTypesObj {}
+
+  public static fromJSON(obj: IScalarTypesObj): IScalarTypes {}
 
   clone(): ScalarTypes {
     return new ScalarTypes(this);

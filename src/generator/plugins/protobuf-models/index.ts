@@ -1,11 +1,10 @@
 import { BaseDescriptor, EnumDescriptor, FieldDescriptor, FileDescriptor, MessageDescriptor } from '../../../parser';
-import { buildinProtoTypesToTsType } from '../../buildinProtoTypes';
 import { Context, Import } from '../../Context';
 import { Plugin, PluginOutputFile } from '../../Plugin';
-import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix } from '../../utils';
+import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix, snakeToCamel } from '../../utils';
 import { templates } from './templates';
 import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx, TypeInfoCtx } from './types';
-import { getBasicWireType } from './utils';
+import { getBasicWireType, getJsonTypeByProtoType, getTsTypeByProtoType } from './utils';
 
 const plugin: Plugin<void> = (context, projectOptions) => {
     const result: PluginOutputFile[] = []
@@ -69,8 +68,9 @@ const buildMessageContext = (context: Context, descriptor: FileDescriptor, messa
 
     return {
         messageIndex: message.index!,
-        ifaceName: `I${message.name}`,
-        modelName: message.name,
+        modelIfaceName: `I${message.name}`,
+        modelClassName: message.name,
+        jsonIfaceName: `I${message.name}Obj`,
         pivot: getPivot(message),
         enums: nestedEnums,
         mesages: nestedMessages,
@@ -85,18 +85,19 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
         mapType = {
             keyTypeInfo: getTypeInfoCtx(context, descriptor, field.map.keyType),
             valueTypeInfo: getTypeInfoCtx(context, descriptor, field.map.valueType),
-            valueTypeIsMessage: !(field.map.valueType in buildinProtoTypesToTsType)
+            valueTypeIsMessage: getTsTypeByProtoType(field.map.valueType!) === null
         }
     }
 
     const fieldTypeInfo = field.type ? getTypeInfoCtx(context, descriptor, field.type) : null;
 
     return {
-        fieldName: lowerCaseFirst(field.name),
+        rawName: field.name,
+        fieldName: snakeToCamel(lowerCaseFirst(field.name)),
         fieldNumber: field.fieldNumber,
         fieldTag: ((field.fieldNumber << 3) | getBasicWireType(field.type!)) >>> 0,
         fieldTypeInfo,
-        isMessageType: !(field.type! in buildinProtoTypesToTsType),
+        isMessageType: getTsTypeByProtoType(field.type!) === null,
         isMap: Boolean(field.map),
         isOneof: Boolean(field.oneofName),
         isRepeated: field.repeated,
@@ -119,11 +120,17 @@ export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor,
     if (typeInfo.descriptor) {
         return {
             ...typeInfo,
-            modelFullImportName: getModelFullImportName(context, typeInfo.descriptor)
+            tsType: getTsTypeByProtoType(typeInfo.protoType),
+            jsonType: getJsonTypeByProtoType(typeInfo.protoType),
+            modelFullImportName: getModelFullImportName(context, typeInfo.descriptor),
         }
     }
 
-    return typeInfo
+    return {
+        ...typeInfo,
+        tsType: getTsTypeByProtoType(typeInfo.protoType),
+        jsonType: getJsonTypeByProtoType(typeInfo.protoType),
+    }
 }
 
 // Returns the max index in the underlying data storage array beyond which the

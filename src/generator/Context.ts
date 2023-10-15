@@ -2,11 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { BaseDescriptor, FileDescriptor, parse } from "../parser"
-import { buildinProtoTypesToTsType } from './buildinProtoTypes';
 import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
 import { wellKnownTypesToProtoFilesMap } from './wellKnownTypes';
-import { filePathToPseudoNamespace, replaceProtoSuffix } from './utils';
 
 export interface Import {
     name: string
@@ -14,9 +12,7 @@ export interface Import {
 }
 
 export interface TypeInfo {
-    isBuiltin: boolean
     protoType: string
-    tsType: string
     descriptor?: BaseDescriptor
 }
 
@@ -158,24 +154,11 @@ export class Context {
 
     // TODO: make cache
     private extractTypeInfo(fileDescriptor: FileDescriptor, protoType: string): TypeInfo {
-        const buildinTsType = buildinProtoTypesToTsType[protoType];
+        const resolvedType = this.resolveType(fileDescriptor, protoType);
 
-        if (buildinTsType ?? false) {
-            return {
-                isBuiltin: true,
-                protoType,
-                tsType: buildinTsType,
-            }
-        }
-        else {
-            const descriptor = this.getProtoTypeDescriptor(fileDescriptor, protoType);
-
-            return {
-                isBuiltin: false,
-                protoType,
-                tsType: protoType,
-                descriptor,
-            }
+        return {
+            protoType,
+            descriptor: resolvedType ?? undefined
         }
     }
 }

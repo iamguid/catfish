@@ -2,8 +2,8 @@ import { FileDescriptor } from "../../../parser";
 import { Context, Import, TypeInfo } from "../../Context";
 
 export type MapTypeCtx = {
-    keyTypeInfo: TypeInfo
-    valueTypeInfo: TypeInfo
+    keyTypeInfo: TypeInfoCtx
+    valueTypeInfo: TypeInfoCtx
     valueTypeIsMessage: boolean
 }
 
@@ -18,6 +18,7 @@ export type EnumCtx = {
 }
 
 export type MessageFieldCtx = {
+    rawName: string,
     fieldName: string
     fieldTypeInfo: TypeInfoCtx | null
     fieldNumber: number
@@ -32,8 +33,9 @@ export type MessageFieldCtx = {
 }
 
 export type MessageCtx = {
-    ifaceName: string
-    modelName: string
+    modelIfaceName: string
+    jsonIfaceName: string
+    modelClassName: string
     messageIndex: number
     pivot: number
     fields: MessageFieldCtx[]
@@ -50,5 +52,7 @@ export type FileCtx = {
 }
 
 export type TypeInfoCtx = TypeInfo & {
+    tsType: string | null,
+    jsonType: string | null,
     modelFullImportName?: string
 }
