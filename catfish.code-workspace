@@ -1,0 +1,20 @@
+{
+    "folders": [
+        {
+            "name": "Generator",
+            "path": "./lib/generator"
+        },
+        {
+            "name": "Parser",
+            "path": "./lib/parser"
+        },
+        {
+            "name": "Root",
+            "path": "./"
+        }
+    ],
+    "settings": {
+        "jest.autoRun": "off",
+        "jest.disabledWorkspaceFolders": ["Root"]
+    }
+}

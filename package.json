@@ -1,21 +1,14 @@
 {
   "name": "catfish",
   "version": "0.0.1",
-  "description": "Easy to use gRPC client code generation tool",
+  "description": "Easy to use gRPC API generator",
   "main": "index.js",
   "repository": "https://github.com/iamguid/catfish.git",
   "author": "Vladislav <iam.guid@gmail.com>",
   "license": "MIT",
-  "private": false,
-  "scripts": {
-    "test": "yarn jest",
-    "gen:antlr:proto2": "antlr -Dlanguage=TypeScript ./Protobuf2.g4 -visitor -o ./src/parser/generated",
-    "gen:antlr:proto3": "antlr -Dlanguage=TypeScript ./Protobuf3.g4 -visitor -o ./src/parser/generated"
-  },
+  "private": true,
+  "workspaces": ["lib/*"],
   "dependencies": {
-    "antlr4": "4.13.0",
-    "prettier": "^2.8.8",
-    "protobufjs": "^7.2.5",
     "ts-node": "^10.9.1",
     "typescript": "5.0.4"
   },

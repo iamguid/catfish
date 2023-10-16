@@ -1,0 +1,19 @@
+{
+  "name": "@catfish/parser",
+  "version": "0.0.1",
+  "description": "Part of catfish library for parsing .proto files",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "repository": "https://github.com/iamguid/catfish.git",
+  "author": "Vladislav <iam.guid@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "yarn jest",
+    "gen:antlr:proto2": "antlr -Dlanguage=TypeScript ./Protobuf2.g4 -visitor -o ./src/parser/generated",
+    "gen:antlr:proto3": "antlr -Dlanguage=TypeScript ./Protobuf3.g4 -visitor -o ./src/parser/generated"
+  },
+  "devDependencies": {
+    "antlr4": "4.13.0"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@catfish/generator",
+  "version": "0.0.1",
+  "description": "Part of catfish library for code generation",
+  "main": "index.js",
+  "repository": "https://github.com/iamguid/catfish.git",
+  "author": "Vladislav <iam.guid@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "yarn jest"
+  },
+  "dependencies": {
+    "@catfish/parser": "*",
+    "prettier": "2.8.8"
+  },
+  "devDependencies": {
+    "protobufjs": "7.2.5"
+  }
+}
