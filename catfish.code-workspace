@@ -9,6 +9,10 @@
             "path": "./lib/parser"
         },
         {
+            "name": "Runtime",
+            "path": "./lib/runtime"
+        },
+        {
             "name": "Root",
             "path": "./"
         }

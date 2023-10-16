@@ -1,0 +1,14 @@
+{
+  "name": "@catfish/runtime",
+  "version": "0.0.1",
+  "description": "Part of catfish library for runtime",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "repository": "https://github.com/iamguid/catfish.git",
+  "author": "Vladislav <iam.guid@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "yarn jest"
+  }
+}
