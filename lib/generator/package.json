@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@catfish/parser": "*",
+    "@catfish/runtime": "*",
     "prettier": "2.8.8"
   },
   "devDependencies": {

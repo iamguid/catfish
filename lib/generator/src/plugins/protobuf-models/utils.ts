@@ -1,4 +1,4 @@
-import { MessageCtx, MessageFieldCtx } from "./types";
+import { MessageCtx, MessageFieldCtx, TypeMarker } from "./types";
 
 export const getRepeatedFieldsArray = (message: MessageCtx): number[] => {
   return message.fields.filter(field => field.isRepeated).map(field => field.fieldNumber);
@@ -136,5 +136,31 @@ export const getJsonTypeByProtoType = (protoType: string) => {
     case "string": return 'string';
     case "bytes": return 'string';
     default: return null;
+  }
+}
+
+export const getTypeMarkerByProtoType = (protoType: string): TypeMarker => {
+  switch (protoType) {
+    case "float":
+    case "int32":
+    case 'double':
+    case "uint32":
+    case "sint32":
+    case "fixed32":
+    case "sfixed32":
+    case "enum":
+    case "bool":
+    case "string":
+      return 'Primitive';
+    case "int64":
+    case "uint64":
+    case "sint64":
+    case "fixed64":
+    case "sfixed64":
+      return 'BigInt';
+    case "bytes":
+      return 'Bytes';
+    default:
+      return 'Message';
   }
 }

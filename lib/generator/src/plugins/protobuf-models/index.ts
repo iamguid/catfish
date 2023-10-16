@@ -4,7 +4,7 @@ import { Plugin, PluginOutputFile } from '../../Plugin';
 import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix, snakeToCamel } from '../../utils';
 import { templates } from './templates';
 import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx, TypeInfoCtx } from './types';
-import { getBasicWireType, getJsonTypeByProtoType, getTsTypeByProtoType } from './utils';
+import { getBasicWireType, getJsonTypeByProtoType, getTsTypeByProtoType, getTypeMarkerByProtoType } from './utils';
 
 const plugin: Plugin<void> = (context, projectOptions) => {
     const result: PluginOutputFile[] = []
@@ -117,19 +117,12 @@ export const getModelFullImportName = (context: Context, descriptor: BaseDescrip
 export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor, type: string): TypeInfoCtx => {
     const typeInfo = context.getTypeInfo(fileDescriptor, type);
 
-    if (typeInfo.descriptor) {
-        return {
-            ...typeInfo,
-            tsType: getTsTypeByProtoType(typeInfo.protoType),
-            jsonType: getJsonTypeByProtoType(typeInfo.protoType),
-            modelFullImportName: getModelFullImportName(context, typeInfo.descriptor),
-        }
-    }
-
     return {
         ...typeInfo,
+        typeMarker: getTypeMarkerByProtoType(typeInfo.protoType),
         tsType: getTsTypeByProtoType(typeInfo.protoType),
         jsonType: getJsonTypeByProtoType(typeInfo.protoType),
+        modelFullImportName: typeInfo.descriptor ? getModelFullImportName(context, typeInfo.descriptor) : undefined,
     }
 }
 

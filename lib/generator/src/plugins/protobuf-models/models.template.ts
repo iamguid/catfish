@@ -225,7 +225,20 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageCtx }): string =
 export const modelClassToJSONTemplate = (ctx: { message: MessageCtx }): string => {
   return `
     public static toJSON(m: ${ctx.message.modelIfaceName}): ${ctx.message.jsonIfaceName} {
-
+      return {
+        ${ctx.message.fields.map((field) => {
+          switch (field.fieldTypeInfo!.typeMarker) {
+            case "Primitive":
+              return `${field.fieldName}: m.${field.fieldName},`
+            case "BigInt":
+              return `${field.fieldName}: m.${field.fieldName}.toString(),`
+            case "Bytes":
+              return `${field.fieldName}: pjs.util.base64.encode(m.${field.fieldName}, 0, m.${field.fieldName}.length),`
+            case "Message":
+              return `${field.fieldName}: m.${field.fieldName}.toJSON(),`
+          }
+        }).join('\n')}
+      }
     }
   `
 }
@@ -233,7 +246,22 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageCtx }): string =
 export const modelClassFromJSONTemplate = (ctx: { message: MessageCtx }): string => {
   return `
     public static fromJSON(obj: ${ctx.message.jsonIfaceName}): ${ctx.message.modelIfaceName} {
+      const m = new ${ctx.message.modelClassName}();
 
+      ${ctx.message.fields.map((field) => {
+        switch (field.fieldTypeInfo!.typeMarker) {
+          case "Primitive":
+            return `m.${field.fieldName} = obj.${field.fieldName};`
+          case "BigInt":
+            return `m.${field.fieldName} = pjs.util.LongBits.from(obj.${field.fieldName});`
+          case "Bytes":
+            return `pjs.util.base64.decode(obj.${field.fieldName}, m.${field.fieldName}, 0);`
+          case "Message":
+            return `m.${field.fieldName}.fromJSON(obj.${field.fieldName});`
+        }
+      }).join('\n')}
+
+      return m;
     }
   `
 }

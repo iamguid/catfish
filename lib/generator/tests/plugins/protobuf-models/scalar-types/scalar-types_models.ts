@@ -295,9 +295,47 @@ export class ScalarTypes implements IScalarTypes {
     return m;
   }
 
-  public static toJSON(m: IScalarTypes): IScalarTypesObj {}
+  public static toJSON(m: IScalarTypes): IScalarTypesObj {
+    return {
+      fInt32: m.fInt32,
+      fInt64: m.fInt64.toString(),
+      fUint32: m.fUint32,
+      fUint64: m.fUint64.toString(),
+      fSint32: m.fSint32,
+      fSint64: m.fSint64.toString(),
+      fFixed32: m.fFixed32,
+      fFixed64: m.fFixed64.toString(),
+      fSfixed32: m.fSfixed32,
+      fSfixed64: m.fSfixed64.toString(),
+      fFloat: m.fFloat,
+      fDouble: m.fDouble,
+      fBool: m.fBool,
+      fString: m.fString,
+      fBytes: pjs.util.base64.encode(m.fBytes, 0, m.fBytes.length),
+    };
+  }
 
-  public static fromJSON(obj: IScalarTypesObj): IScalarTypes {}
+  public static fromJSON(obj: IScalarTypesObj): IScalarTypes {
+    const m = new ScalarTypes();
+
+    m.fInt32 = obj.fInt32;
+    m.fInt64 = pjs.util.LongBits.from(obj.fInt64);
+    m.fUint32 = obj.fUint32;
+    m.fUint64 = pjs.util.LongBits.from(obj.fUint64);
+    m.fSint32 = obj.fSint32;
+    m.fSint64 = pjs.util.LongBits.from(obj.fSint64);
+    m.fFixed32 = obj.fFixed32;
+    m.fFixed64 = pjs.util.LongBits.from(obj.fFixed64);
+    m.fSfixed32 = obj.fSfixed32;
+    m.fSfixed64 = pjs.util.LongBits.from(obj.fSfixed64);
+    m.fFloat = obj.fFloat;
+    m.fDouble = obj.fDouble;
+    m.fBool = obj.fBool;
+    m.fString = obj.fString;
+    pjs.util.base64.decode(obj.fBytes, m.fBytes, 0);
+
+    return m;
+  }
 
   clone(): ScalarTypes {
     return new ScalarTypes(this);
