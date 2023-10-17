@@ -1,4 +1,6 @@
+import { BaseDescriptor, EnumDescriptor } from "@catfish/parser";
 import { MessageCtx, MessageFieldCtx, TypeMarker } from "./types";
+import { TypeInfo } from '../../Context';
 
 export const getRepeatedFieldsArray = (message: MessageCtx): number[] => {
   return message.fields.filter(field => field.isRepeated).map(field => field.fieldNumber);
@@ -36,14 +38,17 @@ export const renderOneofGroupsArray = (groups: number[][]) => {
   return `[${result.join(', ')}]`;
 }
 
-
-export const fieldDefault = (field: MessageFieldCtx) => {
+export const getFieldDefaultValue = (field: MessageFieldCtx) => {
   if (field.isRepeated) {
     return "[]";
   }
 
-  if (field.isMessageType) {
-    return "null";
+  if (field.fieldTypeInfo?.typeMarker === "Message") {
+    return `new ${field.fieldTypeInfo?.fullImportPath}()`;
+  }
+
+  if (field.fieldTypeInfo?.typeMarker === "Enum") {
+    return `${field.fieldTypeInfo?.fullImportPath}.${(field.fieldTypeInfo.descriptor as EnumDescriptor).fields[0].fieldName}`;
   }
 
   switch (field.fieldTypeInfo?.protoType) {
@@ -59,7 +64,6 @@ export const fieldDefault = (field: MessageFieldCtx) => {
     case "fixed64": return 'pjs.util.Long.fromValue(0, true)';
     case "sfixed32": return '0';
     case "sfixed64": return 'pjs.util.Long.fromValue(0, false)';
-    case "enum": return '0';
     case "bool": return 'false';
     case "string": return '""';
     case "bytes": return 'pjs.util.newBuffer(0)';
@@ -69,8 +73,8 @@ export const fieldDefault = (field: MessageFieldCtx) => {
 }
 
 // Based on https://github.com/protobufjs/protobuf.js/blob/master/src/types.js#L37
-export const getBasicWireType = (protoType: string): number => {
-  switch (protoType) {
+export const getBasicWireType = (typeInfo: TypeInfo): number => {
+  switch (typeInfo.protoType) {
     case "int32":
     case "uint32":
     case "sint32":
@@ -91,12 +95,16 @@ export const getBasicWireType = (protoType: string): number => {
     case "sfixed32":
       return 5;
     default:
-      return 2;
+      if (typeInfo.descriptor instanceof EnumDescriptor) {
+        return 0;
+      } else {
+        return 2;
+      }
   }
 }
 
-export const getTsTypeByProtoType = (protoType: string) => {
-  switch (protoType) {
+export const getTsTypeByProtoType = (typeInfo: TypeInfo) => {
+  switch (typeInfo.protoType) {
     case 'double': return 'number';
     case "float": return 'number';
     case "int32": return 'number';
@@ -109,16 +117,20 @@ export const getTsTypeByProtoType = (protoType: string) => {
     case "fixed64": return 'pjs.Long';
     case "sfixed32": return 'number';
     case "sfixed64": return 'pjs.Long';
-    case "enum": return 'number';
     case "bool": return 'boolean';
     case "string": return 'string';
     case "bytes": return 'Uint8Array | Buffer';
-    default: return null;
+    default:
+      if (typeInfo.descriptor instanceof EnumDescriptor) {
+        return "number";
+      } else {
+        return typeInfo.protoType
+      }
   }
 }
 
-export const getJsonTypeByProtoType = (protoType: string) => {
-  switch (protoType) {
+export const getJsonTypeByProtoType = (typeInfo: TypeInfo) => {
+  switch (typeInfo.protoType) {
     case 'double': return 'number';
     case "float": return 'number';
     case "int32": return 'number';
@@ -131,16 +143,20 @@ export const getJsonTypeByProtoType = (protoType: string) => {
     case "fixed64": return 'string';
     case "sfixed32": return 'number';
     case "sfixed64": return 'string';
-    case "enum": return 'number';
     case "bool": return 'boolean';
     case "string": return 'string';
     case "bytes": return 'string';
-    default: return null;
+    default:
+      if (typeInfo.descriptor instanceof EnumDescriptor) {
+        return "number";
+      } else {
+        return typeInfo.protoType
+      }
   }
 }
 
-export const getTypeMarkerByProtoType = (protoType: string): TypeMarker => {
-  switch (protoType) {
+export const getTypeMarkerByProtoType = (typeInfo: TypeInfo): TypeMarker => {
+  switch (typeInfo.protoType) {
     case "float":
     case "int32":
     case 'double':
@@ -148,7 +164,6 @@ export const getTypeMarkerByProtoType = (protoType: string): TypeMarker => {
     case "sint32":
     case "fixed32":
     case "sfixed32":
-    case "enum":
     case "bool":
     case "string":
       return 'Primitive';
@@ -161,6 +176,10 @@ export const getTypeMarkerByProtoType = (protoType: string): TypeMarker => {
     case "bytes":
       return 'Bytes';
     default:
-      return 'Message';
+      if (typeInfo.descriptor instanceof EnumDescriptor) {
+        return "Enum";
+      } else {
+        return "Message"
+      }
   }
 }

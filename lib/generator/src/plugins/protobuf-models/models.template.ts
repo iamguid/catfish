@@ -1,7 +1,7 @@
 import { protoTypeToPjsFn } from ".";
 import { templates } from "./templates";
 import { EnumCtx, FileCtx, MessageCtx, MessageFieldCtx, TypeInfoCtx } from "./types";
-import { fieldDefault } from "./utils";
+import { getFieldDefaultValue } from "./utils";
 
 export const modelsTemplate = (ctx: FileCtx): string => `
   ${templates.render('header', {
@@ -136,9 +136,9 @@ export const modelClassFieldsTemplate = (ctx: { message: MessageCtx }): string =
       case field.isMap:
         return `${field.fieldName}: Record<${field.mapType?.keyTypeInfo.tsType}, ${field.mapType?.valueTypeInfo.tsType}> = ${field.isOptional ? 'undefined' : '{}'};`
       case field.isOneof:
-        return `${field.fieldName}?: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : fieldDefault(field)};`
+        return `${field.fieldName}?: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : getFieldDefaultValue(field)};`
       default:
-        return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : fieldDefault(field)};`
+        return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : getFieldDefaultValue(field)};`
     }
   }).join('\n')
 }
@@ -159,7 +159,7 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageCtx }): string =
           default:
             return `
               // ${field.fieldTypeInfo?.protoType} ${field.rawName} = ${field.fieldNumber}
-              if (m.${field.fieldName} !== ${fieldDefault(field)}) {
+              if (m.${field.fieldName} !== ${getFieldDefaultValue(field)}) {
                 w.uint32(${field.fieldTag});
                 ${templates.render('models.encodeField', { typeInfo: field.fieldTypeInfo!, field })}
               }
@@ -244,6 +244,8 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageCtx }): string =
               return `${field.fieldName}: m.${field.fieldName}.toString(),`
             case "Bytes":
               return `${field.fieldName}: pjs.util.base64.encode(m.${field.fieldName}, 0, m.${field.fieldName}.length),`
+            case "Enum":
+              return `${field.fieldName}: ${field.fieldTypeInfo?.fullImportPath}[m.${field.fieldName}],`
             case "Message":
               return `${field.fieldName}: m.${field.fieldName}.toJSON(),`
           }
@@ -270,6 +272,8 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageCtx }): string
               pjs.util.base64.decode(obj.${field.fieldName}, tmpBuffer, 0);
               m.${field.fieldName} = pjs.util.Buffer.from(tmpBuffer);
             }`
+          case "Enum":
+            return `m.${field.fieldName} = ${field.fieldTypeInfo?.fullImportPath}[obj.${field.fieldName}];`
           case "Message":
             return `m.${field.fieldName}.fromJSON(obj.${field.fieldName});`
         }
@@ -281,14 +285,22 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageCtx }): string
 }
 
 export const decodeFieldTemplate = (ctx: { typeInfo: TypeInfoCtx }): string => {
+  if (ctx.typeInfo.typeMarker === "Enum") {
+    return `r.uint32()`
+  }
+
   if (ctx.typeInfo.tsType) {
     return `r.${protoTypeToPjsFn(ctx.typeInfo.protoType)}()`
   }
 
-  return ctx.typeInfo.modelFullImportName!
+  return ctx.typeInfo.fullImportPath!
 }
 
 export const encodeFieldTemplate = (ctx: { typeInfo: TypeInfoCtx, field: MessageFieldCtx }): string => {
+  if (ctx.typeInfo.typeMarker === "Enum") {
+    return `w.uint32(m.${ctx.field.fieldName})`
+  }
+
   if (ctx.typeInfo.tsType) {
     return `w.${protoTypeToPjsFn(ctx.typeInfo.protoType)}(m.${ctx.field.fieldName})`
   }

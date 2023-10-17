@@ -4,7 +4,7 @@ import { Plugin, PluginOutputFile } from '../../Plugin';
 import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix, snakeToCamel } from '../../utils';
 import { templates } from './templates';
 import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx, TypeInfoCtx } from './types';
-import { getBasicWireType, getJsonTypeByProtoType, getTsTypeByProtoType, getTypeMarkerByProtoType } from './utils';
+import { getBasicWireType, getJsonTypeByProtoType as getJsonTypeByTypeInfo, getTsTypeByProtoType as getTsTypeByTypeInfo, getTypeMarkerByProtoType as getTypeMarkerByTypeInfo } from './utils';
 
 const plugin: Plugin<void> = (context, projectOptions) => {
     const result: PluginOutputFile[] = []
@@ -82,10 +82,13 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
     let mapType: MapTypeCtx | undefined = undefined;
 
     if (field.map) {
+        const keyTypeInfo = getTypeInfoCtx(context, descriptor, field.map.keyType);
+        const valueTypeInfo = getTypeInfoCtx(context, descriptor, field.map.valueType);
+
         mapType = {
-            keyTypeInfo: getTypeInfoCtx(context, descriptor, field.map.keyType),
-            valueTypeInfo: getTypeInfoCtx(context, descriptor, field.map.valueType),
-            valueTypeIsMessage: getTsTypeByProtoType(field.map.valueType!) === null
+            keyTypeInfo: keyTypeInfo,
+            valueTypeInfo: valueTypeInfo,
+            valueTypeIsMessage: getTsTypeByTypeInfo(valueTypeInfo) === "Message"
         }
     }
 
@@ -95,9 +98,9 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
         rawName: field.name,
         fieldName: snakeToCamel(lowerCaseFirst(field.name)),
         fieldNumber: field.fieldNumber,
-        fieldTag: ((field.fieldNumber << 3) | getBasicWireType(field.type!)) >>> 0,
+        fieldTag: ((field.fieldNumber << 3) | getBasicWireType(fieldTypeInfo!)) >>> 0,
         fieldTypeInfo,
-        isMessageType: getTsTypeByProtoType(field.type!) === null,
+        isMessageType: getTypeMarkerByTypeInfo(fieldTypeInfo!) === "Message",
         isMap: Boolean(field.map),
         isOneof: Boolean(field.oneofName),
         isRepeated: field.repeated,
@@ -107,11 +110,17 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
     }
 }
 
-export const getModelFullImportName = (context: Context, descriptor: BaseDescriptor) => {
+export const getFullImportPath = (context: Context, file: FileDescriptor, descriptor: BaseDescriptor) => {
     const filePath = context.getFilePathByDescriptor(descriptor.fileDescriptor);
     const modelsFilePath = replaceProtoSuffix(filePath, 'models');
     const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
-    return `${modelsFileImportName}.${descriptor.fullpath}`
+
+    // Model defined in current file
+    if (descriptor.fileDescriptor === file) {
+        return descriptor.fullname
+    } else {
+        return `${modelsFileImportName}.${descriptor.fullpath}`
+    }
 }
 
 export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor, type: string): TypeInfoCtx => {
@@ -119,10 +128,10 @@ export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor,
 
     return {
         ...typeInfo,
-        typeMarker: getTypeMarkerByProtoType(typeInfo.protoType),
-        tsType: getTsTypeByProtoType(typeInfo.protoType),
-        jsonType: getJsonTypeByProtoType(typeInfo.protoType),
-        modelFullImportName: typeInfo.descriptor ? getModelFullImportName(context, typeInfo.descriptor) : undefined,
+        typeMarker: getTypeMarkerByTypeInfo(typeInfo),
+        tsType: getTsTypeByTypeInfo(typeInfo),
+        jsonType: getJsonTypeByTypeInfo(typeInfo),
+        fullImportPath: typeInfo.descriptor ? getFullImportPath(context, fileDescriptor, typeInfo.descriptor) : undefined,
     }
 }
 

@@ -1,0 +1,9 @@
+
+syntax = "proto3";
+
+package map_types;
+
+message MapTypes {
+    map<int32, string> map_int32_string = 2;
+    map<int32, bytes> map_int32_bytes = 1;
+}

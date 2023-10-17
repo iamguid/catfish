@@ -1,7 +1,7 @@
-import { FileDescriptor } from "../../../../parser";
+import { FileDescriptor } from "@catfish/parser";
 import { Context, Import, TypeInfo } from "../../Context";
 
-export type TypeMarker = "BigInt" | "Primitive" | "Bytes" | "Message";
+export type TypeMarker = "BigInt" | "Primitive" | "Bytes" | "Message" | "Enum";
 
 export type MapTypeCtx = {
     keyTypeInfo: TypeInfoCtx
@@ -57,5 +57,5 @@ export type TypeInfoCtx = TypeInfo & {
     tsType: string | null,
     jsonType: string | null,
     typeMarker: TypeMarker,
-    modelFullImportName?: string
+    fullImportPath?: string
 }
