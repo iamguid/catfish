@@ -45,6 +45,12 @@ export const recursiveTemplate = (ctx: { messages: MessageCtx[], enums: EnumCtx[
 export const modelClassTemplate = (ctx: { message: MessageCtx }): string => {
   return `
     export class ${ctx.message.modelClassName} implements ${ctx.message.modelIfaceName} {
+      public static fields = [${ctx.message.fields.map(f => `'${f.fieldName}'`).join(",")}]
+
+      public get fields() {
+        return ${ctx.message.modelClassName}.fields
+      }
+
       ${templates.render('models.modelClassFields', {
         message: ctx.message
       })}
@@ -180,29 +186,33 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageCtx }): string =
                 return `
                   // map<${field.mapType?.keyTypeInfo.protoType}, ${field.mapType?.valueTypeInfo.protoType}> ${field.rawName} = ${field.fieldNumber}
                   case ${field.fieldTag}:
-                    const ${field.fieldName}Key = ${templates.render('models.decodeField', { typeInfo: field.mapType!.keyTypeInfo })}
-                    const ${field.fieldName}Value = ${templates.render('models.decodeField', { typeInfo: field.mapType!.valueTypeInfo })}
-
-                    ${field.isOptional ? `
-                    if (m.${field.fieldName} === undefined) {
-                      m.${field.fieldName} = new Map();
-                    }` : ''}
-
-                    m.${field.fieldName}.set(${field.fieldName}Key, ${field.fieldName}Value)
+                    {
+                      const key = ${templates.render('models.decodeField', { typeInfo: field.mapType!.keyTypeInfo })}
+                      const value = ${templates.render('models.decodeField', { typeInfo: field.mapType!.valueTypeInfo })}
+  
+                      ${field.isOptional ? `
+                      if (m.${field.fieldName} === undefined) {
+                        m.${field.fieldName} = new Map();
+                      }` : ''}
+  
+                      m.${field.fieldName}.set(key, value)
+                    }
                     continue;
                 `
               case field.isRepeated:
                 return `
                   // repeated ${field.fieldTypeInfo?.protoType} ${field.rawName} = ${field.fieldNumber}
                   case ${field.fieldTag}:
-                    const ${field.fieldName}Value = ${templates.render('models.decodeField', { typeInfo: field.fieldTypeInfo! })}
+                    {
+                      const value = ${templates.render('models.decodeField', { typeInfo: field.fieldTypeInfo! })}
 
-                    ${field.isOptional ? `
-                    if (m.${field.fieldName} === undefined) {
-                      m.${field.fieldName} = [];
-                    }` : ''}
-
-                    m.${field.fieldName}.push(${field.fieldName}Value)
+                      ${field.isOptional ? `
+                      if (m.${field.fieldName} === undefined) {
+                        m.${field.fieldName} = [];
+                      }` : ''}
+  
+                      m.${field.fieldName}.push(value)
+                    }
                     continue;
                 `
               default:
@@ -253,9 +263,13 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageCtx }): string
           case "Primitive":
             return `m.${field.fieldName} = obj.${field.fieldName};`
           case "BigInt":
-            return `m.${field.fieldName} = pjs.util.LongBits.from(obj.${field.fieldName});`
+            return `m.${field.fieldName} = pjs.util.Long.fromValue(obj.${field.fieldName}, ${field.fieldTypeInfo!.protoType === "uint64" || field.fieldTypeInfo!.protoType === "fixed64" ? 'true' : 'false'});`
           case "Bytes":
-            return `pjs.util.base64.decode(obj.${field.fieldName}, m.${field.fieldName}, 0);`
+            return `{
+              const tmpBuffer = []
+              pjs.util.base64.decode(obj.${field.fieldName}, tmpBuffer, 0);
+              m.${field.fieldName} = pjs.util.Buffer.from(tmpBuffer);
+            }`
           case "Message":
             return `m.${field.fieldName}.fromJSON(obj.${field.fieldName});`
         }

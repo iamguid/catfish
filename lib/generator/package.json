@@ -16,6 +16,7 @@
     "prettier": "2.8.8"
   },
   "devDependencies": {
-    "protobufjs": "7.2.5"
+    "protobufjs": "7.2.5",
+    "long": "5.2.3"
   }
 }

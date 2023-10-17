@@ -50,19 +50,19 @@ export const fieldDefault = (field: MessageFieldCtx) => {
     case "double": return '0';
     case "float": return '0';
     case "int32": return '0';
-    case "int64": return '0n';
+    case "int64": return 'pjs.util.Long(0, false)';
     case "uint32": return '0';
-    case "uint64": return '0n';
+    case "uint64": return 'pjs.util.Long(0, true)';
     case "sint32": return '0';
-    case "sint64": return '0n';
+    case "sint64": return 'pjs.util.Long(0, false)';
     case "fixed32": return '0';
-    case "fixed64": return '0n';
+    case "fixed64": return 'pjs.util.Long(0, true)';
     case "sfixed32": return '0';
-    case "sfixed64": return '0n';
+    case "sfixed64": return 'pjs.util.Long(0, false)';
     case "enum": return '0';
     case "bool": return 'false';
     case "string": return '""';
-    case "bytes": return 'new Uint8Array()';
+    case "bytes": return 'pjs.util.newBuffer(0)';
   }
 
   throw new Error(`Cannot get default TS type for proto type ${field.fieldTypeInfo?.protoType}`)
@@ -112,7 +112,7 @@ export const getTsTypeByProtoType = (protoType: string) => {
     case "enum": return 'number';
     case "bool": return 'boolean';
     case "string": return 'string';
-    case "bytes": return 'Uint8Array';
+    case "bytes": return 'Uint8Array | Buffer';
     default: return null;
   }
 }
