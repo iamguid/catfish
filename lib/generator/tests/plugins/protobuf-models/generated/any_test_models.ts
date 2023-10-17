@@ -13,23 +13,30 @@ import * as pjs from "protobufjs/minimal";
 
 export interface ITestAnyObj {
   int32Value: number;
-  anyValue: null;
-  repeatedAnyValue: null;
+  anyValue: google.protobuf.Any;
+  repeatedAnyValue: google.protobuf.Any;
   text: string;
 }
 
 export interface ITestAny {
   int32Value: number;
-  anyValue: null;
-  repeatedAnyValue: null;
+  anyValue: google.protobuf.Any;
+  repeatedAnyValue: google.protobuf.Any;
   text: string;
 }
 
 export class TestAny implements ITestAny {
   int32Value: number = 0;
-  anyValue: null = null;
-  repeatedAnyValue: null = [];
+  anyValue: google.protobuf.Any =
+    new google_protobuf_any_models.google.protobuf.Any();
+  repeatedAnyValue: google.protobuf.Any = [];
   text: string = "";
+
+  public static fields = ["int32Value", "anyValue", "repeatedAnyValue", "text"];
+
+  public get fields() {
+    return TestAny.fields;
+  }
 
   constructor(obj?: Partial<ITestAny>) {
     if (!obj) return;
@@ -59,15 +66,15 @@ export class TestAny implements ITestAny {
     }
 
     // google.protobuf.Any any_value = 2
-    if (m.anyValue !== null) {
+    if (m.anyValue !== new google_protobuf_any_models.google.protobuf.Any()) {
       w.uint32(18);
-      m.anyValue.encode(writer);
+      w.google.protobuf.Any(m.anyValue);
     }
 
     // google.protobuf.Any repeated_any_value = 3
     if (m.repeatedAnyValue !== []) {
       w.uint32(26);
-      m.repeatedAnyValue.encode(writer);
+      w.google.protobuf.Any(m.repeatedAnyValue);
     }
 
     // string text = 4
@@ -92,15 +99,16 @@ export class TestAny implements ITestAny {
 
         // google.protobuf.Any any_value = 2
         case 18:
-          m.anyValue = google_protobuf_any_models.google.protobuf.Any;
+          m.anyValue = r.google.protobuf.Any();
           continue;
 
         // repeated google.protobuf.Any repeated_any_value = 3
         case 26:
-          const repeatedAnyValueValue =
-            google_protobuf_any_models.google.protobuf.Any;
+          {
+            const value = r.google.protobuf.Any();
 
-          m.repeatedAnyValue.push(repeatedAnyValueValue);
+            m.repeatedAnyValue.push(value);
+          }
           continue;
 
         // string text = 4
@@ -113,9 +121,25 @@ export class TestAny implements ITestAny {
     return m;
   }
 
-  public static toJSON(m: ITestAny): ITestAnyObj {}
+  public static toJSON(m: ITestAny): ITestAnyObj {
+    return {
+      int32Value: m.int32Value,
+      anyValue: m.anyValue.toJSON(),
+      repeatedAnyValue: m.repeatedAnyValue.toJSON(),
+      text: m.text,
+    };
+  }
 
-  public static fromJSON(obj: ITestAnyObj): ITestAny {}
+  public static fromJSON(obj: ITestAnyObj): ITestAny {
+    const m = new TestAny();
+
+    m.int32Value = obj.int32Value;
+    m.anyValue.fromJSON(obj.anyValue);
+    m.repeatedAnyValue.fromJSON(obj.repeatedAnyValue);
+    m.text = obj.text;
+
+    return m;
+  }
 
   clone(): TestAny {
     return new TestAny(this);

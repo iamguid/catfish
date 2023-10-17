@@ -34,6 +34,12 @@ export interface IImportMessage {
 export class ImportMessage implements IImportMessage {
   d: number = 0;
 
+  public static fields = ["d"];
+
+  public get fields() {
+    return ImportMessage.fields;
+  }
+
   constructor(obj?: Partial<IImportMessage>) {
     if (!obj) return;
 
@@ -71,9 +77,19 @@ export class ImportMessage implements IImportMessage {
     return m;
   }
 
-  public static toJSON(m: IImportMessage): IImportMessageObj {}
+  public static toJSON(m: IImportMessage): IImportMessageObj {
+    return {
+      d: m.d,
+    };
+  }
 
-  public static fromJSON(obj: IImportMessageObj): IImportMessage {}
+  public static fromJSON(obj: IImportMessageObj): IImportMessage {
+    const m = new ImportMessage();
+
+    m.d = obj.d;
+
+    return m;
+  }
 
   clone(): ImportMessage {
     return new ImportMessage(this);

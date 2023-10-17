@@ -28,6 +28,12 @@ export interface IImportMessageLite {
 export class ImportMessageLite implements IImportMessageLite {
   d: number = 0;
 
+  public static fields = ["d"];
+
+  public get fields() {
+    return ImportMessageLite.fields;
+  }
+
   constructor(obj?: Partial<IImportMessageLite>) {
     if (!obj) return;
 
@@ -65,9 +71,19 @@ export class ImportMessageLite implements IImportMessageLite {
     return m;
   }
 
-  public static toJSON(m: IImportMessageLite): IImportMessageLiteObj {}
+  public static toJSON(m: IImportMessageLite): IImportMessageLiteObj {
+    return {
+      d: m.d,
+    };
+  }
 
-  public static fromJSON(obj: IImportMessageLiteObj): IImportMessageLite {}
+  public static fromJSON(obj: IImportMessageLiteObj): IImportMessageLite {
+    const m = new ImportMessageLite();
+
+    m.d = obj.d;
+
+    return m;
+  }
 
   clone(): ImportMessageLite {
     return new ImportMessageLite(this);

@@ -68,9 +68,8 @@ const buildMessageContext = (context: Context, descriptor: FileDescriptor, messa
 
     return {
         messageIndex: message.index!,
-        modelIfaceName: `I${message.name}`,
         modelClassName: message.name,
-        jsonIfaceName: `I${message.name}Obj`,
+        jsonIfaceName: `${message.name}JSON`,
         pivot: getPivot(message),
         enums: nestedEnums,
         mesages: nestedMessages,
@@ -88,13 +87,11 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
         mapType = {
             keyTypeInfo: keyTypeInfo,
             valueTypeInfo: valueTypeInfo,
-            valueTypeIsMessage: getTsTypeByTypeInfo(valueTypeInfo) === "Message"
         }
     }
 
     const fieldTypeInfo = field.type ? getTypeInfoCtx(context, descriptor, field.type) : null;
-    const fieldTag = fieldTypeInfo ? ((field.fieldNumber << 3) | getBasicWireType(fieldTypeInfo!)) >>> 0 : null;
-    const isMessageType = fieldTypeInfo ? getTypeMarkerByTypeInfo(fieldTypeInfo!) === "Message" : false;
+    const fieldTag = ((field.fieldNumber << 3) | (fieldTypeInfo ? getBasicWireType(fieldTypeInfo!) : 2)) >>> 0;
 
     return {
         rawName: field.name,
@@ -102,7 +99,6 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
         fieldNumber: field.fieldNumber,
         fieldTag,
         fieldTypeInfo,
-        isMessageType,
         isMap: Boolean(field.map),
         isOneof: Boolean(field.oneofName),
         isRepeated: field.repeated,
@@ -127,13 +123,14 @@ export const getFullImportPath = (context: Context, file: FileDescriptor, descri
 
 export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor, type: string): TypeInfoCtx => {
     const typeInfo = context.getTypeInfo(fileDescriptor, type);
+    const fullImportPath = typeInfo.descriptor ? getFullImportPath(context, fileDescriptor, typeInfo.descriptor) : null
 
     return {
         ...typeInfo,
         typeMarker: getTypeMarkerByTypeInfo(typeInfo),
-        tsType: getTsTypeByTypeInfo(typeInfo),
-        jsonType: getJsonTypeByTypeInfo(typeInfo),
-        fullImportPath: typeInfo.descriptor ? getFullImportPath(context, fileDescriptor, typeInfo.descriptor) : undefined,
+        tsType: getTsTypeByTypeInfo(typeInfo) ?? fullImportPath ?? '',
+        jsonType: getJsonTypeByTypeInfo(typeInfo) ?? `${fullImportPath}JSON` ?? '',
+        fullType: fullImportPath,
     }
 }
 

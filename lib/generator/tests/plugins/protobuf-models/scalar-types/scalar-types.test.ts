@@ -1,45 +1,45 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
 import Long from "long";
-import { IScalarTypes, ScalarTypes } from "./scalar-types_models";
-import { generateModels, loadProtoFileByProtobufjs, traverseByModels } from "../../../utils";
+import { ScalarTypes, IScalarTypesJSON } from "./scalar-types_models";
+import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
 
 pjs.util.Long = Long
 
-const EXPECTED_MESSAGE_OBJ: IScalarTypes = {
+const EXPECTED_MESSAGE_OBJ: IScalarTypesJSON = {
     fInt32: 1,
-    fInt64: Long.fromValue(2, false),
+    fInt64: '2',
     fUint32: 3,
-    fUint64: Long.fromValue(4, true),
+    fUint64: '4',
     fSint32: 5,
-    fSint64: Long.fromValue(6, false),
+    fSint64: '6',
     fFixed32: 7,
-    fFixed64: Long.fromValue(8, true),
+    fFixed64: '8',
     fSfixed32: 9,
-    fSfixed64: Long.fromValue(10, false),
+    fSfixed64: '10',
     fFloat: 11.5,
     fDouble: 12.5,
     fBool: true,
-    fString: "14",
-    fBytes: Buffer.from([15, 16, 17]),
+    fString: '14',
+    fBytes: pjs.util.base64.encode(Buffer.from([15, 16, 17]), 0, 3),
 }
 
-const INITIAL_MESSAGE_OBJ: IScalarTypes = {
+const INITIAL_MESSAGE_OBJ: IScalarTypesJSON = {
     fInt32: 0,
-    fInt64: Long.fromValue(0, false),
+    fInt64: '0',
     fUint32: 0,
-    fUint64: Long.fromValue(0, true),
+    fUint64: '0',
     fSint32: 0,
-    fSint64: Long.fromValue(0, false),
+    fSint64: '0',
     fFixed32: 0,
-    fFixed64: Long.fromValue(0, true),
+    fFixed64: '0',
     fSfixed32: 0,
-    fSfixed64: Long.fromValue(0, false),
+    fSfixed64: '0',
     fFloat: 0,
     fDouble: 0,
     fBool: false,
-    fString: "",
-    fBytes: Buffer.from([]),
+    fString: '',
+    fBytes: '',
 }
 
 describe("Scalar value types", () => {
@@ -51,45 +51,28 @@ describe("Scalar value types", () => {
     })
 
     it("initial", () => {
-        const cfMessage = new ScalarTypes();
-
-        traverseByModels(cfMessage, INITIAL_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
+        const cfJson = new ScalarTypes().toJSON();
+        expect(INITIAL_MESSAGE_OBJ).toStrictEqual(cfJson);
     })
 
     it("constructor", () => {
-        const cfMessage = new ScalarTypes(EXPECTED_MESSAGE_OBJ);
-
-        traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
+        const cfMessageA = new ScalarTypes().fromJSON(EXPECTED_MESSAGE_OBJ);
+        const cfJsonB = new ScalarTypes(cfMessageA).toJSON();
+        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJsonB);
     })
 
     it("encode", () => {
-        const cfBuffer = ScalarTypes.encode(EXPECTED_MESSAGE_OBJ);
+        const cfBuffer = new ScalarTypes().fromJSON(EXPECTED_MESSAGE_OBJ).serialize();
         expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer)
     })
 
     it("decode", () => {
-        const cfMessage = ScalarTypes.decode(pjsScalarTypes.buffer);
-
-        traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
+        const cfJson = new ScalarTypes().deserialize(pjsScalarTypes.buffer).toJSON();
+        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJson);
     })
     
-    it("toJSON", () => {
-        const cfJson = ScalarTypes.toJSON(ScalarTypes.decode(pjsScalarTypes.buffer));
+    it("fromJSON/toJSON", () => {
+        const cfJson = new ScalarTypes().fromJSON(EXPECTED_MESSAGE_OBJ).toJSON();
         expect(pjsScalarTypes.json).toStrictEqual(cfJson);
-    })
-    
-    it("fromJSON", () => {
-        const cfJson = ScalarTypes.toJSON(new ScalarTypes(EXPECTED_MESSAGE_OBJ));
-        const cfMessage = ScalarTypes.fromJSON(cfJson);
-
-        traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
     })
 });

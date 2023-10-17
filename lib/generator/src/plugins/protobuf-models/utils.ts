@@ -1,4 +1,4 @@
-import { BaseDescriptor, EnumDescriptor } from "@catfish/parser";
+import { EnumDescriptor } from "@catfish/parser";
 import { MessageCtx, MessageFieldCtx, TypeMarker } from "./types";
 import { TypeInfo } from '../../Context';
 
@@ -44,11 +44,11 @@ export const getFieldDefaultValue = (field: MessageFieldCtx) => {
   }
 
   if (field.fieldTypeInfo?.typeMarker === "Message") {
-    return `new ${field.fieldTypeInfo?.fullImportPath}()`;
+    return `new ${field.fieldTypeInfo.tsType}()`;
   }
 
   if (field.fieldTypeInfo?.typeMarker === "Enum") {
-    return `${field.fieldTypeInfo?.fullImportPath}.${(field.fieldTypeInfo.descriptor as EnumDescriptor).fields[0].fieldName}`;
+    return `${field.fieldTypeInfo.fullType}.${(field.fieldTypeInfo.descriptor as EnumDescriptor).fields[0].fieldName}`;
   }
 
   switch (field.fieldTypeInfo?.protoType) {
@@ -124,7 +124,7 @@ export const getTsTypeByProtoType = (typeInfo: TypeInfo) => {
       if (typeInfo.descriptor instanceof EnumDescriptor) {
         return "number";
       } else {
-        return typeInfo.protoType
+        return null;
       }
   }
 }
@@ -148,9 +148,9 @@ export const getJsonTypeByProtoType = (typeInfo: TypeInfo) => {
     case "bytes": return 'string';
     default:
       if (typeInfo.descriptor instanceof EnumDescriptor) {
-        return "number";
+        return "string";
       } else {
-        return typeInfo.protoType
+        return null;
       }
   }
 }

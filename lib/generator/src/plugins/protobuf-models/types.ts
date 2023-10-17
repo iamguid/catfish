@@ -6,7 +6,6 @@ export type TypeMarker = "BigInt" | "Primitive" | "Bytes" | "Message" | "Enum";
 export type MapTypeCtx = {
     keyTypeInfo: TypeInfoCtx
     valueTypeInfo: TypeInfoCtx
-    valueTypeIsMessage: boolean
 }
 
 export type EnumFieldCtx = {
@@ -25,7 +24,6 @@ export type MessageFieldCtx = {
     fieldTypeInfo: TypeInfoCtx | null
     fieldNumber: number
     fieldTag: number | null
-    isMessageType: boolean
     isRepeated: boolean
     isOptional: boolean
     isMap: boolean
@@ -35,7 +33,6 @@ export type MessageFieldCtx = {
 }
 
 export type MessageCtx = {
-    modelIfaceName: string
     jsonIfaceName: string
     modelClassName: string
     messageIndex: number
@@ -54,8 +51,8 @@ export type FileCtx = {
 }
 
 export type TypeInfoCtx = TypeInfo & {
-    tsType: string | null,
-    jsonType: string | null,
+    tsType: string,
+    jsonType: string,
+    fullType: string | null,
     typeMarker: TypeMarker,
-    fullImportPath?: string
 }

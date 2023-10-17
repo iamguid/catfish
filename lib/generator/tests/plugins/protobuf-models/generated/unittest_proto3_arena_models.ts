@@ -36,17 +36,17 @@ export interface ITestAllTypesObj {
   optionalBool: boolean;
   optionalString: string;
   optionalBytes: string;
-  optionalNestedMessage: null;
-  optionalForeignMessage: null;
-  optionalImportMessage: null;
-  optionalNestedEnum: null;
-  optionalForeignEnum: null;
+  optionalNestedMessage: TestAllTypes.NestedMessage;
+  optionalForeignMessage: ForeignMessage;
+  optionalImportMessage: protobuf_unittest_import.ImportMessage;
+  optionalNestedEnum: number;
+  optionalForeignEnum: number;
   optionalStringPiece: string;
   optionalCord: string;
-  optionalPublicImportMessage: null;
-  optionalLazyMessage: null;
-  optionalUnverifiedLazyMessage: null;
-  optionalLazyImportMessage: null;
+  optionalPublicImportMessage: protobuf_unittest_import.PublicImportMessage;
+  optionalLazyMessage: TestAllTypes.NestedMessage;
+  optionalUnverifiedLazyMessage: TestAllTypes.NestedMessage;
+  optionalLazyImportMessage: protobuf_unittest_import.ImportMessage;
   repeatedInt32: number;
   repeatedInt64: string;
   repeatedUint32: number;
@@ -62,16 +62,16 @@ export interface ITestAllTypesObj {
   repeatedBool: boolean;
   repeatedString: string;
   repeatedBytes: string;
-  repeatedNestedMessage: null;
-  repeatedForeignMessage: null;
-  repeatedImportMessage: null;
-  repeatedNestedEnum: null;
-  repeatedForeignEnum: null;
+  repeatedNestedMessage: TestAllTypes.NestedMessage;
+  repeatedForeignMessage: ForeignMessage;
+  repeatedImportMessage: protobuf_unittest_import.ImportMessage;
+  repeatedNestedEnum: number;
+  repeatedForeignEnum: number;
   repeatedStringPiece: string;
   repeatedCord: string;
-  repeatedLazyMessage: null;
+  repeatedLazyMessage: TestAllTypes.NestedMessage;
   oneofUint32?: number;
-  oneofNestedMessage?: null;
+  oneofNestedMessage?: TestAllTypes.NestedMessage;
   oneofString?: string;
   oneofBytes?: string;
 }
@@ -91,18 +91,18 @@ export interface ITestAllTypes {
   optionalDouble: number;
   optionalBool: boolean;
   optionalString: string;
-  optionalBytes: Uint8Array;
-  optionalNestedMessage: null;
-  optionalForeignMessage: null;
-  optionalImportMessage: null;
-  optionalNestedEnum: null;
-  optionalForeignEnum: null;
+  optionalBytes: Uint8Array | Buffer;
+  optionalNestedMessage: TestAllTypes.NestedMessage;
+  optionalForeignMessage: ForeignMessage;
+  optionalImportMessage: protobuf_unittest_import.ImportMessage;
+  optionalNestedEnum: number;
+  optionalForeignEnum: number;
   optionalStringPiece: string;
   optionalCord: string;
-  optionalPublicImportMessage: null;
-  optionalLazyMessage: null;
-  optionalUnverifiedLazyMessage: null;
-  optionalLazyImportMessage: null;
+  optionalPublicImportMessage: protobuf_unittest_import.PublicImportMessage;
+  optionalLazyMessage: TestAllTypes.NestedMessage;
+  optionalUnverifiedLazyMessage: TestAllTypes.NestedMessage;
+  optionalLazyImportMessage: protobuf_unittest_import.ImportMessage;
   repeatedInt32: number;
   repeatedInt64: pjs.Long;
   repeatedUint32: number;
@@ -117,48 +117,54 @@ export interface ITestAllTypes {
   repeatedDouble: number;
   repeatedBool: boolean;
   repeatedString: string;
-  repeatedBytes: Uint8Array;
-  repeatedNestedMessage: null;
-  repeatedForeignMessage: null;
-  repeatedImportMessage: null;
-  repeatedNestedEnum: null;
-  repeatedForeignEnum: null;
+  repeatedBytes: Uint8Array | Buffer;
+  repeatedNestedMessage: TestAllTypes.NestedMessage;
+  repeatedForeignMessage: ForeignMessage;
+  repeatedImportMessage: protobuf_unittest_import.ImportMessage;
+  repeatedNestedEnum: number;
+  repeatedForeignEnum: number;
   repeatedStringPiece: string;
   repeatedCord: string;
-  repeatedLazyMessage: null;
+  repeatedLazyMessage: TestAllTypes.NestedMessage;
   oneofUint32?: number;
-  oneofNestedMessage?: null;
+  oneofNestedMessage?: TestAllTypes.NestedMessage;
   oneofString?: string;
-  oneofBytes?: Uint8Array;
+  oneofBytes?: Uint8Array | Buffer;
 }
 
 export class TestAllTypes implements ITestAllTypes {
   optionalInt32: number = 0;
-  optionalInt64: pjs.Long = 0n;
+  optionalInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
   optionalUint32: number = 0;
-  optionalUint64: pjs.Long = 0n;
+  optionalUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
   optionalSint32: number = 0;
-  optionalSint64: pjs.Long = 0n;
+  optionalSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
   optionalFixed32: number = 0;
-  optionalFixed64: pjs.Long = 0n;
+  optionalFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
   optionalSfixed32: number = 0;
-  optionalSfixed64: pjs.Long = 0n;
+  optionalSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
   optionalFloat: number = 0;
   optionalDouble: number = 0;
   optionalBool: boolean = false;
   optionalString: string = "";
-  optionalBytes: Uint8Array = new Uint8Array();
-  optionalNestedMessage: null = null;
-  optionalForeignMessage: null = null;
-  optionalImportMessage: null = null;
-  optionalNestedEnum: null = null;
-  optionalForeignEnum: null = null;
+  optionalBytes: Uint8Array | Buffer = pjs.util.newBuffer(0);
+  optionalNestedMessage: TestAllTypes.NestedMessage =
+    new TestAllTypes.NestedMessage();
+  optionalForeignMessage: ForeignMessage = new ForeignMessage();
+  optionalImportMessage: protobuf_unittest_import.ImportMessage =
+    new unittest_import_models.protobuf_unittest_import.ImportMessage();
+  optionalNestedEnum: number = TestAllTypes.NestedEnum.ZERO;
+  optionalForeignEnum: number = ForeignEnum.FOREIGN_ZERO;
   optionalStringPiece: string = "";
   optionalCord: string = "";
-  optionalPublicImportMessage: null = null;
-  optionalLazyMessage: null = null;
-  optionalUnverifiedLazyMessage: null = null;
-  optionalLazyImportMessage: null = null;
+  optionalPublicImportMessage: protobuf_unittest_import.PublicImportMessage =
+    new unittest_import_public_models.protobuf_unittest_import.PublicImportMessage();
+  optionalLazyMessage: TestAllTypes.NestedMessage =
+    new TestAllTypes.NestedMessage();
+  optionalUnverifiedLazyMessage: TestAllTypes.NestedMessage =
+    new TestAllTypes.NestedMessage();
+  optionalLazyImportMessage: protobuf_unittest_import.ImportMessage =
+    new unittest_import_models.protobuf_unittest_import.ImportMessage();
   repeatedInt32: number = [];
   repeatedInt64: pjs.Long = [];
   repeatedUint32: number = [];
@@ -173,19 +179,80 @@ export class TestAllTypes implements ITestAllTypes {
   repeatedDouble: number = [];
   repeatedBool: boolean = [];
   repeatedString: string = [];
-  repeatedBytes: Uint8Array = [];
-  repeatedNestedMessage: null = [];
-  repeatedForeignMessage: null = [];
-  repeatedImportMessage: null = [];
-  repeatedNestedEnum: null = [];
-  repeatedForeignEnum: null = [];
+  repeatedBytes: Uint8Array | Buffer = [];
+  repeatedNestedMessage: TestAllTypes.NestedMessage = [];
+  repeatedForeignMessage: ForeignMessage = [];
+  repeatedImportMessage: protobuf_unittest_import.ImportMessage = [];
+  repeatedNestedEnum: number = [];
+  repeatedForeignEnum: number = [];
   repeatedStringPiece: string = [];
   repeatedCord: string = [];
-  repeatedLazyMessage: null = [];
+  repeatedLazyMessage: TestAllTypes.NestedMessage = [];
   oneofUint32?: number = 0;
-  oneofNestedMessage?: null = null;
+  oneofNestedMessage?: TestAllTypes.NestedMessage =
+    new TestAllTypes.NestedMessage();
   oneofString?: string = "";
-  oneofBytes?: Uint8Array = new Uint8Array();
+  oneofBytes?: Uint8Array | Buffer = pjs.util.newBuffer(0);
+
+  public static fields = [
+    "optionalInt32",
+    "optionalInt64",
+    "optionalUint32",
+    "optionalUint64",
+    "optionalSint32",
+    "optionalSint64",
+    "optionalFixed32",
+    "optionalFixed64",
+    "optionalSfixed32",
+    "optionalSfixed64",
+    "optionalFloat",
+    "optionalDouble",
+    "optionalBool",
+    "optionalString",
+    "optionalBytes",
+    "optionalNestedMessage",
+    "optionalForeignMessage",
+    "optionalImportMessage",
+    "optionalNestedEnum",
+    "optionalForeignEnum",
+    "optionalStringPiece",
+    "optionalCord",
+    "optionalPublicImportMessage",
+    "optionalLazyMessage",
+    "optionalUnverifiedLazyMessage",
+    "optionalLazyImportMessage",
+    "repeatedInt32",
+    "repeatedInt64",
+    "repeatedUint32",
+    "repeatedUint64",
+    "repeatedSint32",
+    "repeatedSint64",
+    "repeatedFixed32",
+    "repeatedFixed64",
+    "repeatedSfixed32",
+    "repeatedSfixed64",
+    "repeatedFloat",
+    "repeatedDouble",
+    "repeatedBool",
+    "repeatedString",
+    "repeatedBytes",
+    "repeatedNestedMessage",
+    "repeatedForeignMessage",
+    "repeatedImportMessage",
+    "repeatedNestedEnum",
+    "repeatedForeignEnum",
+    "repeatedStringPiece",
+    "repeatedCord",
+    "repeatedLazyMessage",
+    "oneofUint32",
+    "oneofNestedMessage",
+    "oneofString",
+    "oneofBytes",
+  ];
+
+  public get fields() {
+    return TestAllTypes.fields;
+  }
 
   constructor(obj?: Partial<ITestAllTypes>) {
     if (!obj) return;
@@ -362,7 +429,7 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // int64 optional_int64 = 2
-    if (m.optionalInt64 !== 0n) {
+    if (m.optionalInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(16);
       w.int64(m.optionalInt64);
     }
@@ -374,7 +441,7 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // uint64 optional_uint64 = 4
-    if (m.optionalUint64 !== 0n) {
+    if (m.optionalUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(32);
       w.uint64(m.optionalUint64);
     }
@@ -386,7 +453,7 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // sint64 optional_sint64 = 6
-    if (m.optionalSint64 !== 0n) {
+    if (m.optionalSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(48);
       w.sint64(m.optionalSint64);
     }
@@ -398,7 +465,7 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // fixed64 optional_fixed64 = 8
-    if (m.optionalFixed64 !== 0n) {
+    if (m.optionalFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(65);
       w.fixed64(m.optionalFixed64);
     }
@@ -410,7 +477,7 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // sfixed64 optional_sfixed64 = 10
-    if (m.optionalSfixed64 !== 0n) {
+    if (m.optionalSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(81);
       w.sfixed64(m.optionalSfixed64);
     }
@@ -440,39 +507,42 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // bytes optional_bytes = 15
-    if (m.optionalBytes !== new Uint8Array()) {
+    if (m.optionalBytes !== pjs.util.newBuffer(0)) {
       w.uint32(122);
       w.bytes(m.optionalBytes);
     }
 
     // TestAllTypes.NestedMessage optional_nested_message = 18
-    if (m.optionalNestedMessage !== null) {
+    if (m.optionalNestedMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(146);
-      m.optionalNestedMessage.encode(writer);
+      w.TestAllTypes.NestedMessage(m.optionalNestedMessage);
     }
 
     // ForeignMessage optional_foreign_message = 19
-    if (m.optionalForeignMessage !== null) {
+    if (m.optionalForeignMessage !== new ForeignMessage()) {
       w.uint32(154);
-      m.optionalForeignMessage.encode(writer);
+      w.ForeignMessage(m.optionalForeignMessage);
     }
 
     // protobuf_unittest_import.ImportMessage optional_import_message = 20
-    if (m.optionalImportMessage !== null) {
+    if (
+      m.optionalImportMessage !==
+      new unittest_import_models.protobuf_unittest_import.ImportMessage()
+    ) {
       w.uint32(162);
-      m.optionalImportMessage.encode(writer);
+      w.protobuf_unittest_import.ImportMessage(m.optionalImportMessage);
     }
 
     // TestAllTypes.NestedEnum optional_nested_enum = 21
-    if (m.optionalNestedEnum !== null) {
-      w.uint32(170);
-      m.optionalNestedEnum.encode(writer);
+    if (m.optionalNestedEnum !== TestAllTypes.NestedEnum.ZERO) {
+      w.uint32(168);
+      w.uint32(m.optionalNestedEnum);
     }
 
     // ForeignEnum optional_foreign_enum = 22
-    if (m.optionalForeignEnum !== null) {
-      w.uint32(178);
-      m.optionalForeignEnum.encode(writer);
+    if (m.optionalForeignEnum !== ForeignEnum.FOREIGN_ZERO) {
+      w.uint32(176);
+      w.uint32(m.optionalForeignEnum);
     }
 
     // string optional_string_piece = 24
@@ -488,27 +558,35 @@ export class TestAllTypes implements ITestAllTypes {
     }
 
     // protobuf_unittest_import.PublicImportMessage optional_public_import_message = 26
-    if (m.optionalPublicImportMessage !== null) {
+    if (
+      m.optionalPublicImportMessage !==
+      new unittest_import_public_models.protobuf_unittest_import.PublicImportMessage()
+    ) {
       w.uint32(210);
-      m.optionalPublicImportMessage.encode(writer);
+      w.protobuf_unittest_import.PublicImportMessage(
+        m.optionalPublicImportMessage
+      );
     }
 
     // TestAllTypes.NestedMessage optional_lazy_message = 27
-    if (m.optionalLazyMessage !== null) {
+    if (m.optionalLazyMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(218);
-      m.optionalLazyMessage.encode(writer);
+      w.TestAllTypes.NestedMessage(m.optionalLazyMessage);
     }
 
     // TestAllTypes.NestedMessage optional_unverified_lazy_message = 28
-    if (m.optionalUnverifiedLazyMessage !== null) {
+    if (m.optionalUnverifiedLazyMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(226);
-      m.optionalUnverifiedLazyMessage.encode(writer);
+      w.TestAllTypes.NestedMessage(m.optionalUnverifiedLazyMessage);
     }
 
     // protobuf_unittest_import.ImportMessage optional_lazy_import_message = 115
-    if (m.optionalLazyImportMessage !== null) {
+    if (
+      m.optionalLazyImportMessage !==
+      new unittest_import_models.protobuf_unittest_import.ImportMessage()
+    ) {
       w.uint32(922);
-      m.optionalLazyImportMessage.encode(writer);
+      w.protobuf_unittest_import.ImportMessage(m.optionalLazyImportMessage);
     }
 
     // int32 repeated_int32 = 31
@@ -604,31 +682,31 @@ export class TestAllTypes implements ITestAllTypes {
     // TestAllTypes.NestedMessage repeated_nested_message = 48
     if (m.repeatedNestedMessage !== []) {
       w.uint32(386);
-      m.repeatedNestedMessage.encode(writer);
+      w.TestAllTypes.NestedMessage(m.repeatedNestedMessage);
     }
 
     // ForeignMessage repeated_foreign_message = 49
     if (m.repeatedForeignMessage !== []) {
       w.uint32(394);
-      m.repeatedForeignMessage.encode(writer);
+      w.ForeignMessage(m.repeatedForeignMessage);
     }
 
     // protobuf_unittest_import.ImportMessage repeated_import_message = 50
     if (m.repeatedImportMessage !== []) {
       w.uint32(402);
-      m.repeatedImportMessage.encode(writer);
+      w.protobuf_unittest_import.ImportMessage(m.repeatedImportMessage);
     }
 
     // TestAllTypes.NestedEnum repeated_nested_enum = 51
     if (m.repeatedNestedEnum !== []) {
-      w.uint32(410);
-      m.repeatedNestedEnum.encode(writer);
+      w.uint32(408);
+      w.uint32(m.repeatedNestedEnum);
     }
 
     // ForeignEnum repeated_foreign_enum = 52
     if (m.repeatedForeignEnum !== []) {
-      w.uint32(418);
-      m.repeatedForeignEnum.encode(writer);
+      w.uint32(416);
+      w.uint32(m.repeatedForeignEnum);
     }
 
     // string repeated_string_piece = 54
@@ -646,7 +724,7 @@ export class TestAllTypes implements ITestAllTypes {
     // TestAllTypes.NestedMessage repeated_lazy_message = 57
     if (m.repeatedLazyMessage !== []) {
       w.uint32(458);
-      m.repeatedLazyMessage.encode(writer);
+      w.TestAllTypes.NestedMessage(m.repeatedLazyMessage);
     }
 
     // oneof uint32 oneof_uint32 = 111
@@ -743,32 +821,27 @@ export class TestAllTypes implements ITestAllTypes {
 
         // TestAllTypes.NestedMessage optional_nested_message = 18
         case 146:
-          m.optionalNestedMessage =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes.NestedMessage;
+          m.optionalNestedMessage = r.TestAllTypes.NestedMessage();
           continue;
 
         // ForeignMessage optional_foreign_message = 19
         case 154:
-          m.optionalForeignMessage =
-            unittest_proto3_arena_models.proto3_arena_unittest.ForeignMessage;
+          m.optionalForeignMessage = r.ForeignMessage();
           continue;
 
         // protobuf_unittest_import.ImportMessage optional_import_message = 20
         case 162:
-          m.optionalImportMessage =
-            unittest_import_models.protobuf_unittest_import.ImportMessage;
+          m.optionalImportMessage = r.protobuf_unittest_import.ImportMessage();
           continue;
 
         // TestAllTypes.NestedEnum optional_nested_enum = 21
-        case 170:
-          m.optionalNestedEnum =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes.NestedEnum;
+        case 168:
+          m.optionalNestedEnum = r.uint32();
           continue;
 
         // ForeignEnum optional_foreign_enum = 22
-        case 178:
-          m.optionalForeignEnum =
-            unittest_proto3_arena_models.proto3_arena_unittest.ForeignEnum;
+        case 176:
+          m.optionalForeignEnum = r.uint32();
           continue;
 
         // string optional_string_piece = 24
@@ -784,195 +857,230 @@ export class TestAllTypes implements ITestAllTypes {
         // protobuf_unittest_import.PublicImportMessage optional_public_import_message = 26
         case 210:
           m.optionalPublicImportMessage =
-            unittest_import_public_models.protobuf_unittest_import.PublicImportMessage;
+            r.protobuf_unittest_import.PublicImportMessage();
           continue;
 
         // TestAllTypes.NestedMessage optional_lazy_message = 27
         case 218:
-          m.optionalLazyMessage =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes.NestedMessage;
+          m.optionalLazyMessage = r.TestAllTypes.NestedMessage();
           continue;
 
         // TestAllTypes.NestedMessage optional_unverified_lazy_message = 28
         case 226:
-          m.optionalUnverifiedLazyMessage =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes.NestedMessage;
+          m.optionalUnverifiedLazyMessage = r.TestAllTypes.NestedMessage();
           continue;
 
         // protobuf_unittest_import.ImportMessage optional_lazy_import_message = 115
         case 922:
           m.optionalLazyImportMessage =
-            unittest_import_models.protobuf_unittest_import.ImportMessage;
+            r.protobuf_unittest_import.ImportMessage();
           continue;
 
         // repeated int32 repeated_int32 = 31
         case 248:
-          const repeatedInt32Value = r.int32();
+          {
+            const value = r.int32();
 
-          m.repeatedInt32.push(repeatedInt32Value);
+            m.repeatedInt32.push(value);
+          }
           continue;
 
         // repeated int64 repeated_int64 = 32
         case 256:
-          const repeatedInt64Value = r.int64();
+          {
+            const value = r.int64();
 
-          m.repeatedInt64.push(repeatedInt64Value);
+            m.repeatedInt64.push(value);
+          }
           continue;
 
         // repeated uint32 repeated_uint32 = 33
         case 264:
-          const repeatedUint32Value = r.uint32();
+          {
+            const value = r.uint32();
 
-          m.repeatedUint32.push(repeatedUint32Value);
+            m.repeatedUint32.push(value);
+          }
           continue;
 
         // repeated uint64 repeated_uint64 = 34
         case 272:
-          const repeatedUint64Value = r.uint64();
+          {
+            const value = r.uint64();
 
-          m.repeatedUint64.push(repeatedUint64Value);
+            m.repeatedUint64.push(value);
+          }
           continue;
 
         // repeated sint32 repeated_sint32 = 35
         case 280:
-          const repeatedSint32Value = r.sint32();
+          {
+            const value = r.sint32();
 
-          m.repeatedSint32.push(repeatedSint32Value);
+            m.repeatedSint32.push(value);
+          }
           continue;
 
         // repeated sint64 repeated_sint64 = 36
         case 288:
-          const repeatedSint64Value = r.sint64();
+          {
+            const value = r.sint64();
 
-          m.repeatedSint64.push(repeatedSint64Value);
+            m.repeatedSint64.push(value);
+          }
           continue;
 
         // repeated fixed32 repeated_fixed32 = 37
         case 301:
-          const repeatedFixed32Value = r.fixed32();
+          {
+            const value = r.fixed32();
 
-          m.repeatedFixed32.push(repeatedFixed32Value);
+            m.repeatedFixed32.push(value);
+          }
           continue;
 
         // repeated fixed64 repeated_fixed64 = 38
         case 305:
-          const repeatedFixed64Value = r.fixed64();
+          {
+            const value = r.fixed64();
 
-          m.repeatedFixed64.push(repeatedFixed64Value);
+            m.repeatedFixed64.push(value);
+          }
           continue;
 
         // repeated sfixed32 repeated_sfixed32 = 39
         case 317:
-          const repeatedSfixed32Value = r.sfixed32();
+          {
+            const value = r.sfixed32();
 
-          m.repeatedSfixed32.push(repeatedSfixed32Value);
+            m.repeatedSfixed32.push(value);
+          }
           continue;
 
         // repeated sfixed64 repeated_sfixed64 = 40
         case 321:
-          const repeatedSfixed64Value = r.sfixed64();
+          {
+            const value = r.sfixed64();
 
-          m.repeatedSfixed64.push(repeatedSfixed64Value);
+            m.repeatedSfixed64.push(value);
+          }
           continue;
 
         // repeated float repeated_float = 41
         case 333:
-          const repeatedFloatValue = r.float();
+          {
+            const value = r.float();
 
-          m.repeatedFloat.push(repeatedFloatValue);
+            m.repeatedFloat.push(value);
+          }
           continue;
 
         // repeated double repeated_double = 42
         case 337:
-          const repeatedDoubleValue = r.double();
+          {
+            const value = r.double();
 
-          m.repeatedDouble.push(repeatedDoubleValue);
+            m.repeatedDouble.push(value);
+          }
           continue;
 
         // repeated bool repeated_bool = 43
         case 344:
-          const repeatedBoolValue = r.bool();
+          {
+            const value = r.bool();
 
-          m.repeatedBool.push(repeatedBoolValue);
+            m.repeatedBool.push(value);
+          }
           continue;
 
         // repeated string repeated_string = 44
         case 354:
-          const repeatedStringValue = r.string();
+          {
+            const value = r.string();
 
-          m.repeatedString.push(repeatedStringValue);
+            m.repeatedString.push(value);
+          }
           continue;
 
         // repeated bytes repeated_bytes = 45
         case 362:
-          const repeatedBytesValue = r.bytes();
+          {
+            const value = r.bytes();
 
-          m.repeatedBytes.push(repeatedBytesValue);
+            m.repeatedBytes.push(value);
+          }
           continue;
 
         // repeated TestAllTypes.NestedMessage repeated_nested_message = 48
         case 386:
-          const repeatedNestedMessageValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes
-              .NestedMessage;
+          {
+            const value = r.TestAllTypes.NestedMessage();
 
-          m.repeatedNestedMessage.push(repeatedNestedMessageValue);
+            m.repeatedNestedMessage.push(value);
+          }
           continue;
 
         // repeated ForeignMessage repeated_foreign_message = 49
         case 394:
-          const repeatedForeignMessageValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.ForeignMessage;
+          {
+            const value = r.ForeignMessage();
 
-          m.repeatedForeignMessage.push(repeatedForeignMessageValue);
+            m.repeatedForeignMessage.push(value);
+          }
           continue;
 
         // repeated protobuf_unittest_import.ImportMessage repeated_import_message = 50
         case 402:
-          const repeatedImportMessageValue =
-            unittest_import_models.protobuf_unittest_import.ImportMessage;
+          {
+            const value = r.protobuf_unittest_import.ImportMessage();
 
-          m.repeatedImportMessage.push(repeatedImportMessageValue);
+            m.repeatedImportMessage.push(value);
+          }
           continue;
 
         // repeated TestAllTypes.NestedEnum repeated_nested_enum = 51
-        case 410:
-          const repeatedNestedEnumValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes
-              .NestedEnum;
+        case 408:
+          {
+            const value = r.uint32();
 
-          m.repeatedNestedEnum.push(repeatedNestedEnumValue);
+            m.repeatedNestedEnum.push(value);
+          }
           continue;
 
         // repeated ForeignEnum repeated_foreign_enum = 52
-        case 418:
-          const repeatedForeignEnumValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.ForeignEnum;
+        case 416:
+          {
+            const value = r.uint32();
 
-          m.repeatedForeignEnum.push(repeatedForeignEnumValue);
+            m.repeatedForeignEnum.push(value);
+          }
           continue;
 
         // repeated string repeated_string_piece = 54
         case 434:
-          const repeatedStringPieceValue = r.string();
+          {
+            const value = r.string();
 
-          m.repeatedStringPiece.push(repeatedStringPieceValue);
+            m.repeatedStringPiece.push(value);
+          }
           continue;
 
         // repeated string repeated_cord = 55
         case 442:
-          const repeatedCordValue = r.string();
+          {
+            const value = r.string();
 
-          m.repeatedCord.push(repeatedCordValue);
+            m.repeatedCord.push(value);
+          }
           continue;
 
         // repeated TestAllTypes.NestedMessage repeated_lazy_message = 57
         case 458:
-          const repeatedLazyMessageValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes
-              .NestedMessage;
+          {
+            const value = r.TestAllTypes.NestedMessage();
 
-          m.repeatedLazyMessage.push(repeatedLazyMessageValue);
+            m.repeatedLazyMessage.push(value);
+          }
           continue;
 
         // uint32 oneof_uint32 = 111
@@ -982,8 +1090,7 @@ export class TestAllTypes implements ITestAllTypes {
 
         // TestAllTypes.NestedMessage oneof_nested_message = 112
         case 898:
-          m.oneofNestedMessage =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes.NestedMessage;
+          m.oneofNestedMessage = r.TestAllTypes.NestedMessage();
           continue;
 
         // string oneof_string = 113
@@ -1001,9 +1108,143 @@ export class TestAllTypes implements ITestAllTypes {
     return m;
   }
 
-  public static toJSON(m: ITestAllTypes): ITestAllTypesObj {}
+  public static toJSON(m: ITestAllTypes): ITestAllTypesObj {
+    return {
+      optionalInt32: m.optionalInt32,
+      optionalInt64: m.optionalInt64.toString(),
+      optionalUint32: m.optionalUint32,
+      optionalUint64: m.optionalUint64.toString(),
+      optionalSint32: m.optionalSint32,
+      optionalSint64: m.optionalSint64.toString(),
+      optionalFixed32: m.optionalFixed32,
+      optionalFixed64: m.optionalFixed64.toString(),
+      optionalSfixed32: m.optionalSfixed32,
+      optionalSfixed64: m.optionalSfixed64.toString(),
+      optionalFloat: m.optionalFloat,
+      optionalDouble: m.optionalDouble,
+      optionalBool: m.optionalBool,
+      optionalString: m.optionalString,
+      optionalBytes: pjs.util.base64.encode(
+        m.optionalBytes,
+        0,
+        m.optionalBytes.length
+      ),
+      optionalNestedMessage: m.optionalNestedMessage.toJSON(),
+      optionalForeignMessage: m.optionalForeignMessage.toJSON(),
+      optionalImportMessage: m.optionalImportMessage.toJSON(),
+      optionalNestedEnum: TestAllTypes.NestedEnum[m.optionalNestedEnum],
+      optionalForeignEnum: ForeignEnum[m.optionalForeignEnum],
+      optionalStringPiece: m.optionalStringPiece,
+      optionalCord: m.optionalCord,
+      optionalPublicImportMessage: m.optionalPublicImportMessage.toJSON(),
+      optionalLazyMessage: m.optionalLazyMessage.toJSON(),
+      optionalUnverifiedLazyMessage: m.optionalUnverifiedLazyMessage.toJSON(),
+      optionalLazyImportMessage: m.optionalLazyImportMessage.toJSON(),
+      repeatedInt32: m.repeatedInt32,
+      repeatedInt64: m.repeatedInt64.toString(),
+      repeatedUint32: m.repeatedUint32,
+      repeatedUint64: m.repeatedUint64.toString(),
+      repeatedSint32: m.repeatedSint32,
+      repeatedSint64: m.repeatedSint64.toString(),
+      repeatedFixed32: m.repeatedFixed32,
+      repeatedFixed64: m.repeatedFixed64.toString(),
+      repeatedSfixed32: m.repeatedSfixed32,
+      repeatedSfixed64: m.repeatedSfixed64.toString(),
+      repeatedFloat: m.repeatedFloat,
+      repeatedDouble: m.repeatedDouble,
+      repeatedBool: m.repeatedBool,
+      repeatedString: m.repeatedString,
+      repeatedBytes: pjs.util.base64.encode(
+        m.repeatedBytes,
+        0,
+        m.repeatedBytes.length
+      ),
+      repeatedNestedMessage: m.repeatedNestedMessage.toJSON(),
+      repeatedForeignMessage: m.repeatedForeignMessage.toJSON(),
+      repeatedImportMessage: m.repeatedImportMessage.toJSON(),
+      repeatedNestedEnum: TestAllTypes.NestedEnum[m.repeatedNestedEnum],
+      repeatedForeignEnum: ForeignEnum[m.repeatedForeignEnum],
+      repeatedStringPiece: m.repeatedStringPiece,
+      repeatedCord: m.repeatedCord,
+      repeatedLazyMessage: m.repeatedLazyMessage.toJSON(),
+      oneofUint32: m.oneofUint32,
+      oneofNestedMessage: m.oneofNestedMessage.toJSON(),
+      oneofString: m.oneofString,
+      oneofBytes: pjs.util.base64.encode(m.oneofBytes, 0, m.oneofBytes.length),
+    };
+  }
 
-  public static fromJSON(obj: ITestAllTypesObj): ITestAllTypes {}
+  public static fromJSON(obj: ITestAllTypesObj): ITestAllTypes {
+    const m = new TestAllTypes();
+
+    m.optionalInt32 = obj.optionalInt32;
+    m.optionalInt64 = pjs.util.Long.fromValue(obj.optionalInt64, false);
+    m.optionalUint32 = obj.optionalUint32;
+    m.optionalUint64 = pjs.util.Long.fromValue(obj.optionalUint64, true);
+    m.optionalSint32 = obj.optionalSint32;
+    m.optionalSint64 = pjs.util.Long.fromValue(obj.optionalSint64, false);
+    m.optionalFixed32 = obj.optionalFixed32;
+    m.optionalFixed64 = pjs.util.Long.fromValue(obj.optionalFixed64, true);
+    m.optionalSfixed32 = obj.optionalSfixed32;
+    m.optionalSfixed64 = pjs.util.Long.fromValue(obj.optionalSfixed64, false);
+    m.optionalFloat = obj.optionalFloat;
+    m.optionalDouble = obj.optionalDouble;
+    m.optionalBool = obj.optionalBool;
+    m.optionalString = obj.optionalString;
+    {
+      const tmpBuffer = [];
+      pjs.util.base64.decode(obj.optionalBytes, tmpBuffer, 0);
+      m.optionalBytes = pjs.util.Buffer.from(tmpBuffer);
+    }
+    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
+    m.optionalForeignMessage.fromJSON(obj.optionalForeignMessage);
+    m.optionalImportMessage.fromJSON(obj.optionalImportMessage);
+    m.optionalNestedEnum = TestAllTypes.NestedEnum[obj.optionalNestedEnum];
+    m.optionalForeignEnum = ForeignEnum[obj.optionalForeignEnum];
+    m.optionalStringPiece = obj.optionalStringPiece;
+    m.optionalCord = obj.optionalCord;
+    m.optionalPublicImportMessage.fromJSON(obj.optionalPublicImportMessage);
+    m.optionalLazyMessage.fromJSON(obj.optionalLazyMessage);
+    m.optionalUnverifiedLazyMessage.fromJSON(obj.optionalUnverifiedLazyMessage);
+    m.optionalLazyImportMessage.fromJSON(obj.optionalLazyImportMessage);
+    m.repeatedInt32 = obj.repeatedInt32;
+    m.repeatedInt64 = pjs.util.Long.fromValue(obj.repeatedInt64, false);
+    m.repeatedUint32 = obj.repeatedUint32;
+    m.repeatedUint64 = pjs.util.Long.fromValue(obj.repeatedUint64, true);
+    m.repeatedSint32 = obj.repeatedSint32;
+    m.repeatedSint64 = pjs.util.Long.fromValue(obj.repeatedSint64, false);
+    m.repeatedFixed32 = obj.repeatedFixed32;
+    m.repeatedFixed64 = pjs.util.Long.fromValue(obj.repeatedFixed64, true);
+    m.repeatedSfixed32 = obj.repeatedSfixed32;
+    m.repeatedSfixed64 = pjs.util.Long.fromValue(obj.repeatedSfixed64, false);
+    m.repeatedFloat = obj.repeatedFloat;
+    m.repeatedDouble = obj.repeatedDouble;
+    m.repeatedBool = obj.repeatedBool;
+    m.repeatedString = obj.repeatedString;
+    {
+      const tmpBuffer = [];
+      pjs.util.base64.decode(obj.repeatedBytes, tmpBuffer, 0);
+      m.repeatedBytes = pjs.util.Buffer.from(tmpBuffer);
+    }
+    m.repeatedNestedMessage.fromJSON(obj.repeatedNestedMessage);
+    m.repeatedForeignMessage.fromJSON(obj.repeatedForeignMessage);
+    m.repeatedImportMessage.fromJSON(obj.repeatedImportMessage);
+    m.repeatedNestedEnum = TestAllTypes.NestedEnum[obj.repeatedNestedEnum];
+    m.repeatedForeignEnum = ForeignEnum[obj.repeatedForeignEnum];
+    m.repeatedStringPiece = obj.repeatedStringPiece;
+    m.repeatedCord = obj.repeatedCord;
+    m.repeatedLazyMessage.fromJSON(obj.repeatedLazyMessage);
+    m.oneofUint32 = obj.oneofUint32;
+    m.oneofNestedMessage.fromJSON(obj.oneofNestedMessage);
+    m.oneofString = obj.oneofString;
+    {
+      const tmpBuffer = [];
+      pjs.util.base64.decode(obj.oneofBytes, tmpBuffer, 0);
+      m.oneofBytes = pjs.util.Buffer.from(tmpBuffer);
+    }
+
+    return m;
+  }
 
   clone(): TestAllTypes {
     return new TestAllTypes(this);
@@ -1029,6 +1270,12 @@ export namespace TestAllTypes {
 
   export class NestedMessage implements INestedMessage {
     bb: number = 0;
+
+    public static fields = ["bb"];
+
+    public get fields() {
+      return NestedMessage.fields;
+    }
 
     constructor(obj?: Partial<INestedMessage>) {
       if (!obj) return;
@@ -1067,9 +1314,19 @@ export namespace TestAllTypes {
       return m;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {}
+    public static toJSON(m: INestedMessage): INestedMessageObj {
+      return {
+        bb: m.bb,
+      };
+    }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {}
+    public static fromJSON(obj: INestedMessageObj): INestedMessage {
+      const m = new NestedMessage();
+
+      m.bb = obj.bb;
+
+      return m;
+    }
 
     clone(): NestedMessage {
       return new NestedMessage(this);
@@ -1098,7 +1355,7 @@ export interface ITestPackedTypesObj {
   packedFloat: number;
   packedDouble: number;
   packedBool: boolean;
-  packedEnum: null;
+  packedEnum: number;
 }
 
 export interface ITestPackedTypes {
@@ -1115,7 +1372,7 @@ export interface ITestPackedTypes {
   packedFloat: number;
   packedDouble: number;
   packedBool: boolean;
-  packedEnum: null;
+  packedEnum: number;
 }
 
 export class TestPackedTypes implements ITestPackedTypes {
@@ -1132,7 +1389,28 @@ export class TestPackedTypes implements ITestPackedTypes {
   packedFloat: number = [];
   packedDouble: number = [];
   packedBool: boolean = [];
-  packedEnum: null = [];
+  packedEnum: number = [];
+
+  public static fields = [
+    "packedInt32",
+    "packedInt64",
+    "packedUint32",
+    "packedUint64",
+    "packedSint32",
+    "packedSint64",
+    "packedFixed32",
+    "packedFixed64",
+    "packedSfixed32",
+    "packedSfixed64",
+    "packedFloat",
+    "packedDouble",
+    "packedBool",
+    "packedEnum",
+  ];
+
+  public get fields() {
+    return TestPackedTypes.fields;
+  }
 
   constructor(obj?: Partial<ITestPackedTypes>) {
     if (!obj) return;
@@ -1265,8 +1543,8 @@ export class TestPackedTypes implements ITestPackedTypes {
 
     // ForeignEnum packed_enum = 103
     if (m.packedEnum !== []) {
-      w.uint32(826);
-      m.packedEnum.encode(writer);
+      w.uint32(824);
+      w.uint32(m.packedEnum);
     }
 
     return w.finish();
@@ -1280,101 +1558,128 @@ export class TestPackedTypes implements ITestPackedTypes {
       switch (tag) {
         // repeated int32 packed_int32 = 90
         case 720:
-          const packedInt32Value = r.int32();
+          {
+            const value = r.int32();
 
-          m.packedInt32.push(packedInt32Value);
+            m.packedInt32.push(value);
+          }
           continue;
 
         // repeated int64 packed_int64 = 91
         case 728:
-          const packedInt64Value = r.int64();
+          {
+            const value = r.int64();
 
-          m.packedInt64.push(packedInt64Value);
+            m.packedInt64.push(value);
+          }
           continue;
 
         // repeated uint32 packed_uint32 = 92
         case 736:
-          const packedUint32Value = r.uint32();
+          {
+            const value = r.uint32();
 
-          m.packedUint32.push(packedUint32Value);
+            m.packedUint32.push(value);
+          }
           continue;
 
         // repeated uint64 packed_uint64 = 93
         case 744:
-          const packedUint64Value = r.uint64();
+          {
+            const value = r.uint64();
 
-          m.packedUint64.push(packedUint64Value);
+            m.packedUint64.push(value);
+          }
           continue;
 
         // repeated sint32 packed_sint32 = 94
         case 752:
-          const packedSint32Value = r.sint32();
+          {
+            const value = r.sint32();
 
-          m.packedSint32.push(packedSint32Value);
+            m.packedSint32.push(value);
+          }
           continue;
 
         // repeated sint64 packed_sint64 = 95
         case 760:
-          const packedSint64Value = r.sint64();
+          {
+            const value = r.sint64();
 
-          m.packedSint64.push(packedSint64Value);
+            m.packedSint64.push(value);
+          }
           continue;
 
         // repeated fixed32 packed_fixed32 = 96
         case 773:
-          const packedFixed32Value = r.fixed32();
+          {
+            const value = r.fixed32();
 
-          m.packedFixed32.push(packedFixed32Value);
+            m.packedFixed32.push(value);
+          }
           continue;
 
         // repeated fixed64 packed_fixed64 = 97
         case 777:
-          const packedFixed64Value = r.fixed64();
+          {
+            const value = r.fixed64();
 
-          m.packedFixed64.push(packedFixed64Value);
+            m.packedFixed64.push(value);
+          }
           continue;
 
         // repeated sfixed32 packed_sfixed32 = 98
         case 789:
-          const packedSfixed32Value = r.sfixed32();
+          {
+            const value = r.sfixed32();
 
-          m.packedSfixed32.push(packedSfixed32Value);
+            m.packedSfixed32.push(value);
+          }
           continue;
 
         // repeated sfixed64 packed_sfixed64 = 99
         case 793:
-          const packedSfixed64Value = r.sfixed64();
+          {
+            const value = r.sfixed64();
 
-          m.packedSfixed64.push(packedSfixed64Value);
+            m.packedSfixed64.push(value);
+          }
           continue;
 
         // repeated float packed_float = 100
         case 805:
-          const packedFloatValue = r.float();
+          {
+            const value = r.float();
 
-          m.packedFloat.push(packedFloatValue);
+            m.packedFloat.push(value);
+          }
           continue;
 
         // repeated double packed_double = 101
         case 809:
-          const packedDoubleValue = r.double();
+          {
+            const value = r.double();
 
-          m.packedDouble.push(packedDoubleValue);
+            m.packedDouble.push(value);
+          }
           continue;
 
         // repeated bool packed_bool = 102
         case 816:
-          const packedBoolValue = r.bool();
+          {
+            const value = r.bool();
 
-          m.packedBool.push(packedBoolValue);
+            m.packedBool.push(value);
+          }
           continue;
 
         // repeated ForeignEnum packed_enum = 103
-        case 826:
-          const packedEnumValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.ForeignEnum;
+        case 824:
+          {
+            const value = r.uint32();
 
-          m.packedEnum.push(packedEnumValue);
+            m.packedEnum.push(value);
+          }
           continue;
       }
     }
@@ -1382,9 +1687,45 @@ export class TestPackedTypes implements ITestPackedTypes {
     return m;
   }
 
-  public static toJSON(m: ITestPackedTypes): ITestPackedTypesObj {}
+  public static toJSON(m: ITestPackedTypes): ITestPackedTypesObj {
+    return {
+      packedInt32: m.packedInt32,
+      packedInt64: m.packedInt64.toString(),
+      packedUint32: m.packedUint32,
+      packedUint64: m.packedUint64.toString(),
+      packedSint32: m.packedSint32,
+      packedSint64: m.packedSint64.toString(),
+      packedFixed32: m.packedFixed32,
+      packedFixed64: m.packedFixed64.toString(),
+      packedSfixed32: m.packedSfixed32,
+      packedSfixed64: m.packedSfixed64.toString(),
+      packedFloat: m.packedFloat,
+      packedDouble: m.packedDouble,
+      packedBool: m.packedBool,
+      packedEnum: ForeignEnum[m.packedEnum],
+    };
+  }
 
-  public static fromJSON(obj: ITestPackedTypesObj): ITestPackedTypes {}
+  public static fromJSON(obj: ITestPackedTypesObj): ITestPackedTypes {
+    const m = new TestPackedTypes();
+
+    m.packedInt32 = obj.packedInt32;
+    m.packedInt64 = pjs.util.Long.fromValue(obj.packedInt64, false);
+    m.packedUint32 = obj.packedUint32;
+    m.packedUint64 = pjs.util.Long.fromValue(obj.packedUint64, true);
+    m.packedSint32 = obj.packedSint32;
+    m.packedSint64 = pjs.util.Long.fromValue(obj.packedSint64, false);
+    m.packedFixed32 = obj.packedFixed32;
+    m.packedFixed64 = pjs.util.Long.fromValue(obj.packedFixed64, true);
+    m.packedSfixed32 = obj.packedSfixed32;
+    m.packedSfixed64 = pjs.util.Long.fromValue(obj.packedSfixed64, false);
+    m.packedFloat = obj.packedFloat;
+    m.packedDouble = obj.packedDouble;
+    m.packedBool = obj.packedBool;
+    m.packedEnum = ForeignEnum[obj.packedEnum];
+
+    return m;
+  }
 
   clone(): TestPackedTypes {
     return new TestPackedTypes(this);
@@ -1412,7 +1753,7 @@ export interface ITestUnpackedTypesObj {
   repeatedFloat: number;
   repeatedDouble: number;
   repeatedBool: boolean;
-  repeatedNestedEnum: null;
+  repeatedNestedEnum: number;
 }
 
 export interface ITestUnpackedTypes {
@@ -1429,7 +1770,7 @@ export interface ITestUnpackedTypes {
   repeatedFloat: number;
   repeatedDouble: number;
   repeatedBool: boolean;
-  repeatedNestedEnum: null;
+  repeatedNestedEnum: number;
 }
 
 export class TestUnpackedTypes implements ITestUnpackedTypes {
@@ -1446,7 +1787,28 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
   repeatedFloat: number = [];
   repeatedDouble: number = [];
   repeatedBool: boolean = [];
-  repeatedNestedEnum: null = [];
+  repeatedNestedEnum: number = [];
+
+  public static fields = [
+    "repeatedInt32",
+    "repeatedInt64",
+    "repeatedUint32",
+    "repeatedUint64",
+    "repeatedSint32",
+    "repeatedSint64",
+    "repeatedFixed32",
+    "repeatedFixed64",
+    "repeatedSfixed32",
+    "repeatedSfixed64",
+    "repeatedFloat",
+    "repeatedDouble",
+    "repeatedBool",
+    "repeatedNestedEnum",
+  ];
+
+  public get fields() {
+    return TestUnpackedTypes.fields;
+  }
 
   constructor(obj?: Partial<ITestUnpackedTypes>) {
     if (!obj) return;
@@ -1579,8 +1941,8 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
 
     // TestAllTypes.NestedEnum repeated_nested_enum = 14
     if (m.repeatedNestedEnum !== []) {
-      w.uint32(114);
-      m.repeatedNestedEnum.encode(writer);
+      w.uint32(112);
+      w.uint32(m.repeatedNestedEnum);
     }
 
     return w.finish();
@@ -1594,102 +1956,128 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
       switch (tag) {
         // repeated int32 repeated_int32 = 1
         case 8:
-          const repeatedInt32Value = r.int32();
+          {
+            const value = r.int32();
 
-          m.repeatedInt32.push(repeatedInt32Value);
+            m.repeatedInt32.push(value);
+          }
           continue;
 
         // repeated int64 repeated_int64 = 2
         case 16:
-          const repeatedInt64Value = r.int64();
+          {
+            const value = r.int64();
 
-          m.repeatedInt64.push(repeatedInt64Value);
+            m.repeatedInt64.push(value);
+          }
           continue;
 
         // repeated uint32 repeated_uint32 = 3
         case 24:
-          const repeatedUint32Value = r.uint32();
+          {
+            const value = r.uint32();
 
-          m.repeatedUint32.push(repeatedUint32Value);
+            m.repeatedUint32.push(value);
+          }
           continue;
 
         // repeated uint64 repeated_uint64 = 4
         case 32:
-          const repeatedUint64Value = r.uint64();
+          {
+            const value = r.uint64();
 
-          m.repeatedUint64.push(repeatedUint64Value);
+            m.repeatedUint64.push(value);
+          }
           continue;
 
         // repeated sint32 repeated_sint32 = 5
         case 40:
-          const repeatedSint32Value = r.sint32();
+          {
+            const value = r.sint32();
 
-          m.repeatedSint32.push(repeatedSint32Value);
+            m.repeatedSint32.push(value);
+          }
           continue;
 
         // repeated sint64 repeated_sint64 = 6
         case 48:
-          const repeatedSint64Value = r.sint64();
+          {
+            const value = r.sint64();
 
-          m.repeatedSint64.push(repeatedSint64Value);
+            m.repeatedSint64.push(value);
+          }
           continue;
 
         // repeated fixed32 repeated_fixed32 = 7
         case 61:
-          const repeatedFixed32Value = r.fixed32();
+          {
+            const value = r.fixed32();
 
-          m.repeatedFixed32.push(repeatedFixed32Value);
+            m.repeatedFixed32.push(value);
+          }
           continue;
 
         // repeated fixed64 repeated_fixed64 = 8
         case 65:
-          const repeatedFixed64Value = r.fixed64();
+          {
+            const value = r.fixed64();
 
-          m.repeatedFixed64.push(repeatedFixed64Value);
+            m.repeatedFixed64.push(value);
+          }
           continue;
 
         // repeated sfixed32 repeated_sfixed32 = 9
         case 77:
-          const repeatedSfixed32Value = r.sfixed32();
+          {
+            const value = r.sfixed32();
 
-          m.repeatedSfixed32.push(repeatedSfixed32Value);
+            m.repeatedSfixed32.push(value);
+          }
           continue;
 
         // repeated sfixed64 repeated_sfixed64 = 10
         case 81:
-          const repeatedSfixed64Value = r.sfixed64();
+          {
+            const value = r.sfixed64();
 
-          m.repeatedSfixed64.push(repeatedSfixed64Value);
+            m.repeatedSfixed64.push(value);
+          }
           continue;
 
         // repeated float repeated_float = 11
         case 93:
-          const repeatedFloatValue = r.float();
+          {
+            const value = r.float();
 
-          m.repeatedFloat.push(repeatedFloatValue);
+            m.repeatedFloat.push(value);
+          }
           continue;
 
         // repeated double repeated_double = 12
         case 97:
-          const repeatedDoubleValue = r.double();
+          {
+            const value = r.double();
 
-          m.repeatedDouble.push(repeatedDoubleValue);
+            m.repeatedDouble.push(value);
+          }
           continue;
 
         // repeated bool repeated_bool = 13
         case 104:
-          const repeatedBoolValue = r.bool();
+          {
+            const value = r.bool();
 
-          m.repeatedBool.push(repeatedBoolValue);
+            m.repeatedBool.push(value);
+          }
           continue;
 
         // repeated TestAllTypes.NestedEnum repeated_nested_enum = 14
-        case 114:
-          const repeatedNestedEnumValue =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes
-              .NestedEnum;
+        case 112:
+          {
+            const value = r.uint32();
 
-          m.repeatedNestedEnum.push(repeatedNestedEnumValue);
+            m.repeatedNestedEnum.push(value);
+          }
           continue;
       }
     }
@@ -1697,9 +2085,45 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
     return m;
   }
 
-  public static toJSON(m: ITestUnpackedTypes): ITestUnpackedTypesObj {}
+  public static toJSON(m: ITestUnpackedTypes): ITestUnpackedTypesObj {
+    return {
+      repeatedInt32: m.repeatedInt32,
+      repeatedInt64: m.repeatedInt64.toString(),
+      repeatedUint32: m.repeatedUint32,
+      repeatedUint64: m.repeatedUint64.toString(),
+      repeatedSint32: m.repeatedSint32,
+      repeatedSint64: m.repeatedSint64.toString(),
+      repeatedFixed32: m.repeatedFixed32,
+      repeatedFixed64: m.repeatedFixed64.toString(),
+      repeatedSfixed32: m.repeatedSfixed32,
+      repeatedSfixed64: m.repeatedSfixed64.toString(),
+      repeatedFloat: m.repeatedFloat,
+      repeatedDouble: m.repeatedDouble,
+      repeatedBool: m.repeatedBool,
+      repeatedNestedEnum: TestAllTypes.NestedEnum[m.repeatedNestedEnum],
+    };
+  }
 
-  public static fromJSON(obj: ITestUnpackedTypesObj): ITestUnpackedTypes {}
+  public static fromJSON(obj: ITestUnpackedTypesObj): ITestUnpackedTypes {
+    const m = new TestUnpackedTypes();
+
+    m.repeatedInt32 = obj.repeatedInt32;
+    m.repeatedInt64 = pjs.util.Long.fromValue(obj.repeatedInt64, false);
+    m.repeatedUint32 = obj.repeatedUint32;
+    m.repeatedUint64 = pjs.util.Long.fromValue(obj.repeatedUint64, true);
+    m.repeatedSint32 = obj.repeatedSint32;
+    m.repeatedSint64 = pjs.util.Long.fromValue(obj.repeatedSint64, false);
+    m.repeatedFixed32 = obj.repeatedFixed32;
+    m.repeatedFixed64 = pjs.util.Long.fromValue(obj.repeatedFixed64, true);
+    m.repeatedSfixed32 = obj.repeatedSfixed32;
+    m.repeatedSfixed64 = pjs.util.Long.fromValue(obj.repeatedSfixed64, false);
+    m.repeatedFloat = obj.repeatedFloat;
+    m.repeatedDouble = obj.repeatedDouble;
+    m.repeatedBool = obj.repeatedBool;
+    m.repeatedNestedEnum = TestAllTypes.NestedEnum[obj.repeatedNestedEnum];
+
+    return m;
+  }
 
   clone(): TestUnpackedTypes {
     return new TestUnpackedTypes(this);
@@ -1714,21 +2138,27 @@ export enum ForeignEnum {
 }
 
 export interface INestedTestAllTypesObj {
-  child: null;
-  payload: null;
-  repeatedChild: null;
+  child: NestedTestAllTypes;
+  payload: TestAllTypes;
+  repeatedChild: NestedTestAllTypes;
 }
 
 export interface INestedTestAllTypes {
-  child: null;
-  payload: null;
-  repeatedChild: null;
+  child: NestedTestAllTypes;
+  payload: TestAllTypes;
+  repeatedChild: NestedTestAllTypes;
 }
 
 export class NestedTestAllTypes implements INestedTestAllTypes {
-  child: null = null;
-  payload: null = null;
-  repeatedChild: null = [];
+  child: NestedTestAllTypes = new NestedTestAllTypes();
+  payload: TestAllTypes = new TestAllTypes();
+  repeatedChild: NestedTestAllTypes = [];
+
+  public static fields = ["child", "payload", "repeatedChild"];
+
+  public get fields() {
+    return NestedTestAllTypes.fields;
+  }
 
   constructor(obj?: Partial<INestedTestAllTypes>) {
     if (!obj) return;
@@ -1749,21 +2179,21 @@ export class NestedTestAllTypes implements INestedTestAllTypes {
     w: pjs.Writer = pjs.Writer.create()
   ): Uint8Array {
     // NestedTestAllTypes child = 1
-    if (m.child !== null) {
+    if (m.child !== new NestedTestAllTypes()) {
       w.uint32(10);
-      m.child.encode(writer);
+      w.NestedTestAllTypes(m.child);
     }
 
     // TestAllTypes payload = 2
-    if (m.payload !== null) {
+    if (m.payload !== new TestAllTypes()) {
       w.uint32(18);
-      m.payload.encode(writer);
+      w.TestAllTypes(m.payload);
     }
 
     // NestedTestAllTypes repeated_child = 3
     if (m.repeatedChild !== []) {
       w.uint32(26);
-      m.repeatedChild.encode(writer);
+      w.NestedTestAllTypes(m.repeatedChild);
     }
 
     return w.finish();
@@ -1777,23 +2207,21 @@ export class NestedTestAllTypes implements INestedTestAllTypes {
       switch (tag) {
         // NestedTestAllTypes child = 1
         case 10:
-          m.child =
-            unittest_proto3_arena_models.proto3_arena_unittest.NestedTestAllTypes;
+          m.child = r.NestedTestAllTypes();
           continue;
 
         // TestAllTypes payload = 2
         case 18:
-          m.payload =
-            unittest_proto3_arena_models.proto3_arena_unittest.TestAllTypes;
+          m.payload = r.TestAllTypes();
           continue;
 
         // repeated NestedTestAllTypes repeated_child = 3
         case 26:
-          const repeatedChildValue =
-            unittest_proto3_arena_models.proto3_arena_unittest
-              .NestedTestAllTypes;
+          {
+            const value = r.NestedTestAllTypes();
 
-          m.repeatedChild.push(repeatedChildValue);
+            m.repeatedChild.push(value);
+          }
           continue;
       }
     }
@@ -1801,9 +2229,23 @@ export class NestedTestAllTypes implements INestedTestAllTypes {
     return m;
   }
 
-  public static toJSON(m: INestedTestAllTypes): INestedTestAllTypesObj {}
+  public static toJSON(m: INestedTestAllTypes): INestedTestAllTypesObj {
+    return {
+      child: m.child.toJSON(),
+      payload: m.payload.toJSON(),
+      repeatedChild: m.repeatedChild.toJSON(),
+    };
+  }
 
-  public static fromJSON(obj: INestedTestAllTypesObj): INestedTestAllTypes {}
+  public static fromJSON(obj: INestedTestAllTypesObj): INestedTestAllTypes {
+    const m = new NestedTestAllTypes();
+
+    m.child.fromJSON(obj.child);
+    m.payload.fromJSON(obj.payload);
+    m.repeatedChild.fromJSON(obj.repeatedChild);
+
+    return m;
+  }
 
   clone(): NestedTestAllTypes {
     return new NestedTestAllTypes(this);
@@ -1827,6 +2269,12 @@ export interface IForeignMessage {
 
 export class ForeignMessage implements IForeignMessage {
   c: number = 0;
+
+  public static fields = ["c"];
+
+  public get fields() {
+    return ForeignMessage.fields;
+  }
 
   constructor(obj?: Partial<IForeignMessage>) {
     if (!obj) return;
@@ -1865,9 +2313,19 @@ export class ForeignMessage implements IForeignMessage {
     return m;
   }
 
-  public static toJSON(m: IForeignMessage): IForeignMessageObj {}
+  public static toJSON(m: IForeignMessage): IForeignMessageObj {
+    return {
+      c: m.c,
+    };
+  }
 
-  public static fromJSON(obj: IForeignMessageObj): IForeignMessage {}
+  public static fromJSON(obj: IForeignMessageObj): IForeignMessage {
+    const m = new ForeignMessage();
+
+    m.c = obj.c;
+
+    return m;
+  }
 
   clone(): ForeignMessage {
     return new ForeignMessage(this);
@@ -1886,6 +2344,12 @@ export interface ITestEmptyMessageObj {}
 export interface ITestEmptyMessage {}
 
 export class TestEmptyMessage implements ITestEmptyMessage {
+  public static fields = [];
+
+  public get fields() {
+    return TestEmptyMessage.fields;
+  }
+
   constructor(obj?: Partial<ITestEmptyMessage>) {
     if (!obj) return;
   }
@@ -1909,9 +2373,15 @@ export class TestEmptyMessage implements ITestEmptyMessage {
     return m;
   }
 
-  public static toJSON(m: ITestEmptyMessage): ITestEmptyMessageObj {}
+  public static toJSON(m: ITestEmptyMessage): ITestEmptyMessageObj {
+    return {};
+  }
 
-  public static fromJSON(obj: ITestEmptyMessageObj): ITestEmptyMessage {}
+  public static fromJSON(obj: ITestEmptyMessageObj): ITestEmptyMessage {
+    const m = new TestEmptyMessage();
+
+    return m;
+  }
 
   clone(): TestEmptyMessage {
     return new TestEmptyMessage(this);
@@ -1930,6 +2400,12 @@ export interface ITestPickleNestedMessageObj {}
 export interface ITestPickleNestedMessage {}
 
 export class TestPickleNestedMessage implements ITestPickleNestedMessage {
+  public static fields = [];
+
+  public get fields() {
+    return TestPickleNestedMessage.fields;
+  }
+
   constructor(obj?: Partial<ITestPickleNestedMessage>) {
     if (!obj) return;
   }
@@ -1955,11 +2431,17 @@ export class TestPickleNestedMessage implements ITestPickleNestedMessage {
 
   public static toJSON(
     m: ITestPickleNestedMessage
-  ): ITestPickleNestedMessageObj {}
+  ): ITestPickleNestedMessageObj {
+    return {};
+  }
 
   public static fromJSON(
     obj: ITestPickleNestedMessageObj
-  ): ITestPickleNestedMessage {}
+  ): ITestPickleNestedMessage {
+    const m = new TestPickleNestedMessage();
+
+    return m;
+  }
 
   clone(): TestPickleNestedMessage {
     return new TestPickleNestedMessage(this);
@@ -1977,6 +2459,12 @@ export namespace TestPickleNestedMessage {
 
   export class NestedMessage implements INestedMessage {
     bb: number = 0;
+
+    public static fields = ["bb"];
+
+    public get fields() {
+      return NestedMessage.fields;
+    }
 
     constructor(obj?: Partial<INestedMessage>) {
       if (!obj) return;
@@ -2015,9 +2503,19 @@ export namespace TestPickleNestedMessage {
       return m;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {}
+    public static toJSON(m: INestedMessage): INestedMessageObj {
+      return {
+        bb: m.bb,
+      };
+    }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {}
+    public static fromJSON(obj: INestedMessageObj): INestedMessage {
+      const m = new NestedMessage();
+
+      m.bb = obj.bb;
+
+      return m;
+    }
 
     clone(): NestedMessage {
       return new NestedMessage(this);
@@ -2035,6 +2533,12 @@ export namespace TestPickleNestedMessage {
 
     export class NestedNestedMessage implements INestedNestedMessage {
       cc: number = 0;
+
+      public static fields = ["cc"];
+
+      public get fields() {
+        return NestedNestedMessage.fields;
+      }
 
       constructor(obj?: Partial<INestedNestedMessage>) {
         if (!obj) return;
@@ -2073,11 +2577,21 @@ export namespace TestPickleNestedMessage {
         return m;
       }
 
-      public static toJSON(m: INestedNestedMessage): INestedNestedMessageObj {}
+      public static toJSON(m: INestedNestedMessage): INestedNestedMessageObj {
+        return {
+          cc: m.cc,
+        };
+      }
 
       public static fromJSON(
         obj: INestedNestedMessageObj
-      ): INestedNestedMessage {}
+      ): INestedNestedMessage {
+        const m = new NestedNestedMessage();
+
+        m.cc = obj.cc;
+
+        return m;
+      }
 
       clone(): NestedNestedMessage {
         return new NestedNestedMessage(this);

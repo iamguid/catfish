@@ -20,6 +20,12 @@ export interface IPublicImportMessageLite {
 export class PublicImportMessageLite implements IPublicImportMessageLite {
   e: number = 0;
 
+  public static fields = ["e"];
+
+  public get fields() {
+    return PublicImportMessageLite.fields;
+  }
+
   constructor(obj?: Partial<IPublicImportMessageLite>) {
     if (!obj) return;
 
@@ -59,11 +65,21 @@ export class PublicImportMessageLite implements IPublicImportMessageLite {
 
   public static toJSON(
     m: IPublicImportMessageLite
-  ): IPublicImportMessageLiteObj {}
+  ): IPublicImportMessageLiteObj {
+    return {
+      e: m.e,
+    };
+  }
 
   public static fromJSON(
     obj: IPublicImportMessageLiteObj
-  ): IPublicImportMessageLite {}
+  ): IPublicImportMessageLite {
+    const m = new PublicImportMessageLite();
+
+    m.e = obj.e;
+
+    return m;
+  }
 
   clone(): PublicImportMessageLite {
     return new PublicImportMessageLite(this);

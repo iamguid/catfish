@@ -15,13 +15,19 @@ export interface ITestProto3BytesMapObj {
 }
 
 export interface ITestProto3BytesMap {
-  mapBytes: Map<number, Uint8Array>;
+  mapBytes: Map<number, Uint8Array | Buffer>;
   mapString: Map<number, string>;
 }
 
 export class TestProto3BytesMap implements ITestProto3BytesMap {
-  mapBytes: Record<number, Uint8Array> = {};
+  mapBytes: Record<number, Uint8Array | Buffer> = {};
   mapString: Record<number, string> = {};
+
+  public static fields = ["mapBytes", "mapString"];
+
+  public get fields() {
+    return TestProto3BytesMap.fields;
+  }
 
   constructor(obj?: Partial<ITestProto3BytesMap>) {
     if (!obj) return;
@@ -52,19 +58,23 @@ export class TestProto3BytesMap implements ITestProto3BytesMap {
       const tag = r.uint32();
       switch (tag) {
         // map<int32, bytes> map_bytes = 1
-        case 10:
-          const mapBytesKey = r.int32();
-          const mapBytesValue = r.bytes();
+        case null:
+          {
+            const key = r.int32();
+            const value = r.bytes();
 
-          m.mapBytes.set(mapBytesKey, mapBytesValue);
+            m.mapBytes.set(key, value);
+          }
           continue;
 
         // map<int32, string> map_string = 2
-        case 18:
-          const mapStringKey = r.int32();
-          const mapStringValue = r.string();
+        case null:
+          {
+            const key = r.int32();
+            const value = r.string();
 
-          m.mapString.set(mapStringKey, mapStringValue);
+            m.mapString.set(key, value);
+          }
           continue;
       }
     }
@@ -72,9 +82,21 @@ export class TestProto3BytesMap implements ITestProto3BytesMap {
     return m;
   }
 
-  public static toJSON(m: ITestProto3BytesMap): ITestProto3BytesMapObj {}
+  public static toJSON(m: ITestProto3BytesMap): ITestProto3BytesMapObj {
+    return {
+      mapBytes: m.mapBytes,
+      mapString: m.mapString,
+    };
+  }
 
-  public static fromJSON(obj: ITestProto3BytesMapObj): ITestProto3BytesMap {}
+  public static fromJSON(obj: ITestProto3BytesMapObj): ITestProto3BytesMap {
+    const m = new TestProto3BytesMap();
+
+    m.mapBytes = obj.mapBytes;
+    m.mapString = obj.mapString;
+
+    return m;
+  }
 
   clone(): TestProto3BytesMap {
     return new TestProto3BytesMap(this);

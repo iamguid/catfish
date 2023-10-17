@@ -8,8 +8,9 @@
 // file: scalar-types.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
-export interface IScalarTypesObj {
+export interface IScalarTypesJSON {
   fInt32: number;
   fInt64: string;
   fUint32: number;
@@ -27,25 +28,7 @@ export interface IScalarTypesObj {
   fBytes: string;
 }
 
-export interface IScalarTypes {
-  fInt32: number;
-  fInt64: pjs.Long;
-  fUint32: number;
-  fUint64: pjs.Long;
-  fSint32: number;
-  fSint64: pjs.Long;
-  fFixed32: number;
-  fFixed64: pjs.Long;
-  fSfixed32: number;
-  fSfixed64: pjs.Long;
-  fFloat: number;
-  fDouble: number;
-  fBool: boolean;
-  fString: string;
-  fBytes: Uint8Array | Buffer;
-}
-
-export class ScalarTypes implements IScalarTypes {
+export class ScalarTypes {
   fInt32: number = 0;
   fInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
   fUint32: number = 0;
@@ -84,7 +67,7 @@ export class ScalarTypes implements IScalarTypes {
     return ScalarTypes.fields;
   }
 
-  constructor(obj?: Partial<IScalarTypes>) {
+  constructor(obj?: ScalarTypes) {
     if (!obj) return;
 
     if (obj.fInt32 !== undefined) {
@@ -134,10 +117,7 @@ export class ScalarTypes implements IScalarTypes {
     }
   }
 
-  public static encode(
-    m: IScalarTypes,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: ScalarTypes, w: pjs.Writer): pjs.Writer {
     // int32 f_int32 = 1
     if (m.fInt32 !== 0) {
       w.uint32(8);
@@ -228,13 +208,11 @@ export class ScalarTypes implements IScalarTypes {
       w.bytes(m.fBytes);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): ScalarTypes {
-    const m = new ScalarTypes();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: ScalarTypes, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 f_int32 = 1
@@ -314,10 +292,10 @@ export class ScalarTypes implements IScalarTypes {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IScalarTypes): IScalarTypesObj {
+  public static toJSON(m: ScalarTypes): IScalarTypesJSON {
     return {
       fInt32: m.fInt32,
       fInt64: m.fInt64.toString(),
@@ -337,9 +315,7 @@ export class ScalarTypes implements IScalarTypes {
     };
   }
 
-  public static fromJSON(obj: IScalarTypesObj): IScalarTypes {
-    const m = new ScalarTypes();
-
+  public static fromJSON(m: ScalarTypes, obj: IScalarTypesJSON): ScalarTypes {
     m.fInt32 = obj.fInt32;
     m.fInt64 = pjs.util.Long.fromValue(obj.fInt64, false);
     m.fUint32 = obj.fUint32;
@@ -361,6 +337,25 @@ export class ScalarTypes implements IScalarTypes {
     }
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return ScalarTypes.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): ScalarTypes {
+    const r = new pjs.Reader(b);
+    ScalarTypes.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): IScalarTypesJSON {
+    return ScalarTypes.toJSON(this);
+  }
+
+  fromJSON(obj: IScalarTypesJSON): ScalarTypes {
+    return ScalarTypes.fromJSON(this, obj);
   }
 
   clone(): ScalarTypes {

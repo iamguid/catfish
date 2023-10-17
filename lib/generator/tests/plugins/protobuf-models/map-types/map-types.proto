@@ -4,7 +4,7 @@ syntax = "proto3";
 package map_types;
 
 message SimpleMessage {
-    a int32 = 1;
+    int32 a = 1;
 }
 
 enum SimpleEnum {

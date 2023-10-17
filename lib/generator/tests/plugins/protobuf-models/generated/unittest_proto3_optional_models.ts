@@ -26,9 +26,9 @@ export interface ITestProto3OptionalObj {
   optionalString: string | undefined;
   optionalBytes: string | undefined;
   optionalCord: string | undefined;
-  optionalNestedMessage: null | undefined;
-  lazyNestedMessage: null | undefined;
-  optionalNestedEnum: null | undefined;
+  optionalNestedMessage: TestProto3Optional.NestedMessage | undefined;
+  lazyNestedMessage: TestProto3Optional.NestedMessage | undefined;
+  optionalNestedEnum: number | undefined;
   singularInt32: number;
   singularInt64: string;
 }
@@ -48,11 +48,11 @@ export interface ITestProto3Optional {
   optionalDouble: number | undefined;
   optionalBool: boolean | undefined;
   optionalString: string | undefined;
-  optionalBytes: Uint8Array | undefined;
+  optionalBytes: Uint8Array | Buffer | undefined;
   optionalCord: string | undefined;
-  optionalNestedMessage: null | undefined;
-  lazyNestedMessage: null | undefined;
-  optionalNestedEnum: null | undefined;
+  optionalNestedMessage: TestProto3Optional.NestedMessage | undefined;
+  lazyNestedMessage: TestProto3Optional.NestedMessage | undefined;
+  optionalNestedEnum: number | undefined;
   singularInt32: number;
   singularInt64: pjs.Long;
 }
@@ -72,13 +72,42 @@ export class TestProto3Optional implements ITestProto3Optional {
   optionalDouble: number | undefined = undefined;
   optionalBool: boolean | undefined = undefined;
   optionalString: string | undefined = undefined;
-  optionalBytes: Uint8Array | undefined = undefined;
+  optionalBytes: Uint8Array | Buffer | undefined = undefined;
   optionalCord: string | undefined = undefined;
-  optionalNestedMessage: null | undefined = undefined;
-  lazyNestedMessage: null | undefined = undefined;
-  optionalNestedEnum: null | undefined = undefined;
+  optionalNestedMessage: TestProto3Optional.NestedMessage | undefined =
+    undefined;
+  lazyNestedMessage: TestProto3Optional.NestedMessage | undefined = undefined;
+  optionalNestedEnum: number | undefined = undefined;
   singularInt32: number = 0;
-  singularInt64: pjs.Long = 0n;
+  singularInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+
+  public static fields = [
+    "optionalInt32",
+    "optionalInt64",
+    "optionalUint32",
+    "optionalUint64",
+    "optionalSint32",
+    "optionalSint64",
+    "optionalFixed32",
+    "optionalFixed64",
+    "optionalSfixed32",
+    "optionalSfixed64",
+    "optionalFloat",
+    "optionalDouble",
+    "optionalBool",
+    "optionalString",
+    "optionalBytes",
+    "optionalCord",
+    "optionalNestedMessage",
+    "lazyNestedMessage",
+    "optionalNestedEnum",
+    "singularInt32",
+    "singularInt64",
+  ];
+
+  public get fields() {
+    return TestProto3Optional.fields;
+  }
 
   constructor(obj?: Partial<ITestProto3Optional>) {
     if (!obj) return;
@@ -159,7 +188,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // int64 optional_int64 = 2
-    if (m.optionalInt64 !== 0n) {
+    if (m.optionalInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(16);
       w.int64(m.optionalInt64);
     }
@@ -171,7 +200,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // uint64 optional_uint64 = 4
-    if (m.optionalUint64 !== 0n) {
+    if (m.optionalUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(32);
       w.uint64(m.optionalUint64);
     }
@@ -183,7 +212,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // sint64 optional_sint64 = 6
-    if (m.optionalSint64 !== 0n) {
+    if (m.optionalSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(48);
       w.sint64(m.optionalSint64);
     }
@@ -195,7 +224,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // fixed64 optional_fixed64 = 8
-    if (m.optionalFixed64 !== 0n) {
+    if (m.optionalFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(65);
       w.fixed64(m.optionalFixed64);
     }
@@ -207,7 +236,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // sfixed64 optional_sfixed64 = 10
-    if (m.optionalSfixed64 !== 0n) {
+    if (m.optionalSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(81);
       w.sfixed64(m.optionalSfixed64);
     }
@@ -237,7 +266,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // bytes optional_bytes = 15
-    if (m.optionalBytes !== new Uint8Array()) {
+    if (m.optionalBytes !== pjs.util.newBuffer(0)) {
       w.uint32(122);
       w.bytes(m.optionalBytes);
     }
@@ -249,21 +278,21 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // TestProto3Optional.NestedMessage optional_nested_message = 18
-    if (m.optionalNestedMessage !== null) {
+    if (m.optionalNestedMessage !== new TestProto3Optional.NestedMessage()) {
       w.uint32(146);
-      m.optionalNestedMessage.encode(writer);
+      w.TestProto3Optional.NestedMessage(m.optionalNestedMessage);
     }
 
     // TestProto3Optional.NestedMessage lazy_nested_message = 19
-    if (m.lazyNestedMessage !== null) {
+    if (m.lazyNestedMessage !== new TestProto3Optional.NestedMessage()) {
       w.uint32(154);
-      m.lazyNestedMessage.encode(writer);
+      w.TestProto3Optional.NestedMessage(m.lazyNestedMessage);
     }
 
     // TestProto3Optional.NestedEnum optional_nested_enum = 21
-    if (m.optionalNestedEnum !== null) {
-      w.uint32(170);
-      m.optionalNestedEnum.encode(writer);
+    if (m.optionalNestedEnum !== TestProto3Optional.NestedEnum.UNSPECIFIED) {
+      w.uint32(168);
+      w.uint32(m.optionalNestedEnum);
     }
 
     // int32 singular_int32 = 22
@@ -273,7 +302,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
 
     // int64 singular_int64 = 23
-    if (m.singularInt64 !== 0n) {
+    if (m.singularInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(184);
       w.int64(m.singularInt64);
     }
@@ -369,20 +398,17 @@ export class TestProto3Optional implements ITestProto3Optional {
 
         // TestProto3Optional.NestedMessage optional_nested_message = 18
         case 146:
-          m.optionalNestedMessage =
-            unittest_proto3_optional_models.protobuf_unittest.TestProto3Optional.NestedMessage;
+          m.optionalNestedMessage = r.TestProto3Optional.NestedMessage();
           continue;
 
         // TestProto3Optional.NestedMessage lazy_nested_message = 19
         case 154:
-          m.lazyNestedMessage =
-            unittest_proto3_optional_models.protobuf_unittest.TestProto3Optional.NestedMessage;
+          m.lazyNestedMessage = r.TestProto3Optional.NestedMessage();
           continue;
 
         // TestProto3Optional.NestedEnum optional_nested_enum = 21
-        case 170:
-          m.optionalNestedEnum =
-            unittest_proto3_optional_models.protobuf_unittest.TestProto3Optional.NestedEnum;
+        case 168:
+          m.optionalNestedEnum = r.uint32();
           continue;
 
         // int32 singular_int32 = 22
@@ -400,9 +426,68 @@ export class TestProto3Optional implements ITestProto3Optional {
     return m;
   }
 
-  public static toJSON(m: ITestProto3Optional): ITestProto3OptionalObj {}
+  public static toJSON(m: ITestProto3Optional): ITestProto3OptionalObj {
+    return {
+      optionalInt32: m.optionalInt32,
+      optionalInt64: m.optionalInt64.toString(),
+      optionalUint32: m.optionalUint32,
+      optionalUint64: m.optionalUint64.toString(),
+      optionalSint32: m.optionalSint32,
+      optionalSint64: m.optionalSint64.toString(),
+      optionalFixed32: m.optionalFixed32,
+      optionalFixed64: m.optionalFixed64.toString(),
+      optionalSfixed32: m.optionalSfixed32,
+      optionalSfixed64: m.optionalSfixed64.toString(),
+      optionalFloat: m.optionalFloat,
+      optionalDouble: m.optionalDouble,
+      optionalBool: m.optionalBool,
+      optionalString: m.optionalString,
+      optionalBytes: pjs.util.base64.encode(
+        m.optionalBytes,
+        0,
+        m.optionalBytes.length
+      ),
+      optionalCord: m.optionalCord,
+      optionalNestedMessage: m.optionalNestedMessage.toJSON(),
+      lazyNestedMessage: m.lazyNestedMessage.toJSON(),
+      optionalNestedEnum: TestProto3Optional.NestedEnum[m.optionalNestedEnum],
+      singularInt32: m.singularInt32,
+      singularInt64: m.singularInt64.toString(),
+    };
+  }
 
-  public static fromJSON(obj: ITestProto3OptionalObj): ITestProto3Optional {}
+  public static fromJSON(obj: ITestProto3OptionalObj): ITestProto3Optional {
+    const m = new TestProto3Optional();
+
+    m.optionalInt32 = obj.optionalInt32;
+    m.optionalInt64 = pjs.util.Long.fromValue(obj.optionalInt64, false);
+    m.optionalUint32 = obj.optionalUint32;
+    m.optionalUint64 = pjs.util.Long.fromValue(obj.optionalUint64, true);
+    m.optionalSint32 = obj.optionalSint32;
+    m.optionalSint64 = pjs.util.Long.fromValue(obj.optionalSint64, false);
+    m.optionalFixed32 = obj.optionalFixed32;
+    m.optionalFixed64 = pjs.util.Long.fromValue(obj.optionalFixed64, true);
+    m.optionalSfixed32 = obj.optionalSfixed32;
+    m.optionalSfixed64 = pjs.util.Long.fromValue(obj.optionalSfixed64, false);
+    m.optionalFloat = obj.optionalFloat;
+    m.optionalDouble = obj.optionalDouble;
+    m.optionalBool = obj.optionalBool;
+    m.optionalString = obj.optionalString;
+    {
+      const tmpBuffer = [];
+      pjs.util.base64.decode(obj.optionalBytes, tmpBuffer, 0);
+      m.optionalBytes = pjs.util.Buffer.from(tmpBuffer);
+    }
+    m.optionalCord = obj.optionalCord;
+    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
+    m.lazyNestedMessage.fromJSON(obj.lazyNestedMessage);
+    m.optionalNestedEnum =
+      TestProto3Optional.NestedEnum[obj.optionalNestedEnum];
+    m.singularInt32 = obj.singularInt32;
+    m.singularInt64 = pjs.util.Long.fromValue(obj.singularInt64, false);
+
+    return m;
+  }
 
   clone(): TestProto3Optional {
     return new TestProto3Optional(this);
@@ -428,6 +513,12 @@ export namespace TestProto3Optional {
 
   export class NestedMessage implements INestedMessage {
     bb: number | undefined = undefined;
+
+    public static fields = ["bb"];
+
+    public get fields() {
+      return NestedMessage.fields;
+    }
 
     constructor(obj?: Partial<INestedMessage>) {
       if (!obj) return;
@@ -466,9 +557,19 @@ export namespace TestProto3Optional {
       return m;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {}
+    public static toJSON(m: INestedMessage): INestedMessageObj {
+      return {
+        bb: m.bb,
+      };
+    }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {}
+    public static fromJSON(obj: INestedMessageObj): INestedMessage {
+      const m = new NestedMessage();
+
+      m.bb = obj.bb;
+
+      return m;
+    }
 
     clone(): NestedMessage {
       return new NestedMessage(this);
@@ -477,18 +578,26 @@ export namespace TestProto3Optional {
 }
 
 export interface ITestProto3OptionalMessageObj {
-  nestedMessage: null;
-  optionalNestedMessage: null | undefined;
+  nestedMessage: TestProto3OptionalMessage.NestedMessage;
+  optionalNestedMessage: TestProto3OptionalMessage.NestedMessage | undefined;
 }
 
 export interface ITestProto3OptionalMessage {
-  nestedMessage: null;
-  optionalNestedMessage: null | undefined;
+  nestedMessage: TestProto3OptionalMessage.NestedMessage;
+  optionalNestedMessage: TestProto3OptionalMessage.NestedMessage | undefined;
 }
 
 export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
-  nestedMessage: null = null;
-  optionalNestedMessage: null | undefined = undefined;
+  nestedMessage: TestProto3OptionalMessage.NestedMessage =
+    new TestProto3OptionalMessage.NestedMessage();
+  optionalNestedMessage: TestProto3OptionalMessage.NestedMessage | undefined =
+    undefined;
+
+  public static fields = ["nestedMessage", "optionalNestedMessage"];
+
+  public get fields() {
+    return TestProto3OptionalMessage.fields;
+  }
 
   constructor(obj?: Partial<ITestProto3OptionalMessage>) {
     if (!obj) return;
@@ -506,15 +615,17 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
     w: pjs.Writer = pjs.Writer.create()
   ): Uint8Array {
     // TestProto3OptionalMessage.NestedMessage nested_message = 1
-    if (m.nestedMessage !== null) {
+    if (m.nestedMessage !== new TestProto3OptionalMessage.NestedMessage()) {
       w.uint32(10);
-      m.nestedMessage.encode(writer);
+      w.TestProto3OptionalMessage.NestedMessage(m.nestedMessage);
     }
 
     // TestProto3OptionalMessage.NestedMessage optional_nested_message = 2
-    if (m.optionalNestedMessage !== null) {
+    if (
+      m.optionalNestedMessage !== new TestProto3OptionalMessage.NestedMessage()
+    ) {
       w.uint32(18);
-      m.optionalNestedMessage.encode(writer);
+      w.TestProto3OptionalMessage.NestedMessage(m.optionalNestedMessage);
     }
 
     return w.finish();
@@ -528,14 +639,12 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
       switch (tag) {
         // TestProto3OptionalMessage.NestedMessage nested_message = 1
         case 10:
-          m.nestedMessage =
-            unittest_proto3_optional_models.protobuf_unittest.TestProto3OptionalMessage.NestedMessage;
+          m.nestedMessage = r.TestProto3OptionalMessage.NestedMessage();
           continue;
 
         // TestProto3OptionalMessage.NestedMessage optional_nested_message = 2
         case 18:
-          m.optionalNestedMessage =
-            unittest_proto3_optional_models.protobuf_unittest.TestProto3OptionalMessage.NestedMessage;
+          m.optionalNestedMessage = r.TestProto3OptionalMessage.NestedMessage();
           continue;
       }
     }
@@ -545,11 +654,23 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
 
   public static toJSON(
     m: ITestProto3OptionalMessage
-  ): ITestProto3OptionalMessageObj {}
+  ): ITestProto3OptionalMessageObj {
+    return {
+      nestedMessage: m.nestedMessage.toJSON(),
+      optionalNestedMessage: m.optionalNestedMessage.toJSON(),
+    };
+  }
 
   public static fromJSON(
     obj: ITestProto3OptionalMessageObj
-  ): ITestProto3OptionalMessage {}
+  ): ITestProto3OptionalMessage {
+    const m = new TestProto3OptionalMessage();
+
+    m.nestedMessage.fromJSON(obj.nestedMessage);
+    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
+
+    return m;
+  }
 
   clone(): TestProto3OptionalMessage {
     return new TestProto3OptionalMessage(this);
@@ -567,6 +688,12 @@ export namespace TestProto3OptionalMessage {
 
   export class NestedMessage implements INestedMessage {
     s: string = "";
+
+    public static fields = ["s"];
+
+    public get fields() {
+      return NestedMessage.fields;
+    }
 
     constructor(obj?: Partial<INestedMessage>) {
       if (!obj) return;
@@ -605,9 +732,19 @@ export namespace TestProto3OptionalMessage {
       return m;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {}
+    public static toJSON(m: INestedMessage): INestedMessageObj {
+      return {
+        s: m.s,
+      };
+    }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {}
+    public static fromJSON(obj: INestedMessageObj): INestedMessage {
+      const m = new NestedMessage();
+
+      m.s = obj.s;
+
+      return m;
+    }
 
     clone(): NestedMessage {
       return new NestedMessage(this);
@@ -620,6 +757,12 @@ export interface IProto3OptionalExtensionsObj {}
 export interface IProto3OptionalExtensions {}
 
 export class Proto3OptionalExtensions implements IProto3OptionalExtensions {
+  public static fields = [];
+
+  public get fields() {
+    return Proto3OptionalExtensions.fields;
+  }
+
   constructor(obj?: Partial<IProto3OptionalExtensions>) {
     if (!obj) return;
   }
@@ -645,11 +788,17 @@ export class Proto3OptionalExtensions implements IProto3OptionalExtensions {
 
   public static toJSON(
     m: IProto3OptionalExtensions
-  ): IProto3OptionalExtensionsObj {}
+  ): IProto3OptionalExtensionsObj {
+    return {};
+  }
 
   public static fromJSON(
     obj: IProto3OptionalExtensionsObj
-  ): IProto3OptionalExtensions {}
+  ): IProto3OptionalExtensions {
+    const m = new Proto3OptionalExtensions();
+
+    return m;
+  }
 
   clone(): Proto3OptionalExtensions {
     return new Proto3OptionalExtensions(this);

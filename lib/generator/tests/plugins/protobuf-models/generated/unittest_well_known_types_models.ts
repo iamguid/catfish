@@ -42,69 +42,114 @@ import * as google_protobuf_wrappers_models from "google/protobuf/wrappers_model
 import * as pjs from "protobufjs/minimal";
 
 export interface ITestWellKnownTypesObj {
-  anyField: null;
-  apiField: null;
-  durationField: null;
-  emptyField: null;
-  fieldMaskField: null;
-  sourceContextField: null;
-  structField: null;
-  timestampField: null;
-  typeField: null;
-  doubleField: null;
-  floatField: null;
-  int64Field: null;
-  uint64Field: null;
-  int32Field: null;
-  uint32Field: null;
-  boolField: null;
-  stringField: null;
-  bytesField: null;
-  valueField: null;
+  anyField: google.protobuf.Any;
+  apiField: google.protobuf.Api;
+  durationField: google.protobuf.Duration;
+  emptyField: google.protobuf.Empty;
+  fieldMaskField: google.protobuf.FieldMask;
+  sourceContextField: google.protobuf.SourceContext;
+  structField: google.protobuf.Struct;
+  timestampField: google.protobuf.Timestamp;
+  typeField: google.protobuf.Type;
+  doubleField: google.protobuf.DoubleValue;
+  floatField: google.protobuf.FloatValue;
+  int64Field: google.protobuf.Int64Value;
+  uint64Field: google.protobuf.UInt64Value;
+  int32Field: google.protobuf.Int32Value;
+  uint32Field: google.protobuf.UInt32Value;
+  boolField: google.protobuf.BoolValue;
+  stringField: google.protobuf.StringValue;
+  bytesField: google.protobuf.BytesValue;
+  valueField: google.protobuf.Value;
 }
 
 export interface ITestWellKnownTypes {
-  anyField: null;
-  apiField: null;
-  durationField: null;
-  emptyField: null;
-  fieldMaskField: null;
-  sourceContextField: null;
-  structField: null;
-  timestampField: null;
-  typeField: null;
-  doubleField: null;
-  floatField: null;
-  int64Field: null;
-  uint64Field: null;
-  int32Field: null;
-  uint32Field: null;
-  boolField: null;
-  stringField: null;
-  bytesField: null;
-  valueField: null;
+  anyField: google.protobuf.Any;
+  apiField: google.protobuf.Api;
+  durationField: google.protobuf.Duration;
+  emptyField: google.protobuf.Empty;
+  fieldMaskField: google.protobuf.FieldMask;
+  sourceContextField: google.protobuf.SourceContext;
+  structField: google.protobuf.Struct;
+  timestampField: google.protobuf.Timestamp;
+  typeField: google.protobuf.Type;
+  doubleField: google.protobuf.DoubleValue;
+  floatField: google.protobuf.FloatValue;
+  int64Field: google.protobuf.Int64Value;
+  uint64Field: google.protobuf.UInt64Value;
+  int32Field: google.protobuf.Int32Value;
+  uint32Field: google.protobuf.UInt32Value;
+  boolField: google.protobuf.BoolValue;
+  stringField: google.protobuf.StringValue;
+  bytesField: google.protobuf.BytesValue;
+  valueField: google.protobuf.Value;
 }
 
 export class TestWellKnownTypes implements ITestWellKnownTypes {
-  anyField: null = null;
-  apiField: null = null;
-  durationField: null = null;
-  emptyField: null = null;
-  fieldMaskField: null = null;
-  sourceContextField: null = null;
-  structField: null = null;
-  timestampField: null = null;
-  typeField: null = null;
-  doubleField: null = null;
-  floatField: null = null;
-  int64Field: null = null;
-  uint64Field: null = null;
-  int32Field: null = null;
-  uint32Field: null = null;
-  boolField: null = null;
-  stringField: null = null;
-  bytesField: null = null;
-  valueField: null = null;
+  anyField: google.protobuf.Any =
+    new google_protobuf_any_models.google.protobuf.Any();
+  apiField: google.protobuf.Api =
+    new google_protobuf_api_models.google.protobuf.Api();
+  durationField: google.protobuf.Duration =
+    new google_protobuf_duration_models.google.protobuf.Duration();
+  emptyField: google.protobuf.Empty =
+    new google_protobuf_empty_models.google.protobuf.Empty();
+  fieldMaskField: google.protobuf.FieldMask =
+    new google_protobuf_field_mask_models.google.protobuf.FieldMask();
+  sourceContextField: google.protobuf.SourceContext =
+    new google_protobuf_source_context_models.google.protobuf.SourceContext();
+  structField: google.protobuf.Struct =
+    new google_protobuf_struct_models.google.protobuf.Struct();
+  timestampField: google.protobuf.Timestamp =
+    new google_protobuf_timestamp_models.google.protobuf.Timestamp();
+  typeField: google.protobuf.Type =
+    new google_protobuf_type_models.google.protobuf.Type();
+  doubleField: google.protobuf.DoubleValue =
+    new google_protobuf_wrappers_models.google.protobuf.DoubleValue();
+  floatField: google.protobuf.FloatValue =
+    new google_protobuf_wrappers_models.google.protobuf.FloatValue();
+  int64Field: google.protobuf.Int64Value =
+    new google_protobuf_wrappers_models.google.protobuf.Int64Value();
+  uint64Field: google.protobuf.UInt64Value =
+    new google_protobuf_wrappers_models.google.protobuf.UInt64Value();
+  int32Field: google.protobuf.Int32Value =
+    new google_protobuf_wrappers_models.google.protobuf.Int32Value();
+  uint32Field: google.protobuf.UInt32Value =
+    new google_protobuf_wrappers_models.google.protobuf.UInt32Value();
+  boolField: google.protobuf.BoolValue =
+    new google_protobuf_wrappers_models.google.protobuf.BoolValue();
+  stringField: google.protobuf.StringValue =
+    new google_protobuf_wrappers_models.google.protobuf.StringValue();
+  bytesField: google.protobuf.BytesValue =
+    new google_protobuf_wrappers_models.google.protobuf.BytesValue();
+  valueField: google.protobuf.Value =
+    new google_protobuf_struct_models.google.protobuf.Value();
+
+  public static fields = [
+    "anyField",
+    "apiField",
+    "durationField",
+    "emptyField",
+    "fieldMaskField",
+    "sourceContextField",
+    "structField",
+    "timestampField",
+    "typeField",
+    "doubleField",
+    "floatField",
+    "int64Field",
+    "uint64Field",
+    "int32Field",
+    "uint32Field",
+    "boolField",
+    "stringField",
+    "bytesField",
+    "valueField",
+  ];
+
+  public get fields() {
+    return TestWellKnownTypes.fields;
+  }
 
   constructor(obj?: Partial<ITestWellKnownTypes>) {
     if (!obj) return;
@@ -173,117 +218,165 @@ export class TestWellKnownTypes implements ITestWellKnownTypes {
     w: pjs.Writer = pjs.Writer.create()
   ): Uint8Array {
     // google.protobuf.Any any_field = 1
-    if (m.anyField !== null) {
+    if (m.anyField !== new google_protobuf_any_models.google.protobuf.Any()) {
       w.uint32(10);
-      m.anyField.encode(writer);
+      w.google.protobuf.Any(m.anyField);
     }
 
     // google.protobuf.Api api_field = 2
-    if (m.apiField !== null) {
+    if (m.apiField !== new google_protobuf_api_models.google.protobuf.Api()) {
       w.uint32(18);
-      m.apiField.encode(writer);
+      w.google.protobuf.Api(m.apiField);
     }
 
     // google.protobuf.Duration duration_field = 3
-    if (m.durationField !== null) {
+    if (
+      m.durationField !==
+      new google_protobuf_duration_models.google.protobuf.Duration()
+    ) {
       w.uint32(26);
-      m.durationField.encode(writer);
+      w.google.protobuf.Duration(m.durationField);
     }
 
     // google.protobuf.Empty empty_field = 4
-    if (m.emptyField !== null) {
+    if (
+      m.emptyField !== new google_protobuf_empty_models.google.protobuf.Empty()
+    ) {
       w.uint32(34);
-      m.emptyField.encode(writer);
+      w.google.protobuf.Empty(m.emptyField);
     }
 
     // google.protobuf.FieldMask field_mask_field = 5
-    if (m.fieldMaskField !== null) {
+    if (
+      m.fieldMaskField !==
+      new google_protobuf_field_mask_models.google.protobuf.FieldMask()
+    ) {
       w.uint32(42);
-      m.fieldMaskField.encode(writer);
+      w.google.protobuf.FieldMask(m.fieldMaskField);
     }
 
     // google.protobuf.SourceContext source_context_field = 6
-    if (m.sourceContextField !== null) {
+    if (
+      m.sourceContextField !==
+      new google_protobuf_source_context_models.google.protobuf.SourceContext()
+    ) {
       w.uint32(50);
-      m.sourceContextField.encode(writer);
+      w.google.protobuf.SourceContext(m.sourceContextField);
     }
 
     // google.protobuf.Struct struct_field = 7
-    if (m.structField !== null) {
+    if (
+      m.structField !==
+      new google_protobuf_struct_models.google.protobuf.Struct()
+    ) {
       w.uint32(58);
-      m.structField.encode(writer);
+      w.google.protobuf.Struct(m.structField);
     }
 
     // google.protobuf.Timestamp timestamp_field = 8
-    if (m.timestampField !== null) {
+    if (
+      m.timestampField !==
+      new google_protobuf_timestamp_models.google.protobuf.Timestamp()
+    ) {
       w.uint32(66);
-      m.timestampField.encode(writer);
+      w.google.protobuf.Timestamp(m.timestampField);
     }
 
     // google.protobuf.Type type_field = 9
-    if (m.typeField !== null) {
+    if (
+      m.typeField !== new google_protobuf_type_models.google.protobuf.Type()
+    ) {
       w.uint32(74);
-      m.typeField.encode(writer);
+      w.google.protobuf.Type(m.typeField);
     }
 
     // google.protobuf.DoubleValue double_field = 10
-    if (m.doubleField !== null) {
+    if (
+      m.doubleField !==
+      new google_protobuf_wrappers_models.google.protobuf.DoubleValue()
+    ) {
       w.uint32(82);
-      m.doubleField.encode(writer);
+      w.google.protobuf.DoubleValue(m.doubleField);
     }
 
     // google.protobuf.FloatValue float_field = 11
-    if (m.floatField !== null) {
+    if (
+      m.floatField !==
+      new google_protobuf_wrappers_models.google.protobuf.FloatValue()
+    ) {
       w.uint32(90);
-      m.floatField.encode(writer);
+      w.google.protobuf.FloatValue(m.floatField);
     }
 
     // google.protobuf.Int64Value int64_field = 12
-    if (m.int64Field !== null) {
+    if (
+      m.int64Field !==
+      new google_protobuf_wrappers_models.google.protobuf.Int64Value()
+    ) {
       w.uint32(98);
-      m.int64Field.encode(writer);
+      w.google.protobuf.Int64Value(m.int64Field);
     }
 
     // google.protobuf.UInt64Value uint64_field = 13
-    if (m.uint64Field !== null) {
+    if (
+      m.uint64Field !==
+      new google_protobuf_wrappers_models.google.protobuf.UInt64Value()
+    ) {
       w.uint32(106);
-      m.uint64Field.encode(writer);
+      w.google.protobuf.UInt64Value(m.uint64Field);
     }
 
     // google.protobuf.Int32Value int32_field = 14
-    if (m.int32Field !== null) {
+    if (
+      m.int32Field !==
+      new google_protobuf_wrappers_models.google.protobuf.Int32Value()
+    ) {
       w.uint32(114);
-      m.int32Field.encode(writer);
+      w.google.protobuf.Int32Value(m.int32Field);
     }
 
     // google.protobuf.UInt32Value uint32_field = 15
-    if (m.uint32Field !== null) {
+    if (
+      m.uint32Field !==
+      new google_protobuf_wrappers_models.google.protobuf.UInt32Value()
+    ) {
       w.uint32(122);
-      m.uint32Field.encode(writer);
+      w.google.protobuf.UInt32Value(m.uint32Field);
     }
 
     // google.protobuf.BoolValue bool_field = 16
-    if (m.boolField !== null) {
+    if (
+      m.boolField !==
+      new google_protobuf_wrappers_models.google.protobuf.BoolValue()
+    ) {
       w.uint32(130);
-      m.boolField.encode(writer);
+      w.google.protobuf.BoolValue(m.boolField);
     }
 
     // google.protobuf.StringValue string_field = 17
-    if (m.stringField !== null) {
+    if (
+      m.stringField !==
+      new google_protobuf_wrappers_models.google.protobuf.StringValue()
+    ) {
       w.uint32(138);
-      m.stringField.encode(writer);
+      w.google.protobuf.StringValue(m.stringField);
     }
 
     // google.protobuf.BytesValue bytes_field = 18
-    if (m.bytesField !== null) {
+    if (
+      m.bytesField !==
+      new google_protobuf_wrappers_models.google.protobuf.BytesValue()
+    ) {
       w.uint32(146);
-      m.bytesField.encode(writer);
+      w.google.protobuf.BytesValue(m.bytesField);
     }
 
     // google.protobuf.Value value_field = 19
-    if (m.valueField !== null) {
+    if (
+      m.valueField !== new google_protobuf_struct_models.google.protobuf.Value()
+    ) {
       w.uint32(154);
-      m.valueField.encode(writer);
+      w.google.protobuf.Value(m.valueField);
     }
 
     return w.finish();
@@ -297,110 +390,97 @@ export class TestWellKnownTypes implements ITestWellKnownTypes {
       switch (tag) {
         // google.protobuf.Any any_field = 1
         case 10:
-          m.anyField = google_protobuf_any_models.google.protobuf.Any;
+          m.anyField = r.google.protobuf.Any();
           continue;
 
         // google.protobuf.Api api_field = 2
         case 18:
-          m.apiField = google_protobuf_api_models.google.protobuf.Api;
+          m.apiField = r.google.protobuf.Api();
           continue;
 
         // google.protobuf.Duration duration_field = 3
         case 26:
-          m.durationField =
-            google_protobuf_duration_models.google.protobuf.Duration;
+          m.durationField = r.google.protobuf.Duration();
           continue;
 
         // google.protobuf.Empty empty_field = 4
         case 34:
-          m.emptyField = google_protobuf_empty_models.google.protobuf.Empty;
+          m.emptyField = r.google.protobuf.Empty();
           continue;
 
         // google.protobuf.FieldMask field_mask_field = 5
         case 42:
-          m.fieldMaskField =
-            google_protobuf_field_mask_models.google.protobuf.FieldMask;
+          m.fieldMaskField = r.google.protobuf.FieldMask();
           continue;
 
         // google.protobuf.SourceContext source_context_field = 6
         case 50:
-          m.sourceContextField =
-            google_protobuf_source_context_models.google.protobuf.SourceContext;
+          m.sourceContextField = r.google.protobuf.SourceContext();
           continue;
 
         // google.protobuf.Struct struct_field = 7
         case 58:
-          m.structField = google_protobuf_struct_models.google.protobuf.Struct;
+          m.structField = r.google.protobuf.Struct();
           continue;
 
         // google.protobuf.Timestamp timestamp_field = 8
         case 66:
-          m.timestampField =
-            google_protobuf_timestamp_models.google.protobuf.Timestamp;
+          m.timestampField = r.google.protobuf.Timestamp();
           continue;
 
         // google.protobuf.Type type_field = 9
         case 74:
-          m.typeField = google_protobuf_type_models.google.protobuf.Type;
+          m.typeField = r.google.protobuf.Type();
           continue;
 
         // google.protobuf.DoubleValue double_field = 10
         case 82:
-          m.doubleField =
-            google_protobuf_wrappers_models.google.protobuf.DoubleValue;
+          m.doubleField = r.google.protobuf.DoubleValue();
           continue;
 
         // google.protobuf.FloatValue float_field = 11
         case 90:
-          m.floatField =
-            google_protobuf_wrappers_models.google.protobuf.FloatValue;
+          m.floatField = r.google.protobuf.FloatValue();
           continue;
 
         // google.protobuf.Int64Value int64_field = 12
         case 98:
-          m.int64Field =
-            google_protobuf_wrappers_models.google.protobuf.Int64Value;
+          m.int64Field = r.google.protobuf.Int64Value();
           continue;
 
         // google.protobuf.UInt64Value uint64_field = 13
         case 106:
-          m.uint64Field =
-            google_protobuf_wrappers_models.google.protobuf.UInt64Value;
+          m.uint64Field = r.google.protobuf.UInt64Value();
           continue;
 
         // google.protobuf.Int32Value int32_field = 14
         case 114:
-          m.int32Field =
-            google_protobuf_wrappers_models.google.protobuf.Int32Value;
+          m.int32Field = r.google.protobuf.Int32Value();
           continue;
 
         // google.protobuf.UInt32Value uint32_field = 15
         case 122:
-          m.uint32Field =
-            google_protobuf_wrappers_models.google.protobuf.UInt32Value;
+          m.uint32Field = r.google.protobuf.UInt32Value();
           continue;
 
         // google.protobuf.BoolValue bool_field = 16
         case 130:
-          m.boolField =
-            google_protobuf_wrappers_models.google.protobuf.BoolValue;
+          m.boolField = r.google.protobuf.BoolValue();
           continue;
 
         // google.protobuf.StringValue string_field = 17
         case 138:
-          m.stringField =
-            google_protobuf_wrappers_models.google.protobuf.StringValue;
+          m.stringField = r.google.protobuf.StringValue();
           continue;
 
         // google.protobuf.BytesValue bytes_field = 18
         case 146:
-          m.bytesField =
-            google_protobuf_wrappers_models.google.protobuf.BytesValue;
+          m.bytesField = r.google.protobuf.BytesValue();
           continue;
 
         // google.protobuf.Value value_field = 19
         case 154:
-          m.valueField = google_protobuf_struct_models.google.protobuf.Value;
+          m.valueField = r.google.protobuf.Value();
           continue;
       }
     }
@@ -408,9 +488,55 @@ export class TestWellKnownTypes implements ITestWellKnownTypes {
     return m;
   }
 
-  public static toJSON(m: ITestWellKnownTypes): ITestWellKnownTypesObj {}
+  public static toJSON(m: ITestWellKnownTypes): ITestWellKnownTypesObj {
+    return {
+      anyField: m.anyField.toJSON(),
+      apiField: m.apiField.toJSON(),
+      durationField: m.durationField.toJSON(),
+      emptyField: m.emptyField.toJSON(),
+      fieldMaskField: m.fieldMaskField.toJSON(),
+      sourceContextField: m.sourceContextField.toJSON(),
+      structField: m.structField.toJSON(),
+      timestampField: m.timestampField.toJSON(),
+      typeField: m.typeField.toJSON(),
+      doubleField: m.doubleField.toJSON(),
+      floatField: m.floatField.toJSON(),
+      int64Field: m.int64Field.toJSON(),
+      uint64Field: m.uint64Field.toJSON(),
+      int32Field: m.int32Field.toJSON(),
+      uint32Field: m.uint32Field.toJSON(),
+      boolField: m.boolField.toJSON(),
+      stringField: m.stringField.toJSON(),
+      bytesField: m.bytesField.toJSON(),
+      valueField: m.valueField.toJSON(),
+    };
+  }
 
-  public static fromJSON(obj: ITestWellKnownTypesObj): ITestWellKnownTypes {}
+  public static fromJSON(obj: ITestWellKnownTypesObj): ITestWellKnownTypes {
+    const m = new TestWellKnownTypes();
+
+    m.anyField.fromJSON(obj.anyField);
+    m.apiField.fromJSON(obj.apiField);
+    m.durationField.fromJSON(obj.durationField);
+    m.emptyField.fromJSON(obj.emptyField);
+    m.fieldMaskField.fromJSON(obj.fieldMaskField);
+    m.sourceContextField.fromJSON(obj.sourceContextField);
+    m.structField.fromJSON(obj.structField);
+    m.timestampField.fromJSON(obj.timestampField);
+    m.typeField.fromJSON(obj.typeField);
+    m.doubleField.fromJSON(obj.doubleField);
+    m.floatField.fromJSON(obj.floatField);
+    m.int64Field.fromJSON(obj.int64Field);
+    m.uint64Field.fromJSON(obj.uint64Field);
+    m.int32Field.fromJSON(obj.int32Field);
+    m.uint32Field.fromJSON(obj.uint32Field);
+    m.boolField.fromJSON(obj.boolField);
+    m.stringField.fromJSON(obj.stringField);
+    m.bytesField.fromJSON(obj.bytesField);
+    m.valueField.fromJSON(obj.valueField);
+
+    return m;
+  }
 
   clone(): TestWellKnownTypes {
     return new TestWellKnownTypes(this);
@@ -418,66 +544,91 @@ export class TestWellKnownTypes implements ITestWellKnownTypes {
 }
 
 export interface IRepeatedWellKnownTypesObj {
-  anyField: null;
-  apiField: null;
-  durationField: null;
-  emptyField: null;
-  fieldMaskField: null;
-  sourceContextField: null;
-  structField: null;
-  timestampField: null;
-  typeField: null;
-  doubleField: null;
-  floatField: null;
-  int64Field: null;
-  uint64Field: null;
-  int32Field: null;
-  uint32Field: null;
-  boolField: null;
-  stringField: null;
-  bytesField: null;
+  anyField: google.protobuf.Any;
+  apiField: google.protobuf.Api;
+  durationField: google.protobuf.Duration;
+  emptyField: google.protobuf.Empty;
+  fieldMaskField: google.protobuf.FieldMask;
+  sourceContextField: google.protobuf.SourceContext;
+  structField: google.protobuf.Struct;
+  timestampField: google.protobuf.Timestamp;
+  typeField: google.protobuf.Type;
+  doubleField: google.protobuf.DoubleValue;
+  floatField: google.protobuf.FloatValue;
+  int64Field: google.protobuf.Int64Value;
+  uint64Field: google.protobuf.UInt64Value;
+  int32Field: google.protobuf.Int32Value;
+  uint32Field: google.protobuf.UInt32Value;
+  boolField: google.protobuf.BoolValue;
+  stringField: google.protobuf.StringValue;
+  bytesField: google.protobuf.BytesValue;
 }
 
 export interface IRepeatedWellKnownTypes {
-  anyField: null;
-  apiField: null;
-  durationField: null;
-  emptyField: null;
-  fieldMaskField: null;
-  sourceContextField: null;
-  structField: null;
-  timestampField: null;
-  typeField: null;
-  doubleField: null;
-  floatField: null;
-  int64Field: null;
-  uint64Field: null;
-  int32Field: null;
-  uint32Field: null;
-  boolField: null;
-  stringField: null;
-  bytesField: null;
+  anyField: google.protobuf.Any;
+  apiField: google.protobuf.Api;
+  durationField: google.protobuf.Duration;
+  emptyField: google.protobuf.Empty;
+  fieldMaskField: google.protobuf.FieldMask;
+  sourceContextField: google.protobuf.SourceContext;
+  structField: google.protobuf.Struct;
+  timestampField: google.protobuf.Timestamp;
+  typeField: google.protobuf.Type;
+  doubleField: google.protobuf.DoubleValue;
+  floatField: google.protobuf.FloatValue;
+  int64Field: google.protobuf.Int64Value;
+  uint64Field: google.protobuf.UInt64Value;
+  int32Field: google.protobuf.Int32Value;
+  uint32Field: google.protobuf.UInt32Value;
+  boolField: google.protobuf.BoolValue;
+  stringField: google.protobuf.StringValue;
+  bytesField: google.protobuf.BytesValue;
 }
 
 export class RepeatedWellKnownTypes implements IRepeatedWellKnownTypes {
-  anyField: null = [];
-  apiField: null = [];
-  durationField: null = [];
-  emptyField: null = [];
-  fieldMaskField: null = [];
-  sourceContextField: null = [];
-  structField: null = [];
-  timestampField: null = [];
-  typeField: null = [];
-  doubleField: null = [];
-  floatField: null = [];
-  int64Field: null = [];
-  uint64Field: null = [];
-  int32Field: null = [];
-  uint32Field: null = [];
-  boolField: null = [];
-  stringField: null = [];
-  bytesField: null = [];
+  anyField: google.protobuf.Any = [];
+  apiField: google.protobuf.Api = [];
+  durationField: google.protobuf.Duration = [];
+  emptyField: google.protobuf.Empty = [];
+  fieldMaskField: google.protobuf.FieldMask = [];
+  sourceContextField: google.protobuf.SourceContext = [];
+  structField: google.protobuf.Struct = [];
+  timestampField: google.protobuf.Timestamp = [];
+  typeField: google.protobuf.Type = [];
+  doubleField: google.protobuf.DoubleValue = [];
+  floatField: google.protobuf.FloatValue = [];
+  int64Field: google.protobuf.Int64Value = [];
+  uint64Field: google.protobuf.UInt64Value = [];
+  int32Field: google.protobuf.Int32Value = [];
+  uint32Field: google.protobuf.UInt32Value = [];
+  boolField: google.protobuf.BoolValue = [];
+  stringField: google.protobuf.StringValue = [];
+  bytesField: google.protobuf.BytesValue = [];
+
+  public static fields = [
+    "anyField",
+    "apiField",
+    "durationField",
+    "emptyField",
+    "fieldMaskField",
+    "sourceContextField",
+    "structField",
+    "timestampField",
+    "typeField",
+    "doubleField",
+    "floatField",
+    "int64Field",
+    "uint64Field",
+    "int32Field",
+    "uint32Field",
+    "boolField",
+    "stringField",
+    "bytesField",
+  ];
+
+  public get fields() {
+    return RepeatedWellKnownTypes.fields;
+  }
 
   constructor(obj?: Partial<IRepeatedWellKnownTypes>) {
     if (!obj) return;
@@ -545,109 +696,109 @@ export class RepeatedWellKnownTypes implements IRepeatedWellKnownTypes {
     // google.protobuf.Any any_field = 1
     if (m.anyField !== []) {
       w.uint32(10);
-      m.anyField.encode(writer);
+      w.google.protobuf.Any(m.anyField);
     }
 
     // google.protobuf.Api api_field = 2
     if (m.apiField !== []) {
       w.uint32(18);
-      m.apiField.encode(writer);
+      w.google.protobuf.Api(m.apiField);
     }
 
     // google.protobuf.Duration duration_field = 3
     if (m.durationField !== []) {
       w.uint32(26);
-      m.durationField.encode(writer);
+      w.google.protobuf.Duration(m.durationField);
     }
 
     // google.protobuf.Empty empty_field = 4
     if (m.emptyField !== []) {
       w.uint32(34);
-      m.emptyField.encode(writer);
+      w.google.protobuf.Empty(m.emptyField);
     }
 
     // google.protobuf.FieldMask field_mask_field = 5
     if (m.fieldMaskField !== []) {
       w.uint32(42);
-      m.fieldMaskField.encode(writer);
+      w.google.protobuf.FieldMask(m.fieldMaskField);
     }
 
     // google.protobuf.SourceContext source_context_field = 6
     if (m.sourceContextField !== []) {
       w.uint32(50);
-      m.sourceContextField.encode(writer);
+      w.google.protobuf.SourceContext(m.sourceContextField);
     }
 
     // google.protobuf.Struct struct_field = 7
     if (m.structField !== []) {
       w.uint32(58);
-      m.structField.encode(writer);
+      w.google.protobuf.Struct(m.structField);
     }
 
     // google.protobuf.Timestamp timestamp_field = 8
     if (m.timestampField !== []) {
       w.uint32(66);
-      m.timestampField.encode(writer);
+      w.google.protobuf.Timestamp(m.timestampField);
     }
 
     // google.protobuf.Type type_field = 9
     if (m.typeField !== []) {
       w.uint32(74);
-      m.typeField.encode(writer);
+      w.google.protobuf.Type(m.typeField);
     }
 
     // google.protobuf.DoubleValue double_field = 10
     if (m.doubleField !== []) {
       w.uint32(82);
-      m.doubleField.encode(writer);
+      w.google.protobuf.DoubleValue(m.doubleField);
     }
 
     // google.protobuf.FloatValue float_field = 11
     if (m.floatField !== []) {
       w.uint32(90);
-      m.floatField.encode(writer);
+      w.google.protobuf.FloatValue(m.floatField);
     }
 
     // google.protobuf.Int64Value int64_field = 12
     if (m.int64Field !== []) {
       w.uint32(98);
-      m.int64Field.encode(writer);
+      w.google.protobuf.Int64Value(m.int64Field);
     }
 
     // google.protobuf.UInt64Value uint64_field = 13
     if (m.uint64Field !== []) {
       w.uint32(106);
-      m.uint64Field.encode(writer);
+      w.google.protobuf.UInt64Value(m.uint64Field);
     }
 
     // google.protobuf.Int32Value int32_field = 14
     if (m.int32Field !== []) {
       w.uint32(114);
-      m.int32Field.encode(writer);
+      w.google.protobuf.Int32Value(m.int32Field);
     }
 
     // google.protobuf.UInt32Value uint32_field = 15
     if (m.uint32Field !== []) {
       w.uint32(122);
-      m.uint32Field.encode(writer);
+      w.google.protobuf.UInt32Value(m.uint32Field);
     }
 
     // google.protobuf.BoolValue bool_field = 16
     if (m.boolField !== []) {
       w.uint32(130);
-      m.boolField.encode(writer);
+      w.google.protobuf.BoolValue(m.boolField);
     }
 
     // google.protobuf.StringValue string_field = 17
     if (m.stringField !== []) {
       w.uint32(138);
-      m.stringField.encode(writer);
+      w.google.protobuf.StringValue(m.stringField);
     }
 
     // google.protobuf.BytesValue bytes_field = 18
     if (m.bytesField !== []) {
       w.uint32(146);
-      m.bytesField.encode(writer);
+      w.google.protobuf.BytesValue(m.bytesField);
     }
 
     return w.finish();
@@ -661,144 +812,164 @@ export class RepeatedWellKnownTypes implements IRepeatedWellKnownTypes {
       switch (tag) {
         // repeated google.protobuf.Any any_field = 1
         case 10:
-          const anyFieldValue = google_protobuf_any_models.google.protobuf.Any;
+          {
+            const value = r.google.protobuf.Any();
 
-          m.anyField.push(anyFieldValue);
+            m.anyField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Api api_field = 2
         case 18:
-          const apiFieldValue = google_protobuf_api_models.google.protobuf.Api;
+          {
+            const value = r.google.protobuf.Api();
 
-          m.apiField.push(apiFieldValue);
+            m.apiField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Duration duration_field = 3
         case 26:
-          const durationFieldValue =
-            google_protobuf_duration_models.google.protobuf.Duration;
+          {
+            const value = r.google.protobuf.Duration();
 
-          m.durationField.push(durationFieldValue);
+            m.durationField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Empty empty_field = 4
         case 34:
-          const emptyFieldValue =
-            google_protobuf_empty_models.google.protobuf.Empty;
+          {
+            const value = r.google.protobuf.Empty();
 
-          m.emptyField.push(emptyFieldValue);
+            m.emptyField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.FieldMask field_mask_field = 5
         case 42:
-          const fieldMaskFieldValue =
-            google_protobuf_field_mask_models.google.protobuf.FieldMask;
+          {
+            const value = r.google.protobuf.FieldMask();
 
-          m.fieldMaskField.push(fieldMaskFieldValue);
+            m.fieldMaskField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.SourceContext source_context_field = 6
         case 50:
-          const sourceContextFieldValue =
-            google_protobuf_source_context_models.google.protobuf.SourceContext;
+          {
+            const value = r.google.protobuf.SourceContext();
 
-          m.sourceContextField.push(sourceContextFieldValue);
+            m.sourceContextField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Struct struct_field = 7
         case 58:
-          const structFieldValue =
-            google_protobuf_struct_models.google.protobuf.Struct;
+          {
+            const value = r.google.protobuf.Struct();
 
-          m.structField.push(structFieldValue);
+            m.structField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Timestamp timestamp_field = 8
         case 66:
-          const timestampFieldValue =
-            google_protobuf_timestamp_models.google.protobuf.Timestamp;
+          {
+            const value = r.google.protobuf.Timestamp();
 
-          m.timestampField.push(timestampFieldValue);
+            m.timestampField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Type type_field = 9
         case 74:
-          const typeFieldValue =
-            google_protobuf_type_models.google.protobuf.Type;
+          {
+            const value = r.google.protobuf.Type();
 
-          m.typeField.push(typeFieldValue);
+            m.typeField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.DoubleValue double_field = 10
         case 82:
-          const doubleFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.DoubleValue;
+          {
+            const value = r.google.protobuf.DoubleValue();
 
-          m.doubleField.push(doubleFieldValue);
+            m.doubleField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.FloatValue float_field = 11
         case 90:
-          const floatFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.FloatValue;
+          {
+            const value = r.google.protobuf.FloatValue();
 
-          m.floatField.push(floatFieldValue);
+            m.floatField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Int64Value int64_field = 12
         case 98:
-          const int64FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.Int64Value;
+          {
+            const value = r.google.protobuf.Int64Value();
 
-          m.int64Field.push(int64FieldValue);
+            m.int64Field.push(value);
+          }
           continue;
 
         // repeated google.protobuf.UInt64Value uint64_field = 13
         case 106:
-          const uint64FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.UInt64Value;
+          {
+            const value = r.google.protobuf.UInt64Value();
 
-          m.uint64Field.push(uint64FieldValue);
+            m.uint64Field.push(value);
+          }
           continue;
 
         // repeated google.protobuf.Int32Value int32_field = 14
         case 114:
-          const int32FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.Int32Value;
+          {
+            const value = r.google.protobuf.Int32Value();
 
-          m.int32Field.push(int32FieldValue);
+            m.int32Field.push(value);
+          }
           continue;
 
         // repeated google.protobuf.UInt32Value uint32_field = 15
         case 122:
-          const uint32FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.UInt32Value;
+          {
+            const value = r.google.protobuf.UInt32Value();
 
-          m.uint32Field.push(uint32FieldValue);
+            m.uint32Field.push(value);
+          }
           continue;
 
         // repeated google.protobuf.BoolValue bool_field = 16
         case 130:
-          const boolFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.BoolValue;
+          {
+            const value = r.google.protobuf.BoolValue();
 
-          m.boolField.push(boolFieldValue);
+            m.boolField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.StringValue string_field = 17
         case 138:
-          const stringFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.StringValue;
+          {
+            const value = r.google.protobuf.StringValue();
 
-          m.stringField.push(stringFieldValue);
+            m.stringField.push(value);
+          }
           continue;
 
         // repeated google.protobuf.BytesValue bytes_field = 18
         case 146:
-          const bytesFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.BytesValue;
+          {
+            const value = r.google.protobuf.BytesValue();
 
-          m.bytesField.push(bytesFieldValue);
+            m.bytesField.push(value);
+          }
           continue;
       }
     }
@@ -806,13 +977,55 @@ export class RepeatedWellKnownTypes implements IRepeatedWellKnownTypes {
     return m;
   }
 
-  public static toJSON(
-    m: IRepeatedWellKnownTypes
-  ): IRepeatedWellKnownTypesObj {}
+  public static toJSON(m: IRepeatedWellKnownTypes): IRepeatedWellKnownTypesObj {
+    return {
+      anyField: m.anyField.toJSON(),
+      apiField: m.apiField.toJSON(),
+      durationField: m.durationField.toJSON(),
+      emptyField: m.emptyField.toJSON(),
+      fieldMaskField: m.fieldMaskField.toJSON(),
+      sourceContextField: m.sourceContextField.toJSON(),
+      structField: m.structField.toJSON(),
+      timestampField: m.timestampField.toJSON(),
+      typeField: m.typeField.toJSON(),
+      doubleField: m.doubleField.toJSON(),
+      floatField: m.floatField.toJSON(),
+      int64Field: m.int64Field.toJSON(),
+      uint64Field: m.uint64Field.toJSON(),
+      int32Field: m.int32Field.toJSON(),
+      uint32Field: m.uint32Field.toJSON(),
+      boolField: m.boolField.toJSON(),
+      stringField: m.stringField.toJSON(),
+      bytesField: m.bytesField.toJSON(),
+    };
+  }
 
   public static fromJSON(
     obj: IRepeatedWellKnownTypesObj
-  ): IRepeatedWellKnownTypes {}
+  ): IRepeatedWellKnownTypes {
+    const m = new RepeatedWellKnownTypes();
+
+    m.anyField.fromJSON(obj.anyField);
+    m.apiField.fromJSON(obj.apiField);
+    m.durationField.fromJSON(obj.durationField);
+    m.emptyField.fromJSON(obj.emptyField);
+    m.fieldMaskField.fromJSON(obj.fieldMaskField);
+    m.sourceContextField.fromJSON(obj.sourceContextField);
+    m.structField.fromJSON(obj.structField);
+    m.timestampField.fromJSON(obj.timestampField);
+    m.typeField.fromJSON(obj.typeField);
+    m.doubleField.fromJSON(obj.doubleField);
+    m.floatField.fromJSON(obj.floatField);
+    m.int64Field.fromJSON(obj.int64Field);
+    m.uint64Field.fromJSON(obj.uint64Field);
+    m.int32Field.fromJSON(obj.int32Field);
+    m.uint32Field.fromJSON(obj.uint32Field);
+    m.boolField.fromJSON(obj.boolField);
+    m.stringField.fromJSON(obj.stringField);
+    m.bytesField.fromJSON(obj.bytesField);
+
+    return m;
+  }
 
   clone(): RepeatedWellKnownTypes {
     return new RepeatedWellKnownTypes(this);
@@ -820,66 +1033,109 @@ export class RepeatedWellKnownTypes implements IRepeatedWellKnownTypes {
 }
 
 export interface IOneofWellKnownTypesObj {
-  anyField?: null;
-  apiField?: null;
-  durationField?: null;
-  emptyField?: null;
-  fieldMaskField?: null;
-  sourceContextField?: null;
-  structField?: null;
-  timestampField?: null;
-  typeField?: null;
-  doubleField?: null;
-  floatField?: null;
-  int64Field?: null;
-  uint64Field?: null;
-  int32Field?: null;
-  uint32Field?: null;
-  boolField?: null;
-  stringField?: null;
-  bytesField?: null;
+  anyField?: google.protobuf.Any;
+  apiField?: google.protobuf.Api;
+  durationField?: google.protobuf.Duration;
+  emptyField?: google.protobuf.Empty;
+  fieldMaskField?: google.protobuf.FieldMask;
+  sourceContextField?: google.protobuf.SourceContext;
+  structField?: google.protobuf.Struct;
+  timestampField?: google.protobuf.Timestamp;
+  typeField?: google.protobuf.Type;
+  doubleField?: google.protobuf.DoubleValue;
+  floatField?: google.protobuf.FloatValue;
+  int64Field?: google.protobuf.Int64Value;
+  uint64Field?: google.protobuf.UInt64Value;
+  int32Field?: google.protobuf.Int32Value;
+  uint32Field?: google.protobuf.UInt32Value;
+  boolField?: google.protobuf.BoolValue;
+  stringField?: google.protobuf.StringValue;
+  bytesField?: google.protobuf.BytesValue;
 }
 
 export interface IOneofWellKnownTypes {
-  anyField?: null;
-  apiField?: null;
-  durationField?: null;
-  emptyField?: null;
-  fieldMaskField?: null;
-  sourceContextField?: null;
-  structField?: null;
-  timestampField?: null;
-  typeField?: null;
-  doubleField?: null;
-  floatField?: null;
-  int64Field?: null;
-  uint64Field?: null;
-  int32Field?: null;
-  uint32Field?: null;
-  boolField?: null;
-  stringField?: null;
-  bytesField?: null;
+  anyField?: google.protobuf.Any;
+  apiField?: google.protobuf.Api;
+  durationField?: google.protobuf.Duration;
+  emptyField?: google.protobuf.Empty;
+  fieldMaskField?: google.protobuf.FieldMask;
+  sourceContextField?: google.protobuf.SourceContext;
+  structField?: google.protobuf.Struct;
+  timestampField?: google.protobuf.Timestamp;
+  typeField?: google.protobuf.Type;
+  doubleField?: google.protobuf.DoubleValue;
+  floatField?: google.protobuf.FloatValue;
+  int64Field?: google.protobuf.Int64Value;
+  uint64Field?: google.protobuf.UInt64Value;
+  int32Field?: google.protobuf.Int32Value;
+  uint32Field?: google.protobuf.UInt32Value;
+  boolField?: google.protobuf.BoolValue;
+  stringField?: google.protobuf.StringValue;
+  bytesField?: google.protobuf.BytesValue;
 }
 
 export class OneofWellKnownTypes implements IOneofWellKnownTypes {
-  anyField?: null = null;
-  apiField?: null = null;
-  durationField?: null = null;
-  emptyField?: null = null;
-  fieldMaskField?: null = null;
-  sourceContextField?: null = null;
-  structField?: null = null;
-  timestampField?: null = null;
-  typeField?: null = null;
-  doubleField?: null = null;
-  floatField?: null = null;
-  int64Field?: null = null;
-  uint64Field?: null = null;
-  int32Field?: null = null;
-  uint32Field?: null = null;
-  boolField?: null = null;
-  stringField?: null = null;
-  bytesField?: null = null;
+  anyField?: google.protobuf.Any =
+    new google_protobuf_any_models.google.protobuf.Any();
+  apiField?: google.protobuf.Api =
+    new google_protobuf_api_models.google.protobuf.Api();
+  durationField?: google.protobuf.Duration =
+    new google_protobuf_duration_models.google.protobuf.Duration();
+  emptyField?: google.protobuf.Empty =
+    new google_protobuf_empty_models.google.protobuf.Empty();
+  fieldMaskField?: google.protobuf.FieldMask =
+    new google_protobuf_field_mask_models.google.protobuf.FieldMask();
+  sourceContextField?: google.protobuf.SourceContext =
+    new google_protobuf_source_context_models.google.protobuf.SourceContext();
+  structField?: google.protobuf.Struct =
+    new google_protobuf_struct_models.google.protobuf.Struct();
+  timestampField?: google.protobuf.Timestamp =
+    new google_protobuf_timestamp_models.google.protobuf.Timestamp();
+  typeField?: google.protobuf.Type =
+    new google_protobuf_type_models.google.protobuf.Type();
+  doubleField?: google.protobuf.DoubleValue =
+    new google_protobuf_wrappers_models.google.protobuf.DoubleValue();
+  floatField?: google.protobuf.FloatValue =
+    new google_protobuf_wrappers_models.google.protobuf.FloatValue();
+  int64Field?: google.protobuf.Int64Value =
+    new google_protobuf_wrappers_models.google.protobuf.Int64Value();
+  uint64Field?: google.protobuf.UInt64Value =
+    new google_protobuf_wrappers_models.google.protobuf.UInt64Value();
+  int32Field?: google.protobuf.Int32Value =
+    new google_protobuf_wrappers_models.google.protobuf.Int32Value();
+  uint32Field?: google.protobuf.UInt32Value =
+    new google_protobuf_wrappers_models.google.protobuf.UInt32Value();
+  boolField?: google.protobuf.BoolValue =
+    new google_protobuf_wrappers_models.google.protobuf.BoolValue();
+  stringField?: google.protobuf.StringValue =
+    new google_protobuf_wrappers_models.google.protobuf.StringValue();
+  bytesField?: google.protobuf.BytesValue =
+    new google_protobuf_wrappers_models.google.protobuf.BytesValue();
+
+  public static fields = [
+    "anyField",
+    "apiField",
+    "durationField",
+    "emptyField",
+    "fieldMaskField",
+    "sourceContextField",
+    "structField",
+    "timestampField",
+    "typeField",
+    "doubleField",
+    "floatField",
+    "int64Field",
+    "uint64Field",
+    "int32Field",
+    "uint32Field",
+    "boolField",
+    "stringField",
+    "bytesField",
+  ];
+
+  public get fields() {
+    return OneofWellKnownTypes.fields;
+  }
 
   constructor(obj?: Partial<IOneofWellKnownTypes>) {
     if (!obj) return;
@@ -991,105 +1247,92 @@ export class OneofWellKnownTypes implements IOneofWellKnownTypes {
       switch (tag) {
         // google.protobuf.Any any_field = 1
         case 10:
-          m.anyField = google_protobuf_any_models.google.protobuf.Any;
+          m.anyField = r.google.protobuf.Any();
           continue;
 
         // google.protobuf.Api api_field = 2
         case 18:
-          m.apiField = google_protobuf_api_models.google.protobuf.Api;
+          m.apiField = r.google.protobuf.Api();
           continue;
 
         // google.protobuf.Duration duration_field = 3
         case 26:
-          m.durationField =
-            google_protobuf_duration_models.google.protobuf.Duration;
+          m.durationField = r.google.protobuf.Duration();
           continue;
 
         // google.protobuf.Empty empty_field = 4
         case 34:
-          m.emptyField = google_protobuf_empty_models.google.protobuf.Empty;
+          m.emptyField = r.google.protobuf.Empty();
           continue;
 
         // google.protobuf.FieldMask field_mask_field = 5
         case 42:
-          m.fieldMaskField =
-            google_protobuf_field_mask_models.google.protobuf.FieldMask;
+          m.fieldMaskField = r.google.protobuf.FieldMask();
           continue;
 
         // google.protobuf.SourceContext source_context_field = 6
         case 50:
-          m.sourceContextField =
-            google_protobuf_source_context_models.google.protobuf.SourceContext;
+          m.sourceContextField = r.google.protobuf.SourceContext();
           continue;
 
         // google.protobuf.Struct struct_field = 7
         case 58:
-          m.structField = google_protobuf_struct_models.google.protobuf.Struct;
+          m.structField = r.google.protobuf.Struct();
           continue;
 
         // google.protobuf.Timestamp timestamp_field = 8
         case 66:
-          m.timestampField =
-            google_protobuf_timestamp_models.google.protobuf.Timestamp;
+          m.timestampField = r.google.protobuf.Timestamp();
           continue;
 
         // google.protobuf.Type type_field = 9
         case 74:
-          m.typeField = google_protobuf_type_models.google.protobuf.Type;
+          m.typeField = r.google.protobuf.Type();
           continue;
 
         // google.protobuf.DoubleValue double_field = 10
         case 82:
-          m.doubleField =
-            google_protobuf_wrappers_models.google.protobuf.DoubleValue;
+          m.doubleField = r.google.protobuf.DoubleValue();
           continue;
 
         // google.protobuf.FloatValue float_field = 11
         case 90:
-          m.floatField =
-            google_protobuf_wrappers_models.google.protobuf.FloatValue;
+          m.floatField = r.google.protobuf.FloatValue();
           continue;
 
         // google.protobuf.Int64Value int64_field = 12
         case 98:
-          m.int64Field =
-            google_protobuf_wrappers_models.google.protobuf.Int64Value;
+          m.int64Field = r.google.protobuf.Int64Value();
           continue;
 
         // google.protobuf.UInt64Value uint64_field = 13
         case 106:
-          m.uint64Field =
-            google_protobuf_wrappers_models.google.protobuf.UInt64Value;
+          m.uint64Field = r.google.protobuf.UInt64Value();
           continue;
 
         // google.protobuf.Int32Value int32_field = 14
         case 114:
-          m.int32Field =
-            google_protobuf_wrappers_models.google.protobuf.Int32Value;
+          m.int32Field = r.google.protobuf.Int32Value();
           continue;
 
         // google.protobuf.UInt32Value uint32_field = 15
         case 122:
-          m.uint32Field =
-            google_protobuf_wrappers_models.google.protobuf.UInt32Value;
+          m.uint32Field = r.google.protobuf.UInt32Value();
           continue;
 
         // google.protobuf.BoolValue bool_field = 16
         case 130:
-          m.boolField =
-            google_protobuf_wrappers_models.google.protobuf.BoolValue;
+          m.boolField = r.google.protobuf.BoolValue();
           continue;
 
         // google.protobuf.StringValue string_field = 17
         case 138:
-          m.stringField =
-            google_protobuf_wrappers_models.google.protobuf.StringValue;
+          m.stringField = r.google.protobuf.StringValue();
           continue;
 
         // google.protobuf.BytesValue bytes_field = 18
         case 146:
-          m.bytesField =
-            google_protobuf_wrappers_models.google.protobuf.BytesValue;
+          m.bytesField = r.google.protobuf.BytesValue();
           continue;
       }
     }
@@ -1097,9 +1340,53 @@ export class OneofWellKnownTypes implements IOneofWellKnownTypes {
     return m;
   }
 
-  public static toJSON(m: IOneofWellKnownTypes): IOneofWellKnownTypesObj {}
+  public static toJSON(m: IOneofWellKnownTypes): IOneofWellKnownTypesObj {
+    return {
+      anyField: m.anyField.toJSON(),
+      apiField: m.apiField.toJSON(),
+      durationField: m.durationField.toJSON(),
+      emptyField: m.emptyField.toJSON(),
+      fieldMaskField: m.fieldMaskField.toJSON(),
+      sourceContextField: m.sourceContextField.toJSON(),
+      structField: m.structField.toJSON(),
+      timestampField: m.timestampField.toJSON(),
+      typeField: m.typeField.toJSON(),
+      doubleField: m.doubleField.toJSON(),
+      floatField: m.floatField.toJSON(),
+      int64Field: m.int64Field.toJSON(),
+      uint64Field: m.uint64Field.toJSON(),
+      int32Field: m.int32Field.toJSON(),
+      uint32Field: m.uint32Field.toJSON(),
+      boolField: m.boolField.toJSON(),
+      stringField: m.stringField.toJSON(),
+      bytesField: m.bytesField.toJSON(),
+    };
+  }
 
-  public static fromJSON(obj: IOneofWellKnownTypesObj): IOneofWellKnownTypes {}
+  public static fromJSON(obj: IOneofWellKnownTypesObj): IOneofWellKnownTypes {
+    const m = new OneofWellKnownTypes();
+
+    m.anyField.fromJSON(obj.anyField);
+    m.apiField.fromJSON(obj.apiField);
+    m.durationField.fromJSON(obj.durationField);
+    m.emptyField.fromJSON(obj.emptyField);
+    m.fieldMaskField.fromJSON(obj.fieldMaskField);
+    m.sourceContextField.fromJSON(obj.sourceContextField);
+    m.structField.fromJSON(obj.structField);
+    m.timestampField.fromJSON(obj.timestampField);
+    m.typeField.fromJSON(obj.typeField);
+    m.doubleField.fromJSON(obj.doubleField);
+    m.floatField.fromJSON(obj.floatField);
+    m.int64Field.fromJSON(obj.int64Field);
+    m.uint64Field.fromJSON(obj.uint64Field);
+    m.int32Field.fromJSON(obj.int32Field);
+    m.uint32Field.fromJSON(obj.uint32Field);
+    m.boolField.fromJSON(obj.boolField);
+    m.stringField.fromJSON(obj.stringField);
+    m.bytesField.fromJSON(obj.bytesField);
+
+    return m;
+  }
 
   clone(): OneofWellKnownTypes {
     return new OneofWellKnownTypes(this);
@@ -1107,66 +1394,91 @@ export class OneofWellKnownTypes implements IOneofWellKnownTypes {
 }
 
 export interface IMapWellKnownTypesObj {
-  anyField: Record<number, null>;
-  apiField: Record<number, null>;
-  durationField: Record<number, null>;
-  emptyField: Record<number, null>;
-  fieldMaskField: Record<number, null>;
-  sourceContextField: Record<number, null>;
-  structField: Record<number, null>;
-  timestampField: Record<number, null>;
-  typeField: Record<number, null>;
-  doubleField: Record<number, null>;
-  floatField: Record<number, null>;
-  int64Field: Record<number, null>;
-  uint64Field: Record<number, null>;
-  int32Field: Record<number, null>;
-  uint32Field: Record<number, null>;
-  boolField: Record<number, null>;
-  stringField: Record<number, null>;
-  bytesField: Record<number, null>;
+  anyField: Record<number, google.protobuf.Any>;
+  apiField: Record<number, google.protobuf.Api>;
+  durationField: Record<number, google.protobuf.Duration>;
+  emptyField: Record<number, google.protobuf.Empty>;
+  fieldMaskField: Record<number, google.protobuf.FieldMask>;
+  sourceContextField: Record<number, google.protobuf.SourceContext>;
+  structField: Record<number, google.protobuf.Struct>;
+  timestampField: Record<number, google.protobuf.Timestamp>;
+  typeField: Record<number, google.protobuf.Type>;
+  doubleField: Record<number, google.protobuf.DoubleValue>;
+  floatField: Record<number, google.protobuf.FloatValue>;
+  int64Field: Record<number, google.protobuf.Int64Value>;
+  uint64Field: Record<number, google.protobuf.UInt64Value>;
+  int32Field: Record<number, google.protobuf.Int32Value>;
+  uint32Field: Record<number, google.protobuf.UInt32Value>;
+  boolField: Record<number, google.protobuf.BoolValue>;
+  stringField: Record<number, google.protobuf.StringValue>;
+  bytesField: Record<number, google.protobuf.BytesValue>;
 }
 
 export interface IMapWellKnownTypes {
-  anyField: Map<number, null>;
-  apiField: Map<number, null>;
-  durationField: Map<number, null>;
-  emptyField: Map<number, null>;
-  fieldMaskField: Map<number, null>;
-  sourceContextField: Map<number, null>;
-  structField: Map<number, null>;
-  timestampField: Map<number, null>;
-  typeField: Map<number, null>;
-  doubleField: Map<number, null>;
-  floatField: Map<number, null>;
-  int64Field: Map<number, null>;
-  uint64Field: Map<number, null>;
-  int32Field: Map<number, null>;
-  uint32Field: Map<number, null>;
-  boolField: Map<number, null>;
-  stringField: Map<number, null>;
-  bytesField: Map<number, null>;
+  anyField: Map<number, google.protobuf.Any>;
+  apiField: Map<number, google.protobuf.Api>;
+  durationField: Map<number, google.protobuf.Duration>;
+  emptyField: Map<number, google.protobuf.Empty>;
+  fieldMaskField: Map<number, google.protobuf.FieldMask>;
+  sourceContextField: Map<number, google.protobuf.SourceContext>;
+  structField: Map<number, google.protobuf.Struct>;
+  timestampField: Map<number, google.protobuf.Timestamp>;
+  typeField: Map<number, google.protobuf.Type>;
+  doubleField: Map<number, google.protobuf.DoubleValue>;
+  floatField: Map<number, google.protobuf.FloatValue>;
+  int64Field: Map<number, google.protobuf.Int64Value>;
+  uint64Field: Map<number, google.protobuf.UInt64Value>;
+  int32Field: Map<number, google.protobuf.Int32Value>;
+  uint32Field: Map<number, google.protobuf.UInt32Value>;
+  boolField: Map<number, google.protobuf.BoolValue>;
+  stringField: Map<number, google.protobuf.StringValue>;
+  bytesField: Map<number, google.protobuf.BytesValue>;
 }
 
 export class MapWellKnownTypes implements IMapWellKnownTypes {
-  anyField: Record<number, null> = {};
-  apiField: Record<number, null> = {};
-  durationField: Record<number, null> = {};
-  emptyField: Record<number, null> = {};
-  fieldMaskField: Record<number, null> = {};
-  sourceContextField: Record<number, null> = {};
-  structField: Record<number, null> = {};
-  timestampField: Record<number, null> = {};
-  typeField: Record<number, null> = {};
-  doubleField: Record<number, null> = {};
-  floatField: Record<number, null> = {};
-  int64Field: Record<number, null> = {};
-  uint64Field: Record<number, null> = {};
-  int32Field: Record<number, null> = {};
-  uint32Field: Record<number, null> = {};
-  boolField: Record<number, null> = {};
-  stringField: Record<number, null> = {};
-  bytesField: Record<number, null> = {};
+  anyField: Record<number, google.protobuf.Any> = {};
+  apiField: Record<number, google.protobuf.Api> = {};
+  durationField: Record<number, google.protobuf.Duration> = {};
+  emptyField: Record<number, google.protobuf.Empty> = {};
+  fieldMaskField: Record<number, google.protobuf.FieldMask> = {};
+  sourceContextField: Record<number, google.protobuf.SourceContext> = {};
+  structField: Record<number, google.protobuf.Struct> = {};
+  timestampField: Record<number, google.protobuf.Timestamp> = {};
+  typeField: Record<number, google.protobuf.Type> = {};
+  doubleField: Record<number, google.protobuf.DoubleValue> = {};
+  floatField: Record<number, google.protobuf.FloatValue> = {};
+  int64Field: Record<number, google.protobuf.Int64Value> = {};
+  uint64Field: Record<number, google.protobuf.UInt64Value> = {};
+  int32Field: Record<number, google.protobuf.Int32Value> = {};
+  uint32Field: Record<number, google.protobuf.UInt32Value> = {};
+  boolField: Record<number, google.protobuf.BoolValue> = {};
+  stringField: Record<number, google.protobuf.StringValue> = {};
+  bytesField: Record<number, google.protobuf.BytesValue> = {};
+
+  public static fields = [
+    "anyField",
+    "apiField",
+    "durationField",
+    "emptyField",
+    "fieldMaskField",
+    "sourceContextField",
+    "structField",
+    "timestampField",
+    "typeField",
+    "doubleField",
+    "floatField",
+    "int64Field",
+    "uint64Field",
+    "int32Field",
+    "uint32Field",
+    "boolField",
+    "stringField",
+    "bytesField",
+  ];
+
+  public get fields() {
+    return MapWellKnownTypes.fields;
+  }
 
   constructor(obj?: Partial<IMapWellKnownTypes>) {
     if (!obj) return;
@@ -1277,166 +1589,183 @@ export class MapWellKnownTypes implements IMapWellKnownTypes {
       const tag = r.uint32();
       switch (tag) {
         // map<int32, google.protobuf.Any> any_field = 1
-        case 10:
-          const anyFieldKey = r.int32();
-          const anyFieldValue = google_protobuf_any_models.google.protobuf.Any;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Any();
 
-          m.anyField.set(anyFieldKey, anyFieldValue);
+            m.anyField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Api> api_field = 2
-        case 18:
-          const apiFieldKey = r.int32();
-          const apiFieldValue = google_protobuf_api_models.google.protobuf.Api;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Api();
 
-          m.apiField.set(apiFieldKey, apiFieldValue);
+            m.apiField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Duration> duration_field = 3
-        case 26:
-          const durationFieldKey = r.int32();
-          const durationFieldValue =
-            google_protobuf_duration_models.google.protobuf.Duration;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Duration();
 
-          m.durationField.set(durationFieldKey, durationFieldValue);
+            m.durationField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Empty> empty_field = 4
-        case 34:
-          const emptyFieldKey = r.int32();
-          const emptyFieldValue =
-            google_protobuf_empty_models.google.protobuf.Empty;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Empty();
 
-          m.emptyField.set(emptyFieldKey, emptyFieldValue);
+            m.emptyField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.FieldMask> field_mask_field = 5
-        case 42:
-          const fieldMaskFieldKey = r.int32();
-          const fieldMaskFieldValue =
-            google_protobuf_field_mask_models.google.protobuf.FieldMask;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.FieldMask();
 
-          m.fieldMaskField.set(fieldMaskFieldKey, fieldMaskFieldValue);
+            m.fieldMaskField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.SourceContext> source_context_field = 6
-        case 50:
-          const sourceContextFieldKey = r.int32();
-          const sourceContextFieldValue =
-            google_protobuf_source_context_models.google.protobuf.SourceContext;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.SourceContext();
 
-          m.sourceContextField.set(
-            sourceContextFieldKey,
-            sourceContextFieldValue
-          );
+            m.sourceContextField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Struct> struct_field = 7
-        case 58:
-          const structFieldKey = r.int32();
-          const structFieldValue =
-            google_protobuf_struct_models.google.protobuf.Struct;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Struct();
 
-          m.structField.set(structFieldKey, structFieldValue);
+            m.structField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Timestamp> timestamp_field = 8
-        case 66:
-          const timestampFieldKey = r.int32();
-          const timestampFieldValue =
-            google_protobuf_timestamp_models.google.protobuf.Timestamp;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Timestamp();
 
-          m.timestampField.set(timestampFieldKey, timestampFieldValue);
+            m.timestampField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Type> type_field = 9
-        case 74:
-          const typeFieldKey = r.int32();
-          const typeFieldValue =
-            google_protobuf_type_models.google.protobuf.Type;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Type();
 
-          m.typeField.set(typeFieldKey, typeFieldValue);
+            m.typeField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.DoubleValue> double_field = 10
-        case 82:
-          const doubleFieldKey = r.int32();
-          const doubleFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.DoubleValue;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.DoubleValue();
 
-          m.doubleField.set(doubleFieldKey, doubleFieldValue);
+            m.doubleField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.FloatValue> float_field = 11
-        case 90:
-          const floatFieldKey = r.int32();
-          const floatFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.FloatValue;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.FloatValue();
 
-          m.floatField.set(floatFieldKey, floatFieldValue);
+            m.floatField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Int64Value> int64_field = 12
-        case 98:
-          const int64FieldKey = r.int32();
-          const int64FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.Int64Value;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Int64Value();
 
-          m.int64Field.set(int64FieldKey, int64FieldValue);
+            m.int64Field.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.UInt64Value> uint64_field = 13
-        case 106:
-          const uint64FieldKey = r.int32();
-          const uint64FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.UInt64Value;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.UInt64Value();
 
-          m.uint64Field.set(uint64FieldKey, uint64FieldValue);
+            m.uint64Field.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.Int32Value> int32_field = 14
-        case 114:
-          const int32FieldKey = r.int32();
-          const int32FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.Int32Value;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.Int32Value();
 
-          m.int32Field.set(int32FieldKey, int32FieldValue);
+            m.int32Field.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.UInt32Value> uint32_field = 15
-        case 122:
-          const uint32FieldKey = r.int32();
-          const uint32FieldValue =
-            google_protobuf_wrappers_models.google.protobuf.UInt32Value;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.UInt32Value();
 
-          m.uint32Field.set(uint32FieldKey, uint32FieldValue);
+            m.uint32Field.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.BoolValue> bool_field = 16
-        case 130:
-          const boolFieldKey = r.int32();
-          const boolFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.BoolValue;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.BoolValue();
 
-          m.boolField.set(boolFieldKey, boolFieldValue);
+            m.boolField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.StringValue> string_field = 17
-        case 138:
-          const stringFieldKey = r.int32();
-          const stringFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.StringValue;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.StringValue();
 
-          m.stringField.set(stringFieldKey, stringFieldValue);
+            m.stringField.set(key, value);
+          }
           continue;
 
         // map<int32, google.protobuf.BytesValue> bytes_field = 18
-        case 146:
-          const bytesFieldKey = r.int32();
-          const bytesFieldValue =
-            google_protobuf_wrappers_models.google.protobuf.BytesValue;
+        case null:
+          {
+            const key = r.int32();
+            const value = r.google.protobuf.BytesValue();
 
-          m.bytesField.set(bytesFieldKey, bytesFieldValue);
+            m.bytesField.set(key, value);
+          }
           continue;
       }
     }
@@ -1444,9 +1773,53 @@ export class MapWellKnownTypes implements IMapWellKnownTypes {
     return m;
   }
 
-  public static toJSON(m: IMapWellKnownTypes): IMapWellKnownTypesObj {}
+  public static toJSON(m: IMapWellKnownTypes): IMapWellKnownTypesObj {
+    return {
+      anyField: m.anyField,
+      apiField: m.apiField,
+      durationField: m.durationField,
+      emptyField: m.emptyField,
+      fieldMaskField: m.fieldMaskField,
+      sourceContextField: m.sourceContextField,
+      structField: m.structField,
+      timestampField: m.timestampField,
+      typeField: m.typeField,
+      doubleField: m.doubleField,
+      floatField: m.floatField,
+      int64Field: m.int64Field,
+      uint64Field: m.uint64Field,
+      int32Field: m.int32Field,
+      uint32Field: m.uint32Field,
+      boolField: m.boolField,
+      stringField: m.stringField,
+      bytesField: m.bytesField,
+    };
+  }
 
-  public static fromJSON(obj: IMapWellKnownTypesObj): IMapWellKnownTypes {}
+  public static fromJSON(obj: IMapWellKnownTypesObj): IMapWellKnownTypes {
+    const m = new MapWellKnownTypes();
+
+    m.anyField = obj.anyField;
+    m.apiField = obj.apiField;
+    m.durationField = obj.durationField;
+    m.emptyField = obj.emptyField;
+    m.fieldMaskField = obj.fieldMaskField;
+    m.sourceContextField = obj.sourceContextField;
+    m.structField = obj.structField;
+    m.timestampField = obj.timestampField;
+    m.typeField = obj.typeField;
+    m.doubleField = obj.doubleField;
+    m.floatField = obj.floatField;
+    m.int64Field = obj.int64Field;
+    m.uint64Field = obj.uint64Field;
+    m.int32Field = obj.int32Field;
+    m.uint32Field = obj.uint32Field;
+    m.boolField = obj.boolField;
+    m.stringField = obj.stringField;
+    m.bytesField = obj.bytesField;
+
+    return m;
+  }
 
   clone(): MapWellKnownTypes {
     return new MapWellKnownTypes(this);

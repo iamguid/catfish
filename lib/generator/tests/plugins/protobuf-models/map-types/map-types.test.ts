@@ -1,99 +1,62 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
 import Long from "long";
-// import { IScalarTypes, ScalarTypes } from "./scalar-types_models";
-import { generateModels, loadProtoFileByProtobufjs, traverseByModels } from "../../../utils";
+import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
+import { MapTypes, MapTypesJSON, SimpleEnum } from "./map-types_models";
 
 pjs.util.Long = Long
 
-// const EXPECTED_MESSAGE_OBJ: IScalarTypes = {
-//     fInt32: 1,
-//     fInt64: Long.fromValue(2, false),
-//     fUint32: 3,
-//     fUint64: Long.fromValue(4, true),
-//     fSint32: 5,
-//     fSint64: Long.fromValue(6, false),
-//     fFixed32: 7,
-//     fFixed64: Long.fromValue(8, true),
-//     fSfixed32: 9,
-//     fSfixed64: Long.fromValue(10, false),
-//     fFloat: 11.5,
-//     fDouble: 12.5,
-//     fBool: true,
-//     fString: "14",
-//     fBytes: Buffer.from([15, 16, 17]),
-// }
+const EXPECTED_MESSAGE_OBJ: MapTypesJSON = {
+    mapInt32String: { 1: "2", 3: "4" },
+    mapInt32Bytes: { 5: pjs.util.base64.encode(Buffer.from([6, 7, 8]), 0, 3) },
+    mapInt32Bool: { 9: true, 10: false },
+    mapInt32Message: { 11: { a: 12 }, 13: { a: 14 } },
+    mapInt32Enum: { 15: SimpleEnum[SimpleEnum.UNSPECIFIED] },
+    mapStringString: { "16": "17" },
+    mapUint64Int32: { "18": 19 },
+}
 
-// const INITIAL_MESSAGE_OBJ: IScalarTypes = {
-//     fInt32: 0,
-//     fInt64: Long.fromValue(0, false),
-//     fUint32: 0,
-//     fUint64: Long.fromValue(0, true),
-//     fSint32: 0,
-//     fSint64: Long.fromValue(0, false),
-//     fFixed32: 0,
-//     fFixed64: Long.fromValue(0, true),
-//     fSfixed32: 0,
-//     fSfixed64: Long.fromValue(0, false),
-//     fFloat: 0,
-//     fDouble: 0,
-//     fBool: false,
-//     fString: "",
-//     fBytes: Buffer.from([]),
-// }
+const INITIAL_MESSAGE_OBJ: MapTypesJSON = {
+    mapInt32String: { },
+    mapInt32Bytes: { },
+    mapInt32Bool: { },
+    mapInt32Message: { },
+    mapInt32Enum: { },
+    mapStringString: { },
+    mapUint64Int32: { },
+}
 
 describe("Map value types", () => {
-    // const protoFilePath = path.join(__dirname, 'scalar-types.proto');
-    // const pjsScalarTypes = loadProtoFileByProtobufjs(protoFilePath, 'scalar_types.ScalarTypes', EXPECTED_MESSAGE_OBJ);
+    const protoFilePath = path.join(__dirname, 'map-types.proto');
+    const pjsScalarTypes = loadProtoFileByProtobufjs(protoFilePath, 'map_types.MapTypes', EXPECTED_MESSAGE_OBJ);
 
     beforeAll(() => {
         generateModels(__dirname);
     })
 
-    // it("initial", () => {
-    //     const cfMessage = new ScalarTypes();
+    it("initial", () => {
+        const cfJson = new MapTypes().toJSON();
+        expect(INITIAL_MESSAGE_OBJ).toStrictEqual(cfJson);
+    })
 
-    //     traverseByModels(cfMessage, INITIAL_MESSAGE_OBJ, (fieldA, fieldB) => {
-    //         expect(fieldA).toStrictEqual(fieldB);
-    //     })
-    // })
+    it("constructor", () => {
+        const cfMessageA = new MapTypes().fromJSON(EXPECTED_MESSAGE_OBJ);
+        const cfJsonB = new MapTypes(cfMessageA).toJSON();
+        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJsonB);
+    })
 
-    // it("constructor", () => {
-    //     const cfMessage = new ScalarTypes(EXPECTED_MESSAGE_OBJ);
+    it("encode", () => {
+        const cfBuffer = new MapTypes().fromJSON(EXPECTED_MESSAGE_OBJ).serialize();
+        expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer)
+    })
 
-    //     traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-    //         expect(fieldA).toStrictEqual(fieldB);
-    //     })
-    // })
-
-    // it("encode", () => {
-    //     const cfBuffer = ScalarTypes.encode(EXPECTED_MESSAGE_OBJ);
-    //     expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer)
-    // })
-
-    // it("decode", () => {
-    //     const cfMessage = ScalarTypes.decode(pjsScalarTypes.buffer);
-
-    //     traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-    //         expect(fieldA).toStrictEqual(fieldB);
-    //     })
-    // })
+    it("decode", () => {
+        const cfJson = new MapTypes().deserialize(pjsScalarTypes.buffer).toJSON();
+        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJson);
+    })
     
-    // it("toJSON", () => {
-    //     const cfJson = ScalarTypes.toJSON(ScalarTypes.decode(pjsScalarTypes.buffer));
-    //     expect(pjsScalarTypes.json).toStrictEqual(cfJson);
-    // })
-    
-    // it("fromJSON", () => {
-    //     const cfJson = ScalarTypes.toJSON(new ScalarTypes(EXPECTED_MESSAGE_OBJ));
-    //     const cfMessage = ScalarTypes.fromJSON(cfJson);
-
-    //     traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-    //         expect(fieldA).toStrictEqual(fieldB);
-    //     })
-    // })
-
-    it("Simple", () => {
-        expect(true).toBeTruthy()
+    it("fromJSON/toJSON", () => {
+        const cfJson = new MapTypes().fromJSON(EXPECTED_MESSAGE_OBJ).toJSON();
+        expect(pjsScalarTypes.json).toStrictEqual(cfJson);
     })
 });

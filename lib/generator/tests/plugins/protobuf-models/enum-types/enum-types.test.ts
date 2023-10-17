@@ -1,13 +1,13 @@
 import path from "node:path";
-import { EnumMessage, IEnumMessage, TestEnum } from "./enum-types_models";
-import { generateModels, loadProtoFileByProtobufjs, traverseByModels } from "../../../utils";
+import { EnumMessage, TestEnum, IEnumMessageJSON } from "./enum-types_models";
+import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
 
-const EXPECTED_MESSAGE_OBJ: IEnumMessage = {
-    fEnum: TestEnum.BAR
+const EXPECTED_MESSAGE_OBJ: IEnumMessageJSON = {
+    fEnum: TestEnum[TestEnum.BAR]
 }
 
-const INITIAL_MESSAGE_OBJ: IEnumMessage = {
-    fEnum: TestEnum.ZERO
+const INITIAL_MESSAGE_OBJ: IEnumMessageJSON = {
+    fEnum: TestEnum[TestEnum.ZERO]
 }
 
 describe("Enum value types", () => {
@@ -19,45 +19,28 @@ describe("Enum value types", () => {
     })
 
     it("initial", () => {
-        const cfMessage = new EnumMessage();
-
-        traverseByModels(cfMessage, INITIAL_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
+        const cfJson = new EnumMessage().toJSON();
+        expect(INITIAL_MESSAGE_OBJ).toStrictEqual(cfJson);
     })
 
     it("constructor", () => {
-        const cfMessage = new EnumMessage(EXPECTED_MESSAGE_OBJ);
-
-        traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
+        const cfMessageA = new EnumMessage().fromJSON(EXPECTED_MESSAGE_OBJ);
+        const cfJsonB = new EnumMessage(cfMessageA).toJSON();
+        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJsonB)
     })
 
     it("encode", () => {
-        const cfBuffer = EnumMessage.encode(EXPECTED_MESSAGE_OBJ);
+        const cfBuffer = new EnumMessage().fromJSON(EXPECTED_MESSAGE_OBJ).serialize();
         expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer)
     })
 
     it("decode", () => {
-        const cfMessage = EnumMessage.decode(pjsScalarTypes.buffer);
-
-        traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
+        const cfJson = new EnumMessage().deserialize(pjsScalarTypes.buffer).toJSON();
+        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJson);
     })
     
-    it("toJSON", () => {
-        const cfJson = EnumMessage.toJSON(EnumMessage.decode(pjsScalarTypes.buffer));
+    it("fromJSON/toJSON", () => {
+        const cfJson = new EnumMessage().fromJSON(EXPECTED_MESSAGE_OBJ).toJSON();
         expect(pjsScalarTypes.json).toStrictEqual(cfJson);
-    })
-    
-    it("fromJSON", () => {
-        const cfJson = EnumMessage.toJSON(new EnumMessage(EXPECTED_MESSAGE_OBJ));
-        const cfMessage = EnumMessage.fromJSON(cfJson);
-
-        traverseByModels(cfMessage, EXPECTED_MESSAGE_OBJ, (fieldA, fieldB) => {
-            expect(fieldA).toStrictEqual(fieldB);
-        })
     })
 });

@@ -20,6 +20,12 @@ export interface IPublicImportMessage {
 export class PublicImportMessage implements IPublicImportMessage {
   e: number = 0;
 
+  public static fields = ["e"];
+
+  public get fields() {
+    return PublicImportMessage.fields;
+  }
+
   constructor(obj?: Partial<IPublicImportMessage>) {
     if (!obj) return;
 
@@ -57,9 +63,19 @@ export class PublicImportMessage implements IPublicImportMessage {
     return m;
   }
 
-  public static toJSON(m: IPublicImportMessage): IPublicImportMessageObj {}
+  public static toJSON(m: IPublicImportMessage): IPublicImportMessageObj {
+    return {
+      e: m.e,
+    };
+  }
 
-  public static fromJSON(obj: IPublicImportMessageObj): IPublicImportMessage {}
+  public static fromJSON(obj: IPublicImportMessageObj): IPublicImportMessage {
+    const m = new PublicImportMessage();
+
+    m.e = obj.e;
+
+    return m;
+  }
 
   clone(): PublicImportMessage {
     return new PublicImportMessage(this);

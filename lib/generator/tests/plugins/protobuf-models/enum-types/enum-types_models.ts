@@ -8,6 +8,7 @@
 // file: enum-types.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum TestEnum {
   ZERO = 0,
@@ -16,15 +17,11 @@ export enum TestEnum {
   BAZ = 3,
 }
 
-export interface IEnumMessageObj {
-  fEnum: number;
+export interface IEnumMessageJSON {
+  fEnum: string;
 }
 
-export interface IEnumMessage {
-  fEnum: number;
-}
-
-export class EnumMessage implements IEnumMessage {
+export class EnumMessage {
   fEnum: number = TestEnum.ZERO;
 
   public static fields = ["fEnum"];
@@ -33,7 +30,7 @@ export class EnumMessage implements IEnumMessage {
     return EnumMessage.fields;
   }
 
-  constructor(obj?: Partial<IEnumMessage>) {
+  constructor(obj?: EnumMessage) {
     if (!obj) return;
 
     if (obj.fEnum !== undefined) {
@@ -41,23 +38,18 @@ export class EnumMessage implements IEnumMessage {
     }
   }
 
-  public static encode(
-    m: IEnumMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: EnumMessage, w: pjs.Writer): pjs.Writer {
     // TestEnum f_enum = 1
     if (m.fEnum !== TestEnum.ZERO) {
       w.uint32(8);
       w.uint32(m.fEnum);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): EnumMessage {
-    const m = new EnumMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: EnumMessage, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // TestEnum f_enum = 1
@@ -67,21 +59,38 @@ export class EnumMessage implements IEnumMessage {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IEnumMessage): IEnumMessageObj {
+  public static toJSON(m: EnumMessage): IEnumMessageJSON {
     return {
       fEnum: TestEnum[m.fEnum],
     };
   }
 
-  public static fromJSON(obj: IEnumMessageObj): IEnumMessage {
-    const m = new EnumMessage();
-
+  public static fromJSON(m: EnumMessage, obj: IEnumMessageJSON): EnumMessage {
     m.fEnum = TestEnum[obj.fEnum];
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return EnumMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): EnumMessage {
+    const r = new pjs.Reader(b);
+    EnumMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): IEnumMessageJSON {
+    return EnumMessage.toJSON(this);
+  }
+
+  fromJSON(obj: IEnumMessageJSON): EnumMessage {
+    return EnumMessage.fromJSON(this, obj);
   }
 
   clone(): EnumMessage {

@@ -11,17 +11,23 @@ import * as pjs from "protobufjs/minimal";
 
 export interface IFooObj {
   int32Value: number;
-  enumValue: null;
+  enumValue: number;
 }
 
 export interface IFoo {
   int32Value: number;
-  enumValue: null;
+  enumValue: number;
 }
 
 export class Foo implements IFoo {
   int32Value: number = 0;
-  enumValue: null = null;
+  enumValue: number = Foo.NestedEnum.FOO;
+
+  public static fields = ["int32Value", "enumValue"];
+
+  public get fields() {
+    return Foo.fields;
+  }
 
   constructor(obj?: Partial<IFoo>) {
     if (!obj) return;
@@ -45,9 +51,9 @@ export class Foo implements IFoo {
     }
 
     // Foo.NestedEnum enum_value = 2
-    if (m.enumValue !== null) {
-      w.uint32(18);
-      m.enumValue.encode(writer);
+    if (m.enumValue !== Foo.NestedEnum.FOO) {
+      w.uint32(16);
+      w.uint32(m.enumValue);
     }
 
     return w.finish();
@@ -65,9 +71,8 @@ export class Foo implements IFoo {
           continue;
 
         // Foo.NestedEnum enum_value = 2
-        case 18:
-          m.enumValue =
-            unittest_drop_unknown_fields_models.unittest_drop_unknown_fields.Foo.NestedEnum;
+        case 16:
+          m.enumValue = r.uint32();
           continue;
       }
     }
@@ -75,9 +80,21 @@ export class Foo implements IFoo {
     return m;
   }
 
-  public static toJSON(m: IFoo): IFooObj {}
+  public static toJSON(m: IFoo): IFooObj {
+    return {
+      int32Value: m.int32Value,
+      enumValue: Foo.NestedEnum[m.enumValue],
+    };
+  }
 
-  public static fromJSON(obj: IFooObj): IFoo {}
+  public static fromJSON(obj: IFooObj): IFoo {
+    const m = new Foo();
+
+    m.int32Value = obj.int32Value;
+    m.enumValue = Foo.NestedEnum[obj.enumValue];
+
+    return m;
+  }
 
   clone(): Foo {
     return new Foo(this);
@@ -88,20 +105,26 @@ export namespace Foo {}
 
 export interface IFooWithExtraFieldsObj {
   int32Value: number;
-  enumValue: null;
+  enumValue: number;
   extraInt32Value: number;
 }
 
 export interface IFooWithExtraFields {
   int32Value: number;
-  enumValue: null;
+  enumValue: number;
   extraInt32Value: number;
 }
 
 export class FooWithExtraFields implements IFooWithExtraFields {
   int32Value: number = 0;
-  enumValue: null = null;
+  enumValue: number = FooWithExtraFields.NestedEnum.FOO;
   extraInt32Value: number = 0;
+
+  public static fields = ["int32Value", "enumValue", "extraInt32Value"];
+
+  public get fields() {
+    return FooWithExtraFields.fields;
+  }
 
   constructor(obj?: Partial<IFooWithExtraFields>) {
     if (!obj) return;
@@ -128,9 +151,9 @@ export class FooWithExtraFields implements IFooWithExtraFields {
     }
 
     // FooWithExtraFields.NestedEnum enum_value = 2
-    if (m.enumValue !== null) {
-      w.uint32(18);
-      m.enumValue.encode(writer);
+    if (m.enumValue !== FooWithExtraFields.NestedEnum.FOO) {
+      w.uint32(16);
+      w.uint32(m.enumValue);
     }
 
     // int32 extra_int32_value = 3
@@ -154,9 +177,8 @@ export class FooWithExtraFields implements IFooWithExtraFields {
           continue;
 
         // FooWithExtraFields.NestedEnum enum_value = 2
-        case 18:
-          m.enumValue =
-            unittest_drop_unknown_fields_models.unittest_drop_unknown_fields.FooWithExtraFields.NestedEnum;
+        case 16:
+          m.enumValue = r.uint32();
           continue;
 
         // int32 extra_int32_value = 3
@@ -169,9 +191,23 @@ export class FooWithExtraFields implements IFooWithExtraFields {
     return m;
   }
 
-  public static toJSON(m: IFooWithExtraFields): IFooWithExtraFieldsObj {}
+  public static toJSON(m: IFooWithExtraFields): IFooWithExtraFieldsObj {
+    return {
+      int32Value: m.int32Value,
+      enumValue: FooWithExtraFields.NestedEnum[m.enumValue],
+      extraInt32Value: m.extraInt32Value,
+    };
+  }
 
-  public static fromJSON(obj: IFooWithExtraFieldsObj): IFooWithExtraFields {}
+  public static fromJSON(obj: IFooWithExtraFieldsObj): IFooWithExtraFields {
+    const m = new FooWithExtraFields();
+
+    m.int32Value = obj.int32Value;
+    m.enumValue = FooWithExtraFields.NestedEnum[obj.enumValue];
+    m.extraInt32Value = obj.extraInt32Value;
+
+    return m;
+  }
 
   clone(): FooWithExtraFields {
     return new FooWithExtraFields(this);

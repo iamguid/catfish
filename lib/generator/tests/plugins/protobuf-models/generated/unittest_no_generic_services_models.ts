@@ -24,6 +24,12 @@ export interface ITestMessage {
 export class TestMessage implements ITestMessage {
   a: number = 0;
 
+  public static fields = ["a"];
+
+  public get fields() {
+    return TestMessage.fields;
+  }
+
   constructor(obj?: Partial<ITestMessage>) {
     if (!obj) return;
 
@@ -61,9 +67,19 @@ export class TestMessage implements ITestMessage {
     return m;
   }
 
-  public static toJSON(m: ITestMessage): ITestMessageObj {}
+  public static toJSON(m: ITestMessage): ITestMessageObj {
+    return {
+      a: m.a,
+    };
+  }
 
-  public static fromJSON(obj: ITestMessageObj): ITestMessage {}
+  public static fromJSON(obj: ITestMessageObj): ITestMessage {
+    const m = new TestMessage();
+
+    m.a = obj.a;
+
+    return m;
+  }
 
   clone(): TestMessage {
     return new TestMessage(this);
