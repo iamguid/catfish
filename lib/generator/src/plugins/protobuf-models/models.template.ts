@@ -45,15 +45,15 @@ export const recursiveTemplate = (ctx: { messages: MessageCtx[], enums: EnumCtx[
 export const modelClassTemplate = (ctx: { message: MessageCtx }): string => {
   return `
     export class ${ctx.message.modelClassName} implements ${ctx.message.modelIfaceName} {
+      ${templates.render('models.modelClassFields', {
+        message: ctx.message
+      })}
+
       public static fields = [${ctx.message.fields.map(f => `'${f.fieldName}'`).join(",")}]
 
       public get fields() {
         return ${ctx.message.modelClassName}.fields
       }
-
-      ${templates.render('models.modelClassFields', {
-        message: ctx.message
-      })}
 
       ${templates.render('models.modelClassCtor', {
         message: ctx.message

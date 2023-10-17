@@ -46,6 +46,22 @@ export interface IScalarTypes {
 }
 
 export class ScalarTypes implements IScalarTypes {
+  fInt32: number = 0;
+  fInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  fUint32: number = 0;
+  fUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  fSint32: number = 0;
+  fSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  fFixed32: number = 0;
+  fFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  fSfixed32: number = 0;
+  fSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  fFloat: number = 0;
+  fDouble: number = 0;
+  fBool: boolean = false;
+  fString: string = "";
+  fBytes: Uint8Array | Buffer = pjs.util.newBuffer(0);
+
   public static fields = [
     "fInt32",
     "fInt64",
@@ -67,22 +83,6 @@ export class ScalarTypes implements IScalarTypes {
   public get fields() {
     return ScalarTypes.fields;
   }
-
-  fInt32: number = 0;
-  fInt64: pjs.Long = pjs.util.Long(0, false);
-  fUint32: number = 0;
-  fUint64: pjs.Long = pjs.util.Long(0, true);
-  fSint32: number = 0;
-  fSint64: pjs.Long = pjs.util.Long(0, false);
-  fFixed32: number = 0;
-  fFixed64: pjs.Long = pjs.util.Long(0, true);
-  fSfixed32: number = 0;
-  fSfixed64: pjs.Long = pjs.util.Long(0, false);
-  fFloat: number = 0;
-  fDouble: number = 0;
-  fBool: boolean = false;
-  fString: string = "";
-  fBytes: Uint8Array | Buffer = pjs.util.newBuffer(0);
 
   constructor(obj?: Partial<IScalarTypes>) {
     if (!obj) return;
@@ -145,7 +145,7 @@ export class ScalarTypes implements IScalarTypes {
     }
 
     // int64 f_int64 = 2
-    if (m.fInt64 !== pjs.util.Long(0, false)) {
+    if (m.fInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(16);
       w.int64(m.fInt64);
     }
@@ -157,7 +157,7 @@ export class ScalarTypes implements IScalarTypes {
     }
 
     // uint64 f_uint64 = 4
-    if (m.fUint64 !== pjs.util.Long(0, true)) {
+    if (m.fUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(32);
       w.uint64(m.fUint64);
     }
@@ -169,7 +169,7 @@ export class ScalarTypes implements IScalarTypes {
     }
 
     // sint64 f_sint64 = 6
-    if (m.fSint64 !== pjs.util.Long(0, false)) {
+    if (m.fSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(48);
       w.sint64(m.fSint64);
     }
@@ -181,7 +181,7 @@ export class ScalarTypes implements IScalarTypes {
     }
 
     // fixed64 f_fixed64 = 8
-    if (m.fFixed64 !== pjs.util.Long(0, true)) {
+    if (m.fFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(65);
       w.fixed64(m.fFixed64);
     }
@@ -193,7 +193,7 @@ export class ScalarTypes implements IScalarTypes {
     }
 
     // sfixed64 f_sfixed64 = 10
-    if (m.fSfixed64 !== pjs.util.Long(0, false)) {
+    if (m.fSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(81);
       w.sfixed64(m.fSfixed64);
     }
