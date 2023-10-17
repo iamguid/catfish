@@ -3,7 +3,20 @@ syntax = "proto3";
 
 package map_types;
 
+message SimpleMessage {
+    a int32 = 1;
+}
+
+enum SimpleEnum {
+    UNSPECIFIED = 0;
+}
+
 message MapTypes {
-    map<int32, string> map_int32_string = 2;
-    map<int32, bytes> map_int32_bytes = 1;
+    map<int32, string> map_int32_string = 1;
+    map<int32, bytes> map_int32_bytes = 2;
+    map<int32, bool> map_int32_bool = 3;
+    map<int32, SimpleMessage> map_int32_message = 4;
+    map<int32, SimpleEnum> map_int32_enum = 5;
+    map<string, string> map_string_string = 6;
+    map<uint64, int32> map_uint64_int32 = 7;
 }

@@ -24,7 +24,7 @@ export type MessageFieldCtx = {
     fieldName: string
     fieldTypeInfo: TypeInfoCtx | null
     fieldNumber: number
-    fieldTag: number
+    fieldTag: number | null
     isMessageType: boolean
     isRepeated: boolean
     isOptional: boolean

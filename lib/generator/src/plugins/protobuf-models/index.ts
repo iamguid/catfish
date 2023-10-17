@@ -93,14 +93,16 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
     }
 
     const fieldTypeInfo = field.type ? getTypeInfoCtx(context, descriptor, field.type) : null;
+    const fieldTag = fieldTypeInfo ? ((field.fieldNumber << 3) | getBasicWireType(fieldTypeInfo!)) >>> 0 : null;
+    const isMessageType = fieldTypeInfo ? getTypeMarkerByTypeInfo(fieldTypeInfo!) === "Message" : false;
 
     return {
         rawName: field.name,
         fieldName: snakeToCamel(lowerCaseFirst(field.name)),
         fieldNumber: field.fieldNumber,
-        fieldTag: ((field.fieldNumber << 3) | getBasicWireType(fieldTypeInfo!)) >>> 0,
+        fieldTag,
         fieldTypeInfo,
-        isMessageType: getTypeMarkerByTypeInfo(fieldTypeInfo!) === "Message",
+        isMessageType,
         isMap: Boolean(field.map),
         isOneof: Boolean(field.oneofName),
         isRepeated: field.repeated,

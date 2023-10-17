@@ -237,6 +237,10 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageCtx }): string =
     public static toJSON(m: ${ctx.message.modelIfaceName}): ${ctx.message.jsonIfaceName} {
       return {
         ${ctx.message.fields.map((field) => {
+          if (field.isMap) {
+            return `${field.fieldName}: m.${field.fieldName},`
+          }
+
           switch (field.fieldTypeInfo!.typeMarker) {
             case "Primitive":
               return `${field.fieldName}: m.${field.fieldName},`
@@ -261,6 +265,10 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageCtx }): string
       const m = new ${ctx.message.modelClassName}();
 
       ${ctx.message.fields.map((field) => {
+        if (field.isMap) {
+          return `m.${field.fieldName} = obj.${field.fieldName};`
+        }
+
         switch (field.fieldTypeInfo!.typeMarker) {
           case "Primitive":
             return `m.${field.fieldName} = obj.${field.fieldName};`
