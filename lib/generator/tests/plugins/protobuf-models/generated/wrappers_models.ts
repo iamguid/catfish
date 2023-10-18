@@ -8,16 +8,13 @@
 // file: wrappers.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
-export interface IDoubleValueObj {
+export interface DoubleValueJSON {
   value: number;
 }
 
-export interface IDoubleValue {
-  value: number;
-}
-
-export class DoubleValue implements IDoubleValue {
+export class DoubleValue {
   value: number = 0;
 
   public static fields = ["value"];
@@ -26,7 +23,7 @@ export class DoubleValue implements IDoubleValue {
     return DoubleValue.fields;
   }
 
-  constructor(obj?: Partial<IDoubleValue>) {
+  constructor(obj?: DoubleValue) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -34,23 +31,18 @@ export class DoubleValue implements IDoubleValue {
     }
   }
 
-  public static encode(
-    m: IDoubleValue,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: DoubleValue, w: pjs.Writer): pjs.Writer {
     // double value = 1
     if (m.value !== 0) {
       w.uint32(9);
       w.double(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): DoubleValue {
-    const m = new DoubleValue();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: DoubleValue, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // double value = 1
@@ -60,21 +52,38 @@ export class DoubleValue implements IDoubleValue {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IDoubleValue): IDoubleValueObj {
+  public static toJSON(m: DoubleValue): DoubleValueJSON {
     return {
       value: m.value,
     };
   }
 
-  public static fromJSON(obj: IDoubleValueObj): IDoubleValue {
-    const m = new DoubleValue();
-
+  public static fromJSON(m: DoubleValue, obj: DoubleValueJSON): DoubleValue {
     m.value = obj.value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return DoubleValue.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): DoubleValue {
+    const r = new pjs.Reader(b);
+    DoubleValue.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): DoubleValueJSON {
+    return DoubleValue.toJSON(this);
+  }
+
+  fromJSON(obj: DoubleValueJSON): DoubleValue {
+    return DoubleValue.fromJSON(this, obj);
   }
 
   clone(): DoubleValue {
@@ -82,15 +91,11 @@ export class DoubleValue implements IDoubleValue {
   }
 }
 
-export interface IFloatValueObj {
+export interface FloatValueJSON {
   value: number;
 }
 
-export interface IFloatValue {
-  value: number;
-}
-
-export class FloatValue implements IFloatValue {
+export class FloatValue {
   value: number = 0;
 
   public static fields = ["value"];
@@ -99,7 +104,7 @@ export class FloatValue implements IFloatValue {
     return FloatValue.fields;
   }
 
-  constructor(obj?: Partial<IFloatValue>) {
+  constructor(obj?: FloatValue) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -107,23 +112,18 @@ export class FloatValue implements IFloatValue {
     }
   }
 
-  public static encode(
-    m: IFloatValue,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: FloatValue, w: pjs.Writer): pjs.Writer {
     // float value = 1
     if (m.value !== 0) {
       w.uint32(13);
       w.float(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): FloatValue {
-    const m = new FloatValue();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: FloatValue, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // float value = 1
@@ -133,21 +133,38 @@ export class FloatValue implements IFloatValue {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IFloatValue): IFloatValueObj {
+  public static toJSON(m: FloatValue): FloatValueJSON {
     return {
       value: m.value,
     };
   }
 
-  public static fromJSON(obj: IFloatValueObj): IFloatValue {
-    const m = new FloatValue();
-
+  public static fromJSON(m: FloatValue, obj: FloatValueJSON): FloatValue {
     m.value = obj.value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return FloatValue.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): FloatValue {
+    const r = new pjs.Reader(b);
+    FloatValue.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): FloatValueJSON {
+    return FloatValue.toJSON(this);
+  }
+
+  fromJSON(obj: FloatValueJSON): FloatValue {
+    return FloatValue.fromJSON(this, obj);
   }
 
   clone(): FloatValue {
@@ -155,15 +172,11 @@ export class FloatValue implements IFloatValue {
   }
 }
 
-export interface IInt64ValueObj {
+export interface Int64ValueJSON {
   value: string;
 }
 
-export interface IInt64Value {
-  value: pjs.Long;
-}
-
-export class Int64Value implements IInt64Value {
+export class Int64Value {
   value: pjs.Long = pjs.util.Long.fromValue(0, false);
 
   public static fields = ["value"];
@@ -172,7 +185,7 @@ export class Int64Value implements IInt64Value {
     return Int64Value.fields;
   }
 
-  constructor(obj?: Partial<IInt64Value>) {
+  constructor(obj?: Int64Value) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -180,23 +193,18 @@ export class Int64Value implements IInt64Value {
     }
   }
 
-  public static encode(
-    m: IInt64Value,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: Int64Value, w: pjs.Writer): pjs.Writer {
     // int64 value = 1
     if (m.value !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(8);
       w.int64(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): Int64Value {
-    const m = new Int64Value();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: Int64Value, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int64 value = 1
@@ -206,21 +214,38 @@ export class Int64Value implements IInt64Value {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IInt64Value): IInt64ValueObj {
+  public static toJSON(m: Int64Value): Int64ValueJSON {
     return {
       value: m.value.toString(),
     };
   }
 
-  public static fromJSON(obj: IInt64ValueObj): IInt64Value {
-    const m = new Int64Value();
-
+  public static fromJSON(m: Int64Value, obj: Int64ValueJSON): Int64Value {
     m.value = pjs.util.Long.fromValue(obj.value, false);
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return Int64Value.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): Int64Value {
+    const r = new pjs.Reader(b);
+    Int64Value.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): Int64ValueJSON {
+    return Int64Value.toJSON(this);
+  }
+
+  fromJSON(obj: Int64ValueJSON): Int64Value {
+    return Int64Value.fromJSON(this, obj);
   }
 
   clone(): Int64Value {
@@ -228,15 +253,11 @@ export class Int64Value implements IInt64Value {
   }
 }
 
-export interface IUInt64ValueObj {
+export interface UInt64ValueJSON {
   value: string;
 }
 
-export interface IUInt64Value {
-  value: pjs.Long;
-}
-
-export class UInt64Value implements IUInt64Value {
+export class UInt64Value {
   value: pjs.Long = pjs.util.Long.fromValue(0, true);
 
   public static fields = ["value"];
@@ -245,7 +266,7 @@ export class UInt64Value implements IUInt64Value {
     return UInt64Value.fields;
   }
 
-  constructor(obj?: Partial<IUInt64Value>) {
+  constructor(obj?: UInt64Value) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -253,23 +274,18 @@ export class UInt64Value implements IUInt64Value {
     }
   }
 
-  public static encode(
-    m: IUInt64Value,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: UInt64Value, w: pjs.Writer): pjs.Writer {
     // uint64 value = 1
     if (m.value !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(8);
       w.uint64(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): UInt64Value {
-    const m = new UInt64Value();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: UInt64Value, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // uint64 value = 1
@@ -279,21 +295,38 @@ export class UInt64Value implements IUInt64Value {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IUInt64Value): IUInt64ValueObj {
+  public static toJSON(m: UInt64Value): UInt64ValueJSON {
     return {
       value: m.value.toString(),
     };
   }
 
-  public static fromJSON(obj: IUInt64ValueObj): IUInt64Value {
-    const m = new UInt64Value();
-
+  public static fromJSON(m: UInt64Value, obj: UInt64ValueJSON): UInt64Value {
     m.value = pjs.util.Long.fromValue(obj.value, true);
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return UInt64Value.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): UInt64Value {
+    const r = new pjs.Reader(b);
+    UInt64Value.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): UInt64ValueJSON {
+    return UInt64Value.toJSON(this);
+  }
+
+  fromJSON(obj: UInt64ValueJSON): UInt64Value {
+    return UInt64Value.fromJSON(this, obj);
   }
 
   clone(): UInt64Value {
@@ -301,15 +334,11 @@ export class UInt64Value implements IUInt64Value {
   }
 }
 
-export interface IInt32ValueObj {
+export interface Int32ValueJSON {
   value: number;
 }
 
-export interface IInt32Value {
-  value: number;
-}
-
-export class Int32Value implements IInt32Value {
+export class Int32Value {
   value: number = 0;
 
   public static fields = ["value"];
@@ -318,7 +347,7 @@ export class Int32Value implements IInt32Value {
     return Int32Value.fields;
   }
 
-  constructor(obj?: Partial<IInt32Value>) {
+  constructor(obj?: Int32Value) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -326,23 +355,18 @@ export class Int32Value implements IInt32Value {
     }
   }
 
-  public static encode(
-    m: IInt32Value,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: Int32Value, w: pjs.Writer): pjs.Writer {
     // int32 value = 1
     if (m.value !== 0) {
       w.uint32(8);
       w.int32(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): Int32Value {
-    const m = new Int32Value();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: Int32Value, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 value = 1
@@ -352,21 +376,38 @@ export class Int32Value implements IInt32Value {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IInt32Value): IInt32ValueObj {
+  public static toJSON(m: Int32Value): Int32ValueJSON {
     return {
       value: m.value,
     };
   }
 
-  public static fromJSON(obj: IInt32ValueObj): IInt32Value {
-    const m = new Int32Value();
-
+  public static fromJSON(m: Int32Value, obj: Int32ValueJSON): Int32Value {
     m.value = obj.value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return Int32Value.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): Int32Value {
+    const r = new pjs.Reader(b);
+    Int32Value.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): Int32ValueJSON {
+    return Int32Value.toJSON(this);
+  }
+
+  fromJSON(obj: Int32ValueJSON): Int32Value {
+    return Int32Value.fromJSON(this, obj);
   }
 
   clone(): Int32Value {
@@ -374,15 +415,11 @@ export class Int32Value implements IInt32Value {
   }
 }
 
-export interface IUInt32ValueObj {
+export interface UInt32ValueJSON {
   value: number;
 }
 
-export interface IUInt32Value {
-  value: number;
-}
-
-export class UInt32Value implements IUInt32Value {
+export class UInt32Value {
   value: number = 0;
 
   public static fields = ["value"];
@@ -391,7 +428,7 @@ export class UInt32Value implements IUInt32Value {
     return UInt32Value.fields;
   }
 
-  constructor(obj?: Partial<IUInt32Value>) {
+  constructor(obj?: UInt32Value) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -399,23 +436,18 @@ export class UInt32Value implements IUInt32Value {
     }
   }
 
-  public static encode(
-    m: IUInt32Value,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: UInt32Value, w: pjs.Writer): pjs.Writer {
     // uint32 value = 1
     if (m.value !== 0) {
       w.uint32(8);
       w.uint32(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): UInt32Value {
-    const m = new UInt32Value();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: UInt32Value, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // uint32 value = 1
@@ -425,21 +457,38 @@ export class UInt32Value implements IUInt32Value {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IUInt32Value): IUInt32ValueObj {
+  public static toJSON(m: UInt32Value): UInt32ValueJSON {
     return {
       value: m.value,
     };
   }
 
-  public static fromJSON(obj: IUInt32ValueObj): IUInt32Value {
-    const m = new UInt32Value();
-
+  public static fromJSON(m: UInt32Value, obj: UInt32ValueJSON): UInt32Value {
     m.value = obj.value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return UInt32Value.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): UInt32Value {
+    const r = new pjs.Reader(b);
+    UInt32Value.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): UInt32ValueJSON {
+    return UInt32Value.toJSON(this);
+  }
+
+  fromJSON(obj: UInt32ValueJSON): UInt32Value {
+    return UInt32Value.fromJSON(this, obj);
   }
 
   clone(): UInt32Value {
@@ -447,15 +496,11 @@ export class UInt32Value implements IUInt32Value {
   }
 }
 
-export interface IBoolValueObj {
+export interface BoolValueJSON {
   value: boolean;
 }
 
-export interface IBoolValue {
-  value: boolean;
-}
-
-export class BoolValue implements IBoolValue {
+export class BoolValue {
   value: boolean = false;
 
   public static fields = ["value"];
@@ -464,7 +509,7 @@ export class BoolValue implements IBoolValue {
     return BoolValue.fields;
   }
 
-  constructor(obj?: Partial<IBoolValue>) {
+  constructor(obj?: BoolValue) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -472,23 +517,18 @@ export class BoolValue implements IBoolValue {
     }
   }
 
-  public static encode(
-    m: IBoolValue,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: BoolValue, w: pjs.Writer): pjs.Writer {
     // bool value = 1
     if (m.value !== false) {
       w.uint32(8);
       w.bool(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): BoolValue {
-    const m = new BoolValue();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: BoolValue, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // bool value = 1
@@ -498,21 +538,38 @@ export class BoolValue implements IBoolValue {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IBoolValue): IBoolValueObj {
+  public static toJSON(m: BoolValue): BoolValueJSON {
     return {
       value: m.value,
     };
   }
 
-  public static fromJSON(obj: IBoolValueObj): IBoolValue {
-    const m = new BoolValue();
-
+  public static fromJSON(m: BoolValue, obj: BoolValueJSON): BoolValue {
     m.value = obj.value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return BoolValue.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): BoolValue {
+    const r = new pjs.Reader(b);
+    BoolValue.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): BoolValueJSON {
+    return BoolValue.toJSON(this);
+  }
+
+  fromJSON(obj: BoolValueJSON): BoolValue {
+    return BoolValue.fromJSON(this, obj);
   }
 
   clone(): BoolValue {
@@ -520,15 +577,11 @@ export class BoolValue implements IBoolValue {
   }
 }
 
-export interface IStringValueObj {
+export interface StringValueJSON {
   value: string;
 }
 
-export interface IStringValue {
-  value: string;
-}
-
-export class StringValue implements IStringValue {
+export class StringValue {
   value: string = "";
 
   public static fields = ["value"];
@@ -537,7 +590,7 @@ export class StringValue implements IStringValue {
     return StringValue.fields;
   }
 
-  constructor(obj?: Partial<IStringValue>) {
+  constructor(obj?: StringValue) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -545,23 +598,18 @@ export class StringValue implements IStringValue {
     }
   }
 
-  public static encode(
-    m: IStringValue,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: StringValue, w: pjs.Writer): pjs.Writer {
     // string value = 1
     if (m.value !== "") {
       w.uint32(10);
       w.string(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): StringValue {
-    const m = new StringValue();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: StringValue, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // string value = 1
@@ -571,21 +619,38 @@ export class StringValue implements IStringValue {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IStringValue): IStringValueObj {
+  public static toJSON(m: StringValue): StringValueJSON {
     return {
       value: m.value,
     };
   }
 
-  public static fromJSON(obj: IStringValueObj): IStringValue {
-    const m = new StringValue();
-
+  public static fromJSON(m: StringValue, obj: StringValueJSON): StringValue {
     m.value = obj.value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return StringValue.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): StringValue {
+    const r = new pjs.Reader(b);
+    StringValue.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): StringValueJSON {
+    return StringValue.toJSON(this);
+  }
+
+  fromJSON(obj: StringValueJSON): StringValue {
+    return StringValue.fromJSON(this, obj);
   }
 
   clone(): StringValue {
@@ -593,15 +658,11 @@ export class StringValue implements IStringValue {
   }
 }
 
-export interface IBytesValueObj {
+export interface BytesValueJSON {
   value: string;
 }
 
-export interface IBytesValue {
-  value: Uint8Array | Buffer;
-}
-
-export class BytesValue implements IBytesValue {
+export class BytesValue {
   value: Uint8Array | Buffer = pjs.util.newBuffer(0);
 
   public static fields = ["value"];
@@ -610,7 +671,7 @@ export class BytesValue implements IBytesValue {
     return BytesValue.fields;
   }
 
-  constructor(obj?: Partial<IBytesValue>) {
+  constructor(obj?: BytesValue) {
     if (!obj) return;
 
     if (obj.value !== undefined) {
@@ -618,23 +679,18 @@ export class BytesValue implements IBytesValue {
     }
   }
 
-  public static encode(
-    m: IBytesValue,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: BytesValue, w: pjs.Writer): pjs.Writer {
     // bytes value = 1
     if (m.value !== pjs.util.newBuffer(0)) {
       w.uint32(10);
       w.bytes(m.value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): BytesValue {
-    const m = new BytesValue();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: BytesValue, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // bytes value = 1
@@ -644,25 +700,42 @@ export class BytesValue implements IBytesValue {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IBytesValue): IBytesValueObj {
+  public static toJSON(m: BytesValue): BytesValueJSON {
     return {
       value: pjs.util.base64.encode(m.value, 0, m.value.length),
     };
   }
 
-  public static fromJSON(obj: IBytesValueObj): IBytesValue {
-    const m = new BytesValue();
-
+  public static fromJSON(m: BytesValue, obj: BytesValueJSON): BytesValue {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.value, tmpBuffer, 0);
-      m.value = pjs.util.Buffer.from(tmpBuffer);
+      m.value = new pjs.util.Buffer(tmpBuffer);
     }
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return BytesValue.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): BytesValue {
+    const r = new pjs.Reader(b);
+    BytesValue.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): BytesValueJSON {
+    return BytesValue.toJSON(this);
+  }
+
+  fromJSON(obj: BytesValueJSON): BytesValue {
+    return BytesValue.fromJSON(this, obj);
   }
 
   clone(): BytesValue {

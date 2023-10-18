@@ -8,8 +8,9 @@
 // file: unittest_proto3_optional.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
-export interface ITestProto3OptionalObj {
+export interface TestProto3OptionalJSON {
   optionalInt32: number | undefined;
   optionalInt64: string | undefined;
   optionalUint32: number | undefined;
@@ -26,38 +27,14 @@ export interface ITestProto3OptionalObj {
   optionalString: string | undefined;
   optionalBytes: string | undefined;
   optionalCord: string | undefined;
-  optionalNestedMessage: TestProto3Optional.NestedMessage | undefined;
-  lazyNestedMessage: TestProto3Optional.NestedMessage | undefined;
-  optionalNestedEnum: number | undefined;
+  optionalNestedMessage: TestProto3Optional.NestedMessageJSON | undefined;
+  lazyNestedMessage: TestProto3Optional.NestedMessageJSON | undefined;
+  optionalNestedEnum: string | undefined;
   singularInt32: number;
   singularInt64: string;
 }
 
-export interface ITestProto3Optional {
-  optionalInt32: number | undefined;
-  optionalInt64: pjs.Long | undefined;
-  optionalUint32: number | undefined;
-  optionalUint64: pjs.Long | undefined;
-  optionalSint32: number | undefined;
-  optionalSint64: pjs.Long | undefined;
-  optionalFixed32: number | undefined;
-  optionalFixed64: pjs.Long | undefined;
-  optionalSfixed32: number | undefined;
-  optionalSfixed64: pjs.Long | undefined;
-  optionalFloat: number | undefined;
-  optionalDouble: number | undefined;
-  optionalBool: boolean | undefined;
-  optionalString: string | undefined;
-  optionalBytes: Uint8Array | Buffer | undefined;
-  optionalCord: string | undefined;
-  optionalNestedMessage: TestProto3Optional.NestedMessage | undefined;
-  lazyNestedMessage: TestProto3Optional.NestedMessage | undefined;
-  optionalNestedEnum: number | undefined;
-  singularInt32: number;
-  singularInt64: pjs.Long;
-}
-
-export class TestProto3Optional implements ITestProto3Optional {
+export class TestProto3Optional {
   optionalInt32: number | undefined = undefined;
   optionalInt64: pjs.Long | undefined = undefined;
   optionalUint32: number | undefined = undefined;
@@ -109,7 +86,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     return TestProto3Optional.fields;
   }
 
-  constructor(obj?: Partial<ITestProto3Optional>) {
+  constructor(obj?: TestProto3Optional) {
     if (!obj) return;
 
     if (obj.optionalInt32 !== undefined) {
@@ -177,10 +154,7 @@ export class TestProto3Optional implements ITestProto3Optional {
     }
   }
 
-  public static encode(
-    m: ITestProto3Optional,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestProto3Optional, w: pjs.Writer): pjs.Writer {
     // int32 optional_int32 = 1
     if (m.optionalInt32 !== 0) {
       w.uint32(8);
@@ -280,13 +254,13 @@ export class TestProto3Optional implements ITestProto3Optional {
     // TestProto3Optional.NestedMessage optional_nested_message = 18
     if (m.optionalNestedMessage !== new TestProto3Optional.NestedMessage()) {
       w.uint32(146);
-      w.TestProto3Optional.NestedMessage(m.optionalNestedMessage);
+      TestProto3Optional.NestedMessage.encode(m.optionalNestedMessage, w);
     }
 
     // TestProto3Optional.NestedMessage lazy_nested_message = 19
     if (m.lazyNestedMessage !== new TestProto3Optional.NestedMessage()) {
       w.uint32(154);
-      w.TestProto3Optional.NestedMessage(m.lazyNestedMessage);
+      TestProto3Optional.NestedMessage.encode(m.lazyNestedMessage, w);
     }
 
     // TestProto3Optional.NestedEnum optional_nested_enum = 21
@@ -307,13 +281,15 @@ export class TestProto3Optional implements ITestProto3Optional {
       w.int64(m.singularInt64);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestProto3Optional {
-    const m = new TestProto3Optional();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestProto3Optional,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 optional_int32 = 1
@@ -398,12 +374,18 @@ export class TestProto3Optional implements ITestProto3Optional {
 
         // TestProto3Optional.NestedMessage optional_nested_message = 18
         case 146:
-          m.optionalNestedMessage = r.TestProto3Optional.NestedMessage();
+          m.optionalNestedMessage = TestProto3Optional.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // TestProto3Optional.NestedMessage lazy_nested_message = 19
         case 154:
-          m.lazyNestedMessage = r.TestProto3Optional.NestedMessage();
+          m.lazyNestedMessage = TestProto3Optional.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // TestProto3Optional.NestedEnum optional_nested_enum = 21
@@ -423,10 +405,10 @@ export class TestProto3Optional implements ITestProto3Optional {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestProto3Optional): ITestProto3OptionalObj {
+  public static toJSON(m: TestProto3Optional): TestProto3OptionalJSON {
     return {
       optionalInt32: m.optionalInt32,
       optionalInt64: m.optionalInt64.toString(),
@@ -456,9 +438,10 @@ export class TestProto3Optional implements ITestProto3Optional {
     };
   }
 
-  public static fromJSON(obj: ITestProto3OptionalObj): ITestProto3Optional {
-    const m = new TestProto3Optional();
-
+  public static fromJSON(
+    m: TestProto3Optional,
+    obj: TestProto3OptionalJSON
+  ): TestProto3Optional {
     m.optionalInt32 = obj.optionalInt32;
     m.optionalInt64 = pjs.util.Long.fromValue(obj.optionalInt64, false);
     m.optionalUint32 = obj.optionalUint32;
@@ -476,17 +459,40 @@ export class TestProto3Optional implements ITestProto3Optional {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.optionalBytes, tmpBuffer, 0);
-      m.optionalBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.optionalBytes = new pjs.util.Buffer(tmpBuffer);
     }
     m.optionalCord = obj.optionalCord;
-    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
-    m.lazyNestedMessage.fromJSON(obj.lazyNestedMessage);
+    m.optionalNestedMessage = new TestProto3Optional.NestedMessage().fromJSON(
+      obj.optionalNestedMessage
+    );
+    m.lazyNestedMessage = new TestProto3Optional.NestedMessage().fromJSON(
+      obj.lazyNestedMessage
+    );
     m.optionalNestedEnum =
       TestProto3Optional.NestedEnum[obj.optionalNestedEnum];
     m.singularInt32 = obj.singularInt32;
     m.singularInt64 = pjs.util.Long.fromValue(obj.singularInt64, false);
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestProto3Optional.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestProto3Optional {
+    const r = new pjs.Reader(b);
+    TestProto3Optional.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestProto3OptionalJSON {
+    return TestProto3Optional.toJSON(this);
+  }
+
+  fromJSON(obj: TestProto3OptionalJSON): TestProto3Optional {
+    return TestProto3Optional.fromJSON(this, obj);
   }
 
   clone(): TestProto3Optional {
@@ -503,15 +509,11 @@ export namespace TestProto3Optional {
     NEG = 1,
   }
 
-  export interface INestedMessageObj {
+  export interface NestedMessageJSON {
     bb: number | undefined;
   }
 
-  export interface INestedMessage {
-    bb: number | undefined;
-  }
-
-  export class NestedMessage implements INestedMessage {
+  export class NestedMessage {
     bb: number | undefined = undefined;
 
     public static fields = ["bb"];
@@ -520,7 +522,7 @@ export namespace TestProto3Optional {
       return NestedMessage.fields;
     }
 
-    constructor(obj?: Partial<INestedMessage>) {
+    constructor(obj?: NestedMessage) {
       if (!obj) return;
 
       if (obj.bb !== undefined) {
@@ -528,23 +530,22 @@ export namespace TestProto3Optional {
       }
     }
 
-    public static encode(
-      m: INestedMessage,
-      w: pjs.Writer = pjs.Writer.create()
-    ): Uint8Array {
+    public static encode(m: NestedMessage, w: pjs.Writer): pjs.Writer {
       // int32 bb = 1
       if (m.bb !== 0) {
         w.uint32(8);
         w.int32(m.bb);
       }
 
-      return w.finish();
+      return w;
     }
 
-    public static decode(b: Uint8Array): NestedMessage {
-      const m = new NestedMessage();
-      const r = pjs.Reader.create(b);
-      while (r.pos < r.len) {
+    public static decode(
+      m: NestedMessage,
+      r: pjs.Reader,
+      l: number
+    ): pjs.Reader {
+      while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
           // int32 bb = 1
@@ -554,21 +555,41 @@ export namespace TestProto3Optional {
         }
       }
 
-      return m;
+      return r;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {
+    public static toJSON(m: NestedMessage): NestedMessageJSON {
       return {
         bb: m.bb,
       };
     }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {
-      const m = new NestedMessage();
-
+    public static fromJSON(
+      m: NestedMessage,
+      obj: NestedMessageJSON
+    ): NestedMessage {
       m.bb = obj.bb;
 
       return m;
+    }
+
+    serialize(): Uint8Array | Buffer {
+      const w = pjs.Writer.create();
+      return NestedMessage.encode(this, w).finish();
+    }
+
+    deserialize(b: Uint8Array | Buffer): NestedMessage {
+      const r = new pjs.Reader(b);
+      NestedMessage.decode(this, r, r.len);
+      return this;
+    }
+
+    toJSON(): NestedMessageJSON {
+      return NestedMessage.toJSON(this);
+    }
+
+    fromJSON(obj: NestedMessageJSON): NestedMessage {
+      return NestedMessage.fromJSON(this, obj);
     }
 
     clone(): NestedMessage {
@@ -577,17 +598,14 @@ export namespace TestProto3Optional {
   }
 }
 
-export interface ITestProto3OptionalMessageObj {
-  nestedMessage: TestProto3OptionalMessage.NestedMessage;
-  optionalNestedMessage: TestProto3OptionalMessage.NestedMessage | undefined;
+export interface TestProto3OptionalMessageJSON {
+  nestedMessage: TestProto3OptionalMessage.NestedMessageJSON;
+  optionalNestedMessage:
+    | TestProto3OptionalMessage.NestedMessageJSON
+    | undefined;
 }
 
-export interface ITestProto3OptionalMessage {
-  nestedMessage: TestProto3OptionalMessage.NestedMessage;
-  optionalNestedMessage: TestProto3OptionalMessage.NestedMessage | undefined;
-}
-
-export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
+export class TestProto3OptionalMessage {
   nestedMessage: TestProto3OptionalMessage.NestedMessage =
     new TestProto3OptionalMessage.NestedMessage();
   optionalNestedMessage: TestProto3OptionalMessage.NestedMessage | undefined =
@@ -599,7 +617,7 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
     return TestProto3OptionalMessage.fields;
   }
 
-  constructor(obj?: Partial<ITestProto3OptionalMessage>) {
+  constructor(obj?: TestProto3OptionalMessage) {
     if (!obj) return;
 
     if (obj.nestedMessage !== undefined) {
@@ -611,13 +629,13 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
   }
 
   public static encode(
-    m: ITestProto3OptionalMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+    m: TestProto3OptionalMessage,
+    w: pjs.Writer
+  ): pjs.Writer {
     // TestProto3OptionalMessage.NestedMessage nested_message = 1
     if (m.nestedMessage !== new TestProto3OptionalMessage.NestedMessage()) {
       w.uint32(10);
-      w.TestProto3OptionalMessage.NestedMessage(m.nestedMessage);
+      TestProto3OptionalMessage.NestedMessage.encode(m.nestedMessage, w);
     }
 
     // TestProto3OptionalMessage.NestedMessage optional_nested_message = 2
@@ -625,36 +643,45 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
       m.optionalNestedMessage !== new TestProto3OptionalMessage.NestedMessage()
     ) {
       w.uint32(18);
-      w.TestProto3OptionalMessage.NestedMessage(m.optionalNestedMessage);
+      TestProto3OptionalMessage.NestedMessage.encode(
+        m.optionalNestedMessage,
+        w
+      );
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestProto3OptionalMessage {
-    const m = new TestProto3OptionalMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestProto3OptionalMessage,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // TestProto3OptionalMessage.NestedMessage nested_message = 1
         case 10:
-          m.nestedMessage = r.TestProto3OptionalMessage.NestedMessage();
+          m.nestedMessage = TestProto3OptionalMessage.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // TestProto3OptionalMessage.NestedMessage optional_nested_message = 2
         case 18:
-          m.optionalNestedMessage = r.TestProto3OptionalMessage.NestedMessage();
+          m.optionalNestedMessage =
+            TestProto3OptionalMessage.NestedMessage.decode(r, r.uint32());
           continue;
       }
     }
 
-    return m;
+    return r;
   }
 
   public static toJSON(
-    m: ITestProto3OptionalMessage
-  ): ITestProto3OptionalMessageObj {
+    m: TestProto3OptionalMessage
+  ): TestProto3OptionalMessageJSON {
     return {
       nestedMessage: m.nestedMessage.toJSON(),
       optionalNestedMessage: m.optionalNestedMessage.toJSON(),
@@ -662,14 +689,37 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
   }
 
   public static fromJSON(
-    obj: ITestProto3OptionalMessageObj
-  ): ITestProto3OptionalMessage {
-    const m = new TestProto3OptionalMessage();
-
-    m.nestedMessage.fromJSON(obj.nestedMessage);
-    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
+    m: TestProto3OptionalMessage,
+    obj: TestProto3OptionalMessageJSON
+  ): TestProto3OptionalMessage {
+    m.nestedMessage = new TestProto3OptionalMessage.NestedMessage().fromJSON(
+      obj.nestedMessage
+    );
+    m.optionalNestedMessage =
+      new TestProto3OptionalMessage.NestedMessage().fromJSON(
+        obj.optionalNestedMessage
+      );
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestProto3OptionalMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestProto3OptionalMessage {
+    const r = new pjs.Reader(b);
+    TestProto3OptionalMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestProto3OptionalMessageJSON {
+    return TestProto3OptionalMessage.toJSON(this);
+  }
+
+  fromJSON(obj: TestProto3OptionalMessageJSON): TestProto3OptionalMessage {
+    return TestProto3OptionalMessage.fromJSON(this, obj);
   }
 
   clone(): TestProto3OptionalMessage {
@@ -678,15 +728,11 @@ export class TestProto3OptionalMessage implements ITestProto3OptionalMessage {
 }
 
 export namespace TestProto3OptionalMessage {
-  export interface INestedMessageObj {
+  export interface NestedMessageJSON {
     s: string;
   }
 
-  export interface INestedMessage {
-    s: string;
-  }
-
-  export class NestedMessage implements INestedMessage {
+  export class NestedMessage {
     s: string = "";
 
     public static fields = ["s"];
@@ -695,7 +741,7 @@ export namespace TestProto3OptionalMessage {
       return NestedMessage.fields;
     }
 
-    constructor(obj?: Partial<INestedMessage>) {
+    constructor(obj?: NestedMessage) {
       if (!obj) return;
 
       if (obj.s !== undefined) {
@@ -703,23 +749,22 @@ export namespace TestProto3OptionalMessage {
       }
     }
 
-    public static encode(
-      m: INestedMessage,
-      w: pjs.Writer = pjs.Writer.create()
-    ): Uint8Array {
+    public static encode(m: NestedMessage, w: pjs.Writer): pjs.Writer {
       // string s = 1
       if (m.s !== "") {
         w.uint32(10);
         w.string(m.s);
       }
 
-      return w.finish();
+      return w;
     }
 
-    public static decode(b: Uint8Array): NestedMessage {
-      const m = new NestedMessage();
-      const r = pjs.Reader.create(b);
-      while (r.pos < r.len) {
+    public static decode(
+      m: NestedMessage,
+      r: pjs.Reader,
+      l: number
+    ): pjs.Reader {
+      while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
           // string s = 1
@@ -729,21 +774,41 @@ export namespace TestProto3OptionalMessage {
         }
       }
 
-      return m;
+      return r;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {
+    public static toJSON(m: NestedMessage): NestedMessageJSON {
       return {
         s: m.s,
       };
     }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {
-      const m = new NestedMessage();
-
+    public static fromJSON(
+      m: NestedMessage,
+      obj: NestedMessageJSON
+    ): NestedMessage {
       m.s = obj.s;
 
       return m;
+    }
+
+    serialize(): Uint8Array | Buffer {
+      const w = pjs.Writer.create();
+      return NestedMessage.encode(this, w).finish();
+    }
+
+    deserialize(b: Uint8Array | Buffer): NestedMessage {
+      const r = new pjs.Reader(b);
+      NestedMessage.decode(this, r, r.len);
+      return this;
+    }
+
+    toJSON(): NestedMessageJSON {
+      return NestedMessage.toJSON(this);
+    }
+
+    fromJSON(obj: NestedMessageJSON): NestedMessage {
+      return NestedMessage.fromJSON(this, obj);
     }
 
     clone(): NestedMessage {
@@ -752,52 +817,67 @@ export namespace TestProto3OptionalMessage {
   }
 }
 
-export interface IProto3OptionalExtensionsObj {}
+export interface Proto3OptionalExtensionsJSON {}
 
-export interface IProto3OptionalExtensions {}
-
-export class Proto3OptionalExtensions implements IProto3OptionalExtensions {
+export class Proto3OptionalExtensions {
   public static fields = [];
 
   public get fields() {
     return Proto3OptionalExtensions.fields;
   }
 
-  constructor(obj?: Partial<IProto3OptionalExtensions>) {
+  constructor(obj?: Proto3OptionalExtensions) {
     if (!obj) return;
   }
 
-  public static encode(
-    m: IProto3OptionalExtensions,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
-    return w.finish();
+  public static encode(m: Proto3OptionalExtensions, w: pjs.Writer): pjs.Writer {
+    return w;
   }
 
-  public static decode(b: Uint8Array): Proto3OptionalExtensions {
-    const m = new Proto3OptionalExtensions();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: Proto3OptionalExtensions,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
     }
 
-    return m;
+    return r;
   }
 
   public static toJSON(
-    m: IProto3OptionalExtensions
-  ): IProto3OptionalExtensionsObj {
+    m: Proto3OptionalExtensions
+  ): Proto3OptionalExtensionsJSON {
     return {};
   }
 
   public static fromJSON(
-    obj: IProto3OptionalExtensionsObj
-  ): IProto3OptionalExtensions {
-    const m = new Proto3OptionalExtensions();
-
+    m: Proto3OptionalExtensions,
+    obj: Proto3OptionalExtensionsJSON
+  ): Proto3OptionalExtensions {
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return Proto3OptionalExtensions.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): Proto3OptionalExtensions {
+    const r = new pjs.Reader(b);
+    Proto3OptionalExtensions.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): Proto3OptionalExtensionsJSON {
+    return Proto3OptionalExtensions.toJSON(this);
+  }
+
+  fromJSON(obj: Proto3OptionalExtensionsJSON): Proto3OptionalExtensions {
+    return Proto3OptionalExtensions.fromJSON(this, obj);
   }
 
   clone(): Proto3OptionalExtensions {

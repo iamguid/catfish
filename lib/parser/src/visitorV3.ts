@@ -1,17 +1,19 @@
 import { ParseTreeVisitor } from "antlr4";
 
-import { ProtoContext, ImportStatementContext, ServiceDefContext, RpcContext, MessageDefContext, MessageElementContext, FieldContext, MapFieldContext, OneofFieldContext, EnumDefContext, EnumFieldContext } from "./generated/Protobuf3Parser";
+import { ProtoContext, ImportStatementContext, ServiceDefContext, RpcContext, MessageDefContext, MessageElementContext, FieldContext, MapFieldContext, OneofContext, OneofFieldContext, EnumDefContext, EnumFieldContext } from "./generated/Protobuf3Parser";
 import Protobuf3Visitor from "./generated/Protobuf3Visitor";
 import Protobuf3Parser from "./generated/Protobuf3Parser";
 import { EnumDescriptor } from "./reflection/EnumDescriptor";
 import { EnumFieldDescriptor } from "./reflection/EnumFieldDescriptor";
-import { FieldDescriptor, MapField } from "./reflection/FieldDescriptor";
+import { MessageFieldDescriptor } from "./reflection/MessageFieldDescriptor";
 import { FileDescriptor, FileImport } from "./reflection/FileDescriptor";
 import { IDescriptor } from "./reflection/IDescriptor";
 import { MessageDescriptor } from "./reflection/MessageDescriptor";
 import { MethodDescriptor } from "./reflection/MethodDescriptor";
 import { ServiceDescriptor } from "./reflection/ServiceDescriptor";
 import { extractOptions, normalizeTypeName, trimChar } from "./utils";
+import { MapFieldDescriptor } from "./reflection/MapFieldDescriptor";
+import { BaseDescriptor, OneofDescriptor } from "./reflection";
 
 export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf3Visitor<IDescriptor> {
     public fileDescriptor: FileDescriptor;
@@ -141,23 +143,17 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
                     || Boolean(messageElement.oneof()) 
                     || Boolean(messageElement.mapField())
             })
-            .reduce((current: FieldDescriptor[], messageElement: MessageElementContext, index) => {
+            .reduce((current: BaseDescriptor[], messageElement: MessageElementContext, index) => {
                 if (Boolean(messageElement.field())) {
                     current.push(this.visitField(messageElement.field(), index));
+                }
+                
+                if (Boolean(messageElement.oneof())) {
+                    current.push(this.visitOneof(messageElement.oneof(), index));
                 }
 
                 if (Boolean(messageElement.mapField())) {
                     current.push(this.visitMapField(messageElement.mapField(), index));
-                }
-
-                if (Boolean(messageElement.oneof())) {
-                    const oneof = messageElement.oneof();
-                    const oneofName = oneof.oneofName().getText();
-                    const fields = oneof.oneofField_list();
-
-                    fields.forEach((field, oneofIndex) => {
-                        current.push(this.visitOneofField(field, index + oneofIndex, oneofName)) 
-                    });
                 }
 
                 return current;
@@ -181,7 +177,7 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
         });
     }
 
-    visitField(ctx: FieldContext, index = 0): FieldDescriptor {
+    visitField(ctx: FieldContext, index = 0): MessageFieldDescriptor {
         const namespace = this.namespace.join('.');
         const fieldName = ctx.fieldName().getText();
         const filedType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
@@ -194,7 +190,7 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
         const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
 
-        return new FieldDescriptor({
+        return new MessageFieldDescriptor({
             index,
             name: fieldName,
             namespace,
@@ -207,31 +203,43 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
         });
     }
 
-    visitMapField(ctx: MapFieldContext, index = 0): FieldDescriptor {
+    visitMapField(ctx: MapFieldContext, index = 0): MapFieldDescriptor {
         const namespace = this.namespace.join('.');
         const fieldName = ctx.mapName().getText();
         const fieldNumber = Number.parseInt(ctx.fieldNumber().getText(), 10);
         const keyType = normalizeTypeName(ctx.keyType().getText(), this.fileDescriptor.registry, namespace);
         const valueType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
-        const mapField: MapField = { keyType, valueType }
 
         const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
 
-        return new FieldDescriptor({
+        return new MapFieldDescriptor({
             index,
-            name: fieldName,
-            namespace,
-            fileDescriptor: this.fileDescriptor,
             options,
-            repeated: false,
-            optional: false,
+            namespace,
+            name: fieldName,
+            keyType,
+            valueType,
+            fileDescriptor: this.fileDescriptor,
             fieldNumber,
-            map: mapField
         });
     }
 
-    visitOneofField(ctx: OneofFieldContext, index = 0, oneofName = ''): FieldDescriptor {
+    visitOneof(ctx: OneofContext, index = 0): OneofDescriptor {
+        const namespace = this.namespace.join('.');
+        const oneofName = ctx.oneofName().getText();
+        const fields = ctx.oneofField_list();
+
+        return new OneofDescriptor({
+            index,
+            name: oneofName,
+            namespace,
+            fileDescriptor: this.fileDescriptor,
+            fields: fields.map((f, index) => this.visitOneofField(f, index))
+        });
+    }
+
+    visitOneofField(ctx: OneofFieldContext, index = 0): MessageFieldDescriptor {
         const namespace = this.namespace.join('.');
         const fieldName = ctx.fieldName().getText();
         const filedType = normalizeTypeName(ctx.type_().getText(), this.fileDescriptor.registry, namespace);
@@ -240,17 +248,16 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
         const options = (ctx.fieldOptions()?.fieldOption_list() ?? [])
             .map(fieldOption => extractOptions(fieldOption));
 
-        return new FieldDescriptor({
+        return new MessageFieldDescriptor({
             index,
             name: fieldName,
             namespace,
             fileDescriptor: this.fileDescriptor,
-            oneofName,
-            options: options || [],
+            options: options,
             type: filedType,
             repeated: false,
             optional: false,
-            fieldNumber 
+            fieldNumber
         });
     }
 

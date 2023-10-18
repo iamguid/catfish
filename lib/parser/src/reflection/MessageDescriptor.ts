@@ -1,6 +1,6 @@
 import { BaseDescriptor, IBaseDescriptorProps } from './BaseDescriptor';
 import { EnumDescriptor } from './EnumDescriptor';
-import { FieldDescriptor } from './FieldDescriptor';
+import { MessageFieldDescriptor } from './MessageFieldDescriptor';
 import { Options } from './Options';
 
 export class MessageDescriptor extends BaseDescriptor {
@@ -22,11 +22,11 @@ export class MessageDescriptor extends BaseDescriptor {
     /**
      * Contains all fields descriptors that defined in message 
      */
-    public readonly fields: FieldDescriptor[] = [];
+    public readonly fields: BaseDescriptor[] = [];
 
     constructor(props: IBaseDescriptorProps & {
         options: Options[],
-        fields: FieldDescriptor[],
+        fields: BaseDescriptor[],
         messages: MessageDescriptor[],
         enums: EnumDescriptor[]
     }) {

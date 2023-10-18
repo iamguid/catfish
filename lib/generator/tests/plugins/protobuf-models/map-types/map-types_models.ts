@@ -45,7 +45,12 @@ export class SimpleMessage {
     return w;
   }
 
-  public static decode(m: SimpleMessage, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: SimpleMessage,
+    r: pjs.Reader,
+    length: number
+  ): pjs.Reader {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -53,6 +58,10 @@ export class SimpleMessage {
         case 8:
           m.a = r.int32();
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
@@ -79,9 +88,13 @@ export class SimpleMessage {
     return SimpleMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): SimpleMessage {
-    const r = new pjs.Reader(b);
-    SimpleMessage.decode(this, r, r.len);
+  deserialize(
+    buffer: Uint8Array | Buffer | pjs.Reader,
+    length?: number
+  ): SimpleMessage {
+    const r = buffer instanceof pjs.Reader ? buffer : new pjs.Reader(buffer);
+    const l = length ?? r.len;
+    SimpleMessage.decode(this, r, l);
     return this;
   }
 
@@ -177,61 +190,86 @@ export class MapTypes {
 
   public static encode(m: MapTypes, w: pjs.Writer): pjs.Writer {
     // map<int32, string> map_int32_string = 1
+    w.uint32(10);
     for (const [key, val] of m.mapInt32String) {
+      w.uint32(8);
       w.int32(key);
+      w.uint32(18);
       w.string(val);
     }
 
     // map<int32, bytes> map_int32_bytes = 2
+    w.uint32(18);
     for (const [key, val] of m.mapInt32Bytes) {
+      w.uint32(8);
       w.int32(key);
+      w.uint32(18);
       w.bytes(val);
     }
 
     // map<int32, bool> map_int32_bool = 3
+    w.uint32(26);
     for (const [key, val] of m.mapInt32Bool) {
+      w.uint32(8);
       w.int32(key);
+      w.uint32(16);
       w.bool(val);
     }
 
     // map<int32, SimpleMessage> map_int32_message = 4
+    w.uint32(34);
     for (const [key, val] of m.mapInt32Message) {
+      w.uint32(8);
       w.int32(key);
+      w.uint32(18);
       SimpleMessage.encode(val, w);
     }
 
     // map<int32, SimpleEnum> map_int32_enum = 5
+    w.uint32(42);
     for (const [key, val] of m.mapInt32Enum) {
+      w.uint32(8);
       w.int32(key);
+      w.uint32(16);
       w.uint32(val);
     }
 
     // map<string, string> map_string_string = 6
+    w.uint32(50);
     for (const [key, val] of m.mapStringString) {
+      w.uint32(10);
       w.string(key);
+      w.uint32(18);
       w.string(val);
     }
 
     // map<uint64, int32> map_uint64_int32 = 7
+    w.uint32(58);
     for (const [key, val] of m.mapUint64Int32) {
+      w.uint32(8);
       w.uint64(key);
+      w.uint32(16);
       w.int32(val);
     }
 
     return w;
   }
 
-  public static decode(m: MapTypes, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(m: MapTypes, r: pjs.Reader, length: number): pjs.Reader {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // map<int32, string> map_int32_string = 1
         case 10:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.int32();
-            const valueTag = r.uint32();
+
+            r.skipType(0); // uint32 - Value Tag
             const value = r.string();
 
             m.mapInt32String.set(key, value);
@@ -241,10 +279,13 @@ export class MapTypes {
         // map<int32, bytes> map_int32_bytes = 2
         case 18:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.int32();
-            const valueTag = r.uint32();
+
+            r.skipType(0); // uint32 - Value Tag
             const value = r.bytes();
 
             m.mapInt32Bytes.set(key, value);
@@ -254,10 +295,13 @@ export class MapTypes {
         // map<int32, bool> map_int32_bool = 3
         case 26:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.int32();
-            const valueTag = r.uint32();
+
+            r.skipType(0); // uint32 - Value Tag
             const value = r.bool();
 
             m.mapInt32Bool.set(key, value);
@@ -267,11 +311,12 @@ export class MapTypes {
         // map<int32, SimpleMessage> map_int32_message = 4
         case 34:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.int32();
-            const valueTag = r.uint32();
-            const value = SimpleMessage.decode(r, r.uint32());
+            const value = new SimpleMessage().deserialize(r, length);
 
             m.mapInt32Message.set(key, value);
           }
@@ -280,10 +325,13 @@ export class MapTypes {
         // map<int32, SimpleEnum> map_int32_enum = 5
         case 42:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.int32();
-            const valueTag = r.uint32();
+
+            r.skipType(0); // uint32 - Value Tag
             const value = r.uint32();
 
             m.mapInt32Enum.set(key, value);
@@ -293,10 +341,13 @@ export class MapTypes {
         // map<string, string> map_string_string = 6
         case 50:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.string();
-            const valueTag = r.uint32();
+
+            r.skipType(0); // uint32 - Value Tag
             const value = r.string();
 
             m.mapStringString.set(key, value);
@@ -306,15 +357,22 @@ export class MapTypes {
         // map<uint64, int32> map_uint64_int32 = 7
         case 58:
           {
-            const len = r.uint32();
+            // r.skipType(0); // uint32 - ???
+            // r.skipType(0); // uint32 - Key Tag
+            const length = r.uint32();
             const keyTag = r.uint32();
             const key = r.uint64();
-            const valueTag = r.uint32();
+
+            r.skipType(0); // uint32 - Value Tag
             const value = r.int32();
 
             m.mapUint64Int32.set(key, value);
           }
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
@@ -384,9 +442,13 @@ export class MapTypes {
     return MapTypes.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): MapTypes {
-    const r = new pjs.Reader(b);
-    MapTypes.decode(this, r, r.len);
+  deserialize(
+    buffer: Uint8Array | Buffer | pjs.Reader,
+    length?: number
+  ): MapTypes {
+    const r = buffer instanceof pjs.Reader ? buffer : new pjs.Reader(buffer);
+    const l = length ?? r.len;
+    MapTypes.decode(this, r, l);
     return this;
   }
 

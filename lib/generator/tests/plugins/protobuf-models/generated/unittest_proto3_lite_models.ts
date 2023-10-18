@@ -12,6 +12,7 @@ import * as unittest_import_models from "unittest_import_models";
 import * as unittest_import_public_models from "unittest_import_public_models";
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum ForeignEnum {
   FOREIGN_ZERO = 0,
@@ -20,7 +21,7 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 6,
 }
 
-export interface ITestAllTypesObj {
+export interface TestAllTypesJSON {
   optionalInt32: number;
   optionalInt64: string;
   optionalUint32: number;
@@ -36,15 +37,15 @@ export interface ITestAllTypesObj {
   optionalBool: boolean;
   optionalString: string;
   optionalBytes: string;
-  optionalNestedMessage: TestAllTypes.NestedMessage;
-  optionalForeignMessage: ForeignMessage;
-  optionalImportMessage: protobuf_unittest_import.ImportMessage;
-  optionalNestedEnum: number;
-  optionalForeignEnum: number;
+  optionalNestedMessage: TestAllTypes.NestedMessageJSON;
+  optionalForeignMessage: ForeignMessageJSON;
+  optionalImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessageJSON;
+  optionalNestedEnum: string;
+  optionalForeignEnum: string;
   optionalStringPiece: string;
   optionalCord: string;
-  optionalPublicImportMessage: protobuf_unittest_import.PublicImportMessage;
-  optionalLazyMessage: TestAllTypes.NestedMessage;
+  optionalPublicImportMessage: unittest_import_public_models.protobuf_unittest_import.PublicImportMessageJSON;
+  optionalLazyMessage: TestAllTypes.NestedMessageJSON;
   repeatedInt32: number;
   repeatedInt64: string;
   repeatedUint32: number;
@@ -60,75 +61,21 @@ export interface ITestAllTypesObj {
   repeatedBool: boolean;
   repeatedString: string;
   repeatedBytes: string;
-  repeatedNestedMessage: TestAllTypes.NestedMessage;
-  repeatedForeignMessage: ForeignMessage;
-  repeatedImportMessage: protobuf_unittest_import.ImportMessage;
-  repeatedNestedEnum: number;
-  repeatedForeignEnum: number;
+  repeatedNestedMessage: TestAllTypes.NestedMessageJSON;
+  repeatedForeignMessage: ForeignMessageJSON;
+  repeatedImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessageJSON;
+  repeatedNestedEnum: string;
+  repeatedForeignEnum: string;
   repeatedStringPiece: string;
   repeatedCord: string;
-  repeatedLazyMessage: TestAllTypes.NestedMessage;
+  repeatedLazyMessage: TestAllTypes.NestedMessageJSON;
   oneofUint32?: number;
-  oneofNestedMessage?: TestAllTypes.NestedMessage;
+  oneofNestedMessage?: TestAllTypes.NestedMessageJSON;
   oneofString?: string;
   oneofBytes?: string;
 }
 
-export interface ITestAllTypes {
-  optionalInt32: number;
-  optionalInt64: pjs.Long;
-  optionalUint32: number;
-  optionalUint64: pjs.Long;
-  optionalSint32: number;
-  optionalSint64: pjs.Long;
-  optionalFixed32: number;
-  optionalFixed64: pjs.Long;
-  optionalSfixed32: number;
-  optionalSfixed64: pjs.Long;
-  optionalFloat: number;
-  optionalDouble: number;
-  optionalBool: boolean;
-  optionalString: string;
-  optionalBytes: Uint8Array | Buffer;
-  optionalNestedMessage: TestAllTypes.NestedMessage;
-  optionalForeignMessage: ForeignMessage;
-  optionalImportMessage: protobuf_unittest_import.ImportMessage;
-  optionalNestedEnum: number;
-  optionalForeignEnum: number;
-  optionalStringPiece: string;
-  optionalCord: string;
-  optionalPublicImportMessage: protobuf_unittest_import.PublicImportMessage;
-  optionalLazyMessage: TestAllTypes.NestedMessage;
-  repeatedInt32: number;
-  repeatedInt64: pjs.Long;
-  repeatedUint32: number;
-  repeatedUint64: pjs.Long;
-  repeatedSint32: number;
-  repeatedSint64: pjs.Long;
-  repeatedFixed32: number;
-  repeatedFixed64: pjs.Long;
-  repeatedSfixed32: number;
-  repeatedSfixed64: pjs.Long;
-  repeatedFloat: number;
-  repeatedDouble: number;
-  repeatedBool: boolean;
-  repeatedString: string;
-  repeatedBytes: Uint8Array | Buffer;
-  repeatedNestedMessage: TestAllTypes.NestedMessage;
-  repeatedForeignMessage: ForeignMessage;
-  repeatedImportMessage: protobuf_unittest_import.ImportMessage;
-  repeatedNestedEnum: number;
-  repeatedForeignEnum: number;
-  repeatedStringPiece: string;
-  repeatedCord: string;
-  repeatedLazyMessage: TestAllTypes.NestedMessage;
-  oneofUint32?: number;
-  oneofNestedMessage?: TestAllTypes.NestedMessage;
-  oneofString?: string;
-  oneofBytes?: Uint8Array | Buffer;
-}
-
-export class TestAllTypes implements ITestAllTypes {
+export class TestAllTypes {
   optionalInt32: number = 0;
   optionalInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
   optionalUint32: number = 0;
@@ -147,13 +94,13 @@ export class TestAllTypes implements ITestAllTypes {
   optionalNestedMessage: TestAllTypes.NestedMessage =
     new TestAllTypes.NestedMessage();
   optionalForeignMessage: ForeignMessage = new ForeignMessage();
-  optionalImportMessage: protobuf_unittest_import.ImportMessage =
+  optionalImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessage =
     new unittest_import_models.protobuf_unittest_import.ImportMessage();
   optionalNestedEnum: number = TestAllTypes.NestedEnum.ZERO;
   optionalForeignEnum: number = ForeignEnum.FOREIGN_ZERO;
   optionalStringPiece: string = "";
   optionalCord: string = "";
-  optionalPublicImportMessage: protobuf_unittest_import.PublicImportMessage =
+  optionalPublicImportMessage: unittest_import_public_models.protobuf_unittest_import.PublicImportMessage =
     new unittest_import_public_models.protobuf_unittest_import.PublicImportMessage();
   optionalLazyMessage: TestAllTypes.NestedMessage =
     new TestAllTypes.NestedMessage();
@@ -174,7 +121,8 @@ export class TestAllTypes implements ITestAllTypes {
   repeatedBytes: Uint8Array | Buffer = [];
   repeatedNestedMessage: TestAllTypes.NestedMessage = [];
   repeatedForeignMessage: ForeignMessage = [];
-  repeatedImportMessage: protobuf_unittest_import.ImportMessage = [];
+  repeatedImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessage =
+    [];
   repeatedNestedEnum: number = [];
   repeatedForeignEnum: number = [];
   repeatedStringPiece: string = [];
@@ -244,7 +192,7 @@ export class TestAllTypes implements ITestAllTypes {
     return TestAllTypes.fields;
   }
 
-  constructor(obj?: Partial<ITestAllTypes>) {
+  constructor(obj?: TestAllTypes) {
     if (!obj) return;
 
     if (obj.optionalInt32 !== undefined) {
@@ -402,10 +350,7 @@ export class TestAllTypes implements ITestAllTypes {
     }
   }
 
-  public static encode(
-    m: ITestAllTypes,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestAllTypes, w: pjs.Writer): pjs.Writer {
     // int32 optional_int32 = 1
     if (m.optionalInt32 !== 0) {
       w.uint32(8);
@@ -499,13 +444,13 @@ export class TestAllTypes implements ITestAllTypes {
     // TestAllTypes.NestedMessage optional_nested_message = 18
     if (m.optionalNestedMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(146);
-      w.TestAllTypes.NestedMessage(m.optionalNestedMessage);
+      TestAllTypes.NestedMessage.encode(m.optionalNestedMessage, w);
     }
 
     // ForeignMessage optional_foreign_message = 19
     if (m.optionalForeignMessage !== new ForeignMessage()) {
       w.uint32(154);
-      w.ForeignMessage(m.optionalForeignMessage);
+      ForeignMessage.encode(m.optionalForeignMessage, w);
     }
 
     // protobuf_unittest_import.ImportMessage optional_import_message = 20
@@ -514,7 +459,10 @@ export class TestAllTypes implements ITestAllTypes {
       new unittest_import_models.protobuf_unittest_import.ImportMessage()
     ) {
       w.uint32(162);
-      w.protobuf_unittest_import.ImportMessage(m.optionalImportMessage);
+      unittest_import_models.protobuf_unittest_import.ImportMessage.encode(
+        m.optionalImportMessage,
+        w
+      );
     }
 
     // TestAllTypes.NestedEnum optional_nested_enum = 21
@@ -547,15 +495,16 @@ export class TestAllTypes implements ITestAllTypes {
       new unittest_import_public_models.protobuf_unittest_import.PublicImportMessage()
     ) {
       w.uint32(210);
-      w.protobuf_unittest_import.PublicImportMessage(
-        m.optionalPublicImportMessage
+      unittest_import_public_models.protobuf_unittest_import.PublicImportMessage.encode(
+        m.optionalPublicImportMessage,
+        w
       );
     }
 
     // TestAllTypes.NestedMessage optional_lazy_message = 27
     if (m.optionalLazyMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(218);
-      w.TestAllTypes.NestedMessage(m.optionalLazyMessage);
+      TestAllTypes.NestedMessage.encode(m.optionalLazyMessage, w);
     }
 
     // int32 repeated_int32 = 31
@@ -651,19 +600,22 @@ export class TestAllTypes implements ITestAllTypes {
     // TestAllTypes.NestedMessage repeated_nested_message = 48
     if (m.repeatedNestedMessage !== []) {
       w.uint32(386);
-      w.TestAllTypes.NestedMessage(m.repeatedNestedMessage);
+      TestAllTypes.NestedMessage.encode(m.repeatedNestedMessage, w);
     }
 
     // ForeignMessage repeated_foreign_message = 49
     if (m.repeatedForeignMessage !== []) {
       w.uint32(394);
-      w.ForeignMessage(m.repeatedForeignMessage);
+      ForeignMessage.encode(m.repeatedForeignMessage, w);
     }
 
     // protobuf_unittest_import.ImportMessage repeated_import_message = 50
     if (m.repeatedImportMessage !== []) {
       w.uint32(402);
-      w.protobuf_unittest_import.ImportMessage(m.repeatedImportMessage);
+      unittest_import_models.protobuf_unittest_import.ImportMessage.encode(
+        m.repeatedImportMessage,
+        w
+      );
     }
 
     // TestAllTypes.NestedEnum repeated_nested_enum = 51
@@ -693,7 +645,7 @@ export class TestAllTypes implements ITestAllTypes {
     // TestAllTypes.NestedMessage repeated_lazy_message = 57
     if (m.repeatedLazyMessage !== []) {
       w.uint32(458);
-      w.TestAllTypes.NestedMessage(m.repeatedLazyMessage);
+      TestAllTypes.NestedMessage.encode(m.repeatedLazyMessage, w);
     }
 
     // oneof uint32 oneof_uint32 = 111
@@ -704,13 +656,11 @@ export class TestAllTypes implements ITestAllTypes {
 
     // oneof bytes oneof_bytes = 114
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestAllTypes {
-    const m = new TestAllTypes();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: TestAllTypes, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 optional_int32 = 1
@@ -790,17 +740,24 @@ export class TestAllTypes implements ITestAllTypes {
 
         // TestAllTypes.NestedMessage optional_nested_message = 18
         case 146:
-          m.optionalNestedMessage = r.TestAllTypes.NestedMessage();
+          m.optionalNestedMessage = TestAllTypes.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // ForeignMessage optional_foreign_message = 19
         case 154:
-          m.optionalForeignMessage = r.ForeignMessage();
+          m.optionalForeignMessage = ForeignMessage.decode(r, r.uint32());
           continue;
 
         // protobuf_unittest_import.ImportMessage optional_import_message = 20
         case 162:
-          m.optionalImportMessage = r.protobuf_unittest_import.ImportMessage();
+          m.optionalImportMessage =
+            unittest_import_models.protobuf_unittest_import.ImportMessage.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // TestAllTypes.NestedEnum optional_nested_enum = 21
@@ -826,12 +783,18 @@ export class TestAllTypes implements ITestAllTypes {
         // protobuf_unittest_import.PublicImportMessage optional_public_import_message = 26
         case 210:
           m.optionalPublicImportMessage =
-            r.protobuf_unittest_import.PublicImportMessage();
+            unittest_import_public_models.protobuf_unittest_import.PublicImportMessage.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // TestAllTypes.NestedMessage optional_lazy_message = 27
         case 218:
-          m.optionalLazyMessage = r.TestAllTypes.NestedMessage();
+          m.optionalLazyMessage = TestAllTypes.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // repeated int32 repeated_int32 = 31
@@ -972,7 +935,7 @@ export class TestAllTypes implements ITestAllTypes {
         // repeated TestAllTypes.NestedMessage repeated_nested_message = 48
         case 386:
           {
-            const value = r.TestAllTypes.NestedMessage();
+            const value = TestAllTypes.NestedMessage.decode(r, r.uint32());
 
             m.repeatedNestedMessage.push(value);
           }
@@ -981,7 +944,7 @@ export class TestAllTypes implements ITestAllTypes {
         // repeated ForeignMessage repeated_foreign_message = 49
         case 394:
           {
-            const value = r.ForeignMessage();
+            const value = ForeignMessage.decode(r, r.uint32());
 
             m.repeatedForeignMessage.push(value);
           }
@@ -990,7 +953,11 @@ export class TestAllTypes implements ITestAllTypes {
         // repeated protobuf_unittest_import.ImportMessage repeated_import_message = 50
         case 402:
           {
-            const value = r.protobuf_unittest_import.ImportMessage();
+            const value =
+              unittest_import_models.protobuf_unittest_import.ImportMessage.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedImportMessage.push(value);
           }
@@ -1035,7 +1002,7 @@ export class TestAllTypes implements ITestAllTypes {
         // repeated TestAllTypes.NestedMessage repeated_lazy_message = 57
         case 458:
           {
-            const value = r.TestAllTypes.NestedMessage();
+            const value = TestAllTypes.NestedMessage.decode(r, r.uint32());
 
             m.repeatedLazyMessage.push(value);
           }
@@ -1048,7 +1015,10 @@ export class TestAllTypes implements ITestAllTypes {
 
         // TestAllTypes.NestedMessage oneof_nested_message = 112
         case 898:
-          m.oneofNestedMessage = r.TestAllTypes.NestedMessage();
+          m.oneofNestedMessage = TestAllTypes.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // string oneof_string = 113
@@ -1063,10 +1033,10 @@ export class TestAllTypes implements ITestAllTypes {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestAllTypes): ITestAllTypesObj {
+  public static toJSON(m: TestAllTypes): TestAllTypesJSON {
     return {
       optionalInt32: m.optionalInt32,
       optionalInt64: m.optionalInt64.toString(),
@@ -1130,9 +1100,7 @@ export class TestAllTypes implements ITestAllTypes {
     };
   }
 
-  public static fromJSON(obj: ITestAllTypesObj): ITestAllTypes {
-    const m = new TestAllTypes();
-
+  public static fromJSON(m: TestAllTypes, obj: TestAllTypesJSON): TestAllTypes {
     m.optionalInt32 = obj.optionalInt32;
     m.optionalInt64 = pjs.util.Long.fromValue(obj.optionalInt64, false);
     m.optionalUint32 = obj.optionalUint32;
@@ -1150,17 +1118,29 @@ export class TestAllTypes implements ITestAllTypes {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.optionalBytes, tmpBuffer, 0);
-      m.optionalBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.optionalBytes = new pjs.util.Buffer(tmpBuffer);
     }
-    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
-    m.optionalForeignMessage.fromJSON(obj.optionalForeignMessage);
-    m.optionalImportMessage.fromJSON(obj.optionalImportMessage);
+    m.optionalNestedMessage = new TestAllTypes.NestedMessage().fromJSON(
+      obj.optionalNestedMessage
+    );
+    m.optionalForeignMessage = new ForeignMessage().fromJSON(
+      obj.optionalForeignMessage
+    );
+    m.optionalImportMessage =
+      new unittest_import_models.protobuf_unittest_import.ImportMessage().fromJSON(
+        obj.optionalImportMessage
+      );
     m.optionalNestedEnum = TestAllTypes.NestedEnum[obj.optionalNestedEnum];
     m.optionalForeignEnum = ForeignEnum[obj.optionalForeignEnum];
     m.optionalStringPiece = obj.optionalStringPiece;
     m.optionalCord = obj.optionalCord;
-    m.optionalPublicImportMessage.fromJSON(obj.optionalPublicImportMessage);
-    m.optionalLazyMessage.fromJSON(obj.optionalLazyMessage);
+    m.optionalPublicImportMessage =
+      new unittest_import_public_models.protobuf_unittest_import.PublicImportMessage().fromJSON(
+        obj.optionalPublicImportMessage
+      );
+    m.optionalLazyMessage = new TestAllTypes.NestedMessage().fromJSON(
+      obj.optionalLazyMessage
+    );
     m.repeatedInt32 = obj.repeatedInt32;
     m.repeatedInt64 = pjs.util.Long.fromValue(obj.repeatedInt64, false);
     m.repeatedUint32 = obj.repeatedUint32;
@@ -1178,26 +1158,56 @@ export class TestAllTypes implements ITestAllTypes {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.repeatedBytes, tmpBuffer, 0);
-      m.repeatedBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.repeatedBytes = new pjs.util.Buffer(tmpBuffer);
     }
-    m.repeatedNestedMessage.fromJSON(obj.repeatedNestedMessage);
-    m.repeatedForeignMessage.fromJSON(obj.repeatedForeignMessage);
-    m.repeatedImportMessage.fromJSON(obj.repeatedImportMessage);
+    m.repeatedNestedMessage = new TestAllTypes.NestedMessage().fromJSON(
+      obj.repeatedNestedMessage
+    );
+    m.repeatedForeignMessage = new ForeignMessage().fromJSON(
+      obj.repeatedForeignMessage
+    );
+    m.repeatedImportMessage =
+      new unittest_import_models.protobuf_unittest_import.ImportMessage().fromJSON(
+        obj.repeatedImportMessage
+      );
     m.repeatedNestedEnum = TestAllTypes.NestedEnum[obj.repeatedNestedEnum];
     m.repeatedForeignEnum = ForeignEnum[obj.repeatedForeignEnum];
     m.repeatedStringPiece = obj.repeatedStringPiece;
     m.repeatedCord = obj.repeatedCord;
-    m.repeatedLazyMessage.fromJSON(obj.repeatedLazyMessage);
+    m.repeatedLazyMessage = new TestAllTypes.NestedMessage().fromJSON(
+      obj.repeatedLazyMessage
+    );
     m.oneofUint32 = obj.oneofUint32;
-    m.oneofNestedMessage.fromJSON(obj.oneofNestedMessage);
+    m.oneofNestedMessage = new TestAllTypes.NestedMessage().fromJSON(
+      obj.oneofNestedMessage
+    );
     m.oneofString = obj.oneofString;
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.oneofBytes, tmpBuffer, 0);
-      m.oneofBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.oneofBytes = new pjs.util.Buffer(tmpBuffer);
     }
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestAllTypes.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestAllTypes {
+    const r = new pjs.Reader(b);
+    TestAllTypes.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestAllTypesJSON {
+    return TestAllTypes.toJSON(this);
+  }
+
+  fromJSON(obj: TestAllTypesJSON): TestAllTypes {
+    return TestAllTypes.fromJSON(this, obj);
   }
 
   clone(): TestAllTypes {
@@ -1214,15 +1224,11 @@ export namespace TestAllTypes {
     NEG = 1,
   }
 
-  export interface INestedMessageObj {
+  export interface NestedMessageJSON {
     bb: number;
   }
 
-  export interface INestedMessage {
-    bb: number;
-  }
-
-  export class NestedMessage implements INestedMessage {
+  export class NestedMessage {
     bb: number = 0;
 
     public static fields = ["bb"];
@@ -1231,7 +1237,7 @@ export namespace TestAllTypes {
       return NestedMessage.fields;
     }
 
-    constructor(obj?: Partial<INestedMessage>) {
+    constructor(obj?: NestedMessage) {
       if (!obj) return;
 
       if (obj.bb !== undefined) {
@@ -1239,23 +1245,22 @@ export namespace TestAllTypes {
       }
     }
 
-    public static encode(
-      m: INestedMessage,
-      w: pjs.Writer = pjs.Writer.create()
-    ): Uint8Array {
+    public static encode(m: NestedMessage, w: pjs.Writer): pjs.Writer {
       // int32 bb = 1
       if (m.bb !== 0) {
         w.uint32(8);
         w.int32(m.bb);
       }
 
-      return w.finish();
+      return w;
     }
 
-    public static decode(b: Uint8Array): NestedMessage {
-      const m = new NestedMessage();
-      const r = pjs.Reader.create(b);
-      while (r.pos < r.len) {
+    public static decode(
+      m: NestedMessage,
+      r: pjs.Reader,
+      l: number
+    ): pjs.Reader {
+      while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
           // int32 bb = 1
@@ -1265,21 +1270,41 @@ export namespace TestAllTypes {
         }
       }
 
-      return m;
+      return r;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {
+    public static toJSON(m: NestedMessage): NestedMessageJSON {
       return {
         bb: m.bb,
       };
     }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {
-      const m = new NestedMessage();
-
+    public static fromJSON(
+      m: NestedMessage,
+      obj: NestedMessageJSON
+    ): NestedMessage {
       m.bb = obj.bb;
 
       return m;
+    }
+
+    serialize(): Uint8Array | Buffer {
+      const w = pjs.Writer.create();
+      return NestedMessage.encode(this, w).finish();
+    }
+
+    deserialize(b: Uint8Array | Buffer): NestedMessage {
+      const r = new pjs.Reader(b);
+      NestedMessage.decode(this, r, r.len);
+      return this;
+    }
+
+    toJSON(): NestedMessageJSON {
+      return NestedMessage.toJSON(this);
+    }
+
+    fromJSON(obj: NestedMessageJSON): NestedMessage {
+      return NestedMessage.fromJSON(this, obj);
     }
 
     clone(): NestedMessage {
@@ -1295,7 +1320,7 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 6,
 }
 
-export interface ITestPackedTypesObj {
+export interface TestPackedTypesJSON {
   packedInt32: number;
   packedInt64: string;
   packedUint32: number;
@@ -1309,27 +1334,10 @@ export interface ITestPackedTypesObj {
   packedFloat: number;
   packedDouble: number;
   packedBool: boolean;
-  packedEnum: number;
+  packedEnum: string;
 }
 
-export interface ITestPackedTypes {
-  packedInt32: number;
-  packedInt64: pjs.Long;
-  packedUint32: number;
-  packedUint64: pjs.Long;
-  packedSint32: number;
-  packedSint64: pjs.Long;
-  packedFixed32: number;
-  packedFixed64: pjs.Long;
-  packedSfixed32: number;
-  packedSfixed64: pjs.Long;
-  packedFloat: number;
-  packedDouble: number;
-  packedBool: boolean;
-  packedEnum: number;
-}
-
-export class TestPackedTypes implements ITestPackedTypes {
+export class TestPackedTypes {
   packedInt32: number = [];
   packedInt64: pjs.Long = [];
   packedUint32: number = [];
@@ -1366,7 +1374,7 @@ export class TestPackedTypes implements ITestPackedTypes {
     return TestPackedTypes.fields;
   }
 
-  constructor(obj?: Partial<ITestPackedTypes>) {
+  constructor(obj?: TestPackedTypes) {
     if (!obj) return;
 
     if (obj.packedInt32 !== undefined) {
@@ -1413,10 +1421,7 @@ export class TestPackedTypes implements ITestPackedTypes {
     }
   }
 
-  public static encode(
-    m: ITestPackedTypes,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestPackedTypes, w: pjs.Writer): pjs.Writer {
     // int32 packed_int32 = 90
     if (m.packedInt32 !== []) {
       w.uint32(720);
@@ -1501,13 +1506,15 @@ export class TestPackedTypes implements ITestPackedTypes {
       w.uint32(m.packedEnum);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestPackedTypes {
-    const m = new TestPackedTypes();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestPackedTypes,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // repeated int32 packed_int32 = 90
@@ -1638,10 +1645,10 @@ export class TestPackedTypes implements ITestPackedTypes {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestPackedTypes): ITestPackedTypesObj {
+  public static toJSON(m: TestPackedTypes): TestPackedTypesJSON {
     return {
       packedInt32: m.packedInt32,
       packedInt64: m.packedInt64.toString(),
@@ -1660,9 +1667,10 @@ export class TestPackedTypes implements ITestPackedTypes {
     };
   }
 
-  public static fromJSON(obj: ITestPackedTypesObj): ITestPackedTypes {
-    const m = new TestPackedTypes();
-
+  public static fromJSON(
+    m: TestPackedTypes,
+    obj: TestPackedTypesJSON
+  ): TestPackedTypes {
     m.packedInt32 = obj.packedInt32;
     m.packedInt64 = pjs.util.Long.fromValue(obj.packedInt64, false);
     m.packedUint32 = obj.packedUint32;
@@ -1681,6 +1689,25 @@ export class TestPackedTypes implements ITestPackedTypes {
     return m;
   }
 
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestPackedTypes.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestPackedTypes {
+    const r = new pjs.Reader(b);
+    TestPackedTypes.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestPackedTypesJSON {
+    return TestPackedTypes.toJSON(this);
+  }
+
+  fromJSON(obj: TestPackedTypesJSON): TestPackedTypes {
+    return TestPackedTypes.fromJSON(this, obj);
+  }
+
   clone(): TestPackedTypes {
     return new TestPackedTypes(this);
   }
@@ -1693,7 +1720,7 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 6,
 }
 
-export interface ITestUnpackedTypesObj {
+export interface TestUnpackedTypesJSON {
   repeatedInt32: number;
   repeatedInt64: string;
   repeatedUint32: number;
@@ -1707,27 +1734,10 @@ export interface ITestUnpackedTypesObj {
   repeatedFloat: number;
   repeatedDouble: number;
   repeatedBool: boolean;
-  repeatedNestedEnum: number;
+  repeatedNestedEnum: string;
 }
 
-export interface ITestUnpackedTypes {
-  repeatedInt32: number;
-  repeatedInt64: pjs.Long;
-  repeatedUint32: number;
-  repeatedUint64: pjs.Long;
-  repeatedSint32: number;
-  repeatedSint64: pjs.Long;
-  repeatedFixed32: number;
-  repeatedFixed64: pjs.Long;
-  repeatedSfixed32: number;
-  repeatedSfixed64: pjs.Long;
-  repeatedFloat: number;
-  repeatedDouble: number;
-  repeatedBool: boolean;
-  repeatedNestedEnum: number;
-}
-
-export class TestUnpackedTypes implements ITestUnpackedTypes {
+export class TestUnpackedTypes {
   repeatedInt32: number = [];
   repeatedInt64: pjs.Long = [];
   repeatedUint32: number = [];
@@ -1764,7 +1774,7 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
     return TestUnpackedTypes.fields;
   }
 
-  constructor(obj?: Partial<ITestUnpackedTypes>) {
+  constructor(obj?: TestUnpackedTypes) {
     if (!obj) return;
 
     if (obj.repeatedInt32 !== undefined) {
@@ -1811,10 +1821,7 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
     }
   }
 
-  public static encode(
-    m: ITestUnpackedTypes,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestUnpackedTypes, w: pjs.Writer): pjs.Writer {
     // int32 repeated_int32 = 1
     if (m.repeatedInt32 !== []) {
       w.uint32(8);
@@ -1899,13 +1906,15 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
       w.uint32(m.repeatedNestedEnum);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestUnpackedTypes {
-    const m = new TestUnpackedTypes();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestUnpackedTypes,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // repeated int32 repeated_int32 = 1
@@ -2036,10 +2045,10 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestUnpackedTypes): ITestUnpackedTypesObj {
+  public static toJSON(m: TestUnpackedTypes): TestUnpackedTypesJSON {
     return {
       repeatedInt32: m.repeatedInt32,
       repeatedInt64: m.repeatedInt64.toString(),
@@ -2058,9 +2067,10 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
     };
   }
 
-  public static fromJSON(obj: ITestUnpackedTypesObj): ITestUnpackedTypes {
-    const m = new TestUnpackedTypes();
-
+  public static fromJSON(
+    m: TestUnpackedTypes,
+    obj: TestUnpackedTypesJSON
+  ): TestUnpackedTypes {
     m.repeatedInt32 = obj.repeatedInt32;
     m.repeatedInt64 = pjs.util.Long.fromValue(obj.repeatedInt64, false);
     m.repeatedUint32 = obj.repeatedUint32;
@@ -2079,6 +2089,25 @@ export class TestUnpackedTypes implements ITestUnpackedTypes {
     return m;
   }
 
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestUnpackedTypes.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestUnpackedTypes {
+    const r = new pjs.Reader(b);
+    TestUnpackedTypes.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestUnpackedTypesJSON {
+    return TestUnpackedTypes.toJSON(this);
+  }
+
+  fromJSON(obj: TestUnpackedTypesJSON): TestUnpackedTypes {
+    return TestUnpackedTypes.fromJSON(this, obj);
+  }
+
   clone(): TestUnpackedTypes {
     return new TestUnpackedTypes(this);
   }
@@ -2091,17 +2120,12 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 6,
 }
 
-export interface INestedTestAllTypesObj {
-  child: NestedTestAllTypes;
-  payload: TestAllTypes;
+export interface NestedTestAllTypesJSON {
+  child: NestedTestAllTypesJSON;
+  payload: TestAllTypesJSON;
 }
 
-export interface INestedTestAllTypes {
-  child: NestedTestAllTypes;
-  payload: TestAllTypes;
-}
-
-export class NestedTestAllTypes implements INestedTestAllTypes {
+export class NestedTestAllTypes {
   child: NestedTestAllTypes = new NestedTestAllTypes();
   payload: TestAllTypes = new TestAllTypes();
 
@@ -2111,7 +2135,7 @@ export class NestedTestAllTypes implements INestedTestAllTypes {
     return NestedTestAllTypes.fields;
   }
 
-  constructor(obj?: Partial<INestedTestAllTypes>) {
+  constructor(obj?: NestedTestAllTypes) {
     if (!obj) return;
 
     if (obj.child !== undefined) {
@@ -2122,60 +2146,79 @@ export class NestedTestAllTypes implements INestedTestAllTypes {
     }
   }
 
-  public static encode(
-    m: INestedTestAllTypes,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: NestedTestAllTypes, w: pjs.Writer): pjs.Writer {
     // NestedTestAllTypes child = 1
     if (m.child !== new NestedTestAllTypes()) {
       w.uint32(10);
-      w.NestedTestAllTypes(m.child);
+      NestedTestAllTypes.encode(m.child, w);
     }
 
     // TestAllTypes payload = 2
     if (m.payload !== new TestAllTypes()) {
       w.uint32(18);
-      w.TestAllTypes(m.payload);
+      TestAllTypes.encode(m.payload, w);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): NestedTestAllTypes {
-    const m = new NestedTestAllTypes();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: NestedTestAllTypes,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // NestedTestAllTypes child = 1
         case 10:
-          m.child = r.NestedTestAllTypes();
+          m.child = NestedTestAllTypes.decode(r, r.uint32());
           continue;
 
         // TestAllTypes payload = 2
         case 18:
-          m.payload = r.TestAllTypes();
+          m.payload = TestAllTypes.decode(r, r.uint32());
           continue;
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: INestedTestAllTypes): INestedTestAllTypesObj {
+  public static toJSON(m: NestedTestAllTypes): NestedTestAllTypesJSON {
     return {
       child: m.child.toJSON(),
       payload: m.payload.toJSON(),
     };
   }
 
-  public static fromJSON(obj: INestedTestAllTypesObj): INestedTestAllTypes {
-    const m = new NestedTestAllTypes();
-
-    m.child.fromJSON(obj.child);
-    m.payload.fromJSON(obj.payload);
+  public static fromJSON(
+    m: NestedTestAllTypes,
+    obj: NestedTestAllTypesJSON
+  ): NestedTestAllTypes {
+    m.child = new NestedTestAllTypes().fromJSON(obj.child);
+    m.payload = new TestAllTypes().fromJSON(obj.payload);
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return NestedTestAllTypes.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): NestedTestAllTypes {
+    const r = new pjs.Reader(b);
+    NestedTestAllTypes.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): NestedTestAllTypesJSON {
+    return NestedTestAllTypes.toJSON(this);
+  }
+
+  fromJSON(obj: NestedTestAllTypesJSON): NestedTestAllTypes {
+    return NestedTestAllTypes.fromJSON(this, obj);
   }
 
   clone(): NestedTestAllTypes {
@@ -2190,15 +2233,11 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 6,
 }
 
-export interface IForeignMessageObj {
+export interface ForeignMessageJSON {
   c: number;
 }
 
-export interface IForeignMessage {
-  c: number;
-}
-
-export class ForeignMessage implements IForeignMessage {
+export class ForeignMessage {
   c: number = 0;
 
   public static fields = ["c"];
@@ -2207,7 +2246,7 @@ export class ForeignMessage implements IForeignMessage {
     return ForeignMessage.fields;
   }
 
-  constructor(obj?: Partial<IForeignMessage>) {
+  constructor(obj?: ForeignMessage) {
     if (!obj) return;
 
     if (obj.c !== undefined) {
@@ -2215,23 +2254,22 @@ export class ForeignMessage implements IForeignMessage {
     }
   }
 
-  public static encode(
-    m: IForeignMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: ForeignMessage, w: pjs.Writer): pjs.Writer {
     // int32 c = 1
     if (m.c !== 0) {
       w.uint32(8);
       w.int32(m.c);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): ForeignMessage {
-    const m = new ForeignMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: ForeignMessage,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 c = 1
@@ -2241,21 +2279,41 @@ export class ForeignMessage implements IForeignMessage {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IForeignMessage): IForeignMessageObj {
+  public static toJSON(m: ForeignMessage): ForeignMessageJSON {
     return {
       c: m.c,
     };
   }
 
-  public static fromJSON(obj: IForeignMessageObj): IForeignMessage {
-    const m = new ForeignMessage();
-
+  public static fromJSON(
+    m: ForeignMessage,
+    obj: ForeignMessageJSON
+  ): ForeignMessage {
     m.c = obj.c;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return ForeignMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): ForeignMessage {
+    const r = new pjs.Reader(b);
+    ForeignMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): ForeignMessageJSON {
+    return ForeignMessage.toJSON(this);
+  }
+
+  fromJSON(obj: ForeignMessageJSON): ForeignMessage {
+    return ForeignMessage.fromJSON(this, obj);
   }
 
   clone(): ForeignMessage {
@@ -2270,48 +2328,65 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 6,
 }
 
-export interface ITestEmptyMessageObj {}
+export interface TestEmptyMessageJSON {}
 
-export interface ITestEmptyMessage {}
-
-export class TestEmptyMessage implements ITestEmptyMessage {
+export class TestEmptyMessage {
   public static fields = [];
 
   public get fields() {
     return TestEmptyMessage.fields;
   }
 
-  constructor(obj?: Partial<ITestEmptyMessage>) {
+  constructor(obj?: TestEmptyMessage) {
     if (!obj) return;
   }
 
-  public static encode(
-    m: ITestEmptyMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
-    return w.finish();
+  public static encode(m: TestEmptyMessage, w: pjs.Writer): pjs.Writer {
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestEmptyMessage {
-    const m = new TestEmptyMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestEmptyMessage,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestEmptyMessage): ITestEmptyMessageObj {
+  public static toJSON(m: TestEmptyMessage): TestEmptyMessageJSON {
     return {};
   }
 
-  public static fromJSON(obj: ITestEmptyMessageObj): ITestEmptyMessage {
-    const m = new TestEmptyMessage();
-
+  public static fromJSON(
+    m: TestEmptyMessage,
+    obj: TestEmptyMessageJSON
+  ): TestEmptyMessage {
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestEmptyMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestEmptyMessage {
+    const r = new pjs.Reader(b);
+    TestEmptyMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestEmptyMessageJSON {
+    return TestEmptyMessage.toJSON(this);
+  }
+
+  fromJSON(obj: TestEmptyMessageJSON): TestEmptyMessage {
+    return TestEmptyMessage.fromJSON(this, obj);
   }
 
   clone(): TestEmptyMessage {

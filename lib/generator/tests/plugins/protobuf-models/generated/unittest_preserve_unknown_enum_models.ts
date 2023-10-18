@@ -8,6 +8,7 @@
 // file: unittest_preserve_unknown_enum.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum MyEnum {
   FOO = 0,
@@ -22,25 +23,16 @@ export enum MyEnumPlusExtra {
   E_EXTRA = 3,
 }
 
-export interface IMyMessageObj {
-  e: number;
-  repeatedE: number;
-  repeatedPackedE: number;
-  repeatedPackedUnexpectedE: number;
-  oneofE1?: number;
-  oneofE2?: number;
+export interface MyMessageJSON {
+  e: string;
+  repeatedE: string;
+  repeatedPackedE: string;
+  repeatedPackedUnexpectedE: string;
+  oneofE1?: string;
+  oneofE2?: string;
 }
 
-export interface IMyMessage {
-  e: number;
-  repeatedE: number;
-  repeatedPackedE: number;
-  repeatedPackedUnexpectedE: number;
-  oneofE1?: number;
-  oneofE2?: number;
-}
-
-export class MyMessage implements IMyMessage {
+export class MyMessage {
   e: number = MyEnum.FOO;
   repeatedE: number = [];
   repeatedPackedE: number = [];
@@ -61,7 +53,7 @@ export class MyMessage implements IMyMessage {
     return MyMessage.fields;
   }
 
-  constructor(obj?: Partial<IMyMessage>) {
+  constructor(obj?: MyMessage) {
     if (!obj) return;
 
     if (obj.e !== undefined) {
@@ -84,10 +76,7 @@ export class MyMessage implements IMyMessage {
     }
   }
 
-  public static encode(
-    m: IMyMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: MyMessage, w: pjs.Writer): pjs.Writer {
     // MyEnum e = 1
     if (m.e !== MyEnum.FOO) {
       w.uint32(8);
@@ -116,13 +105,11 @@ export class MyMessage implements IMyMessage {
 
     // oneof MyEnum oneof_e_2 = 6
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): MyMessage {
-    const m = new MyMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: MyMessage, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // MyEnum e = 1
@@ -169,10 +156,10 @@ export class MyMessage implements IMyMessage {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IMyMessage): IMyMessageObj {
+  public static toJSON(m: MyMessage): MyMessageJSON {
     return {
       e: MyEnum[m.e],
       repeatedE: MyEnum[m.repeatedE],
@@ -183,9 +170,7 @@ export class MyMessage implements IMyMessage {
     };
   }
 
-  public static fromJSON(obj: IMyMessageObj): IMyMessage {
-    const m = new MyMessage();
-
+  public static fromJSON(m: MyMessage, obj: MyMessageJSON): MyMessage {
     m.e = MyEnum[obj.e];
     m.repeatedE = MyEnum[obj.repeatedE];
     m.repeatedPackedE = MyEnum[obj.repeatedPackedE];
@@ -195,6 +180,25 @@ export class MyMessage implements IMyMessage {
     m.oneofE2 = MyEnum[obj.oneofE2];
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return MyMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): MyMessage {
+    const r = new pjs.Reader(b);
+    MyMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): MyMessageJSON {
+    return MyMessage.toJSON(this);
+  }
+
+  fromJSON(obj: MyMessageJSON): MyMessage {
+    return MyMessage.fromJSON(this, obj);
   }
 
   clone(): MyMessage {
@@ -215,25 +219,16 @@ export enum MyEnumPlusExtra {
   E_EXTRA = 3,
 }
 
-export interface IMyMessagePlusExtraObj {
-  e: number;
-  repeatedE: number;
-  repeatedPackedE: number;
-  repeatedPackedUnexpectedE: number;
-  oneofE1?: number;
-  oneofE2?: number;
+export interface MyMessagePlusExtraJSON {
+  e: string;
+  repeatedE: string;
+  repeatedPackedE: string;
+  repeatedPackedUnexpectedE: string;
+  oneofE1?: string;
+  oneofE2?: string;
 }
 
-export interface IMyMessagePlusExtra {
-  e: number;
-  repeatedE: number;
-  repeatedPackedE: number;
-  repeatedPackedUnexpectedE: number;
-  oneofE1?: number;
-  oneofE2?: number;
-}
-
-export class MyMessagePlusExtra implements IMyMessagePlusExtra {
+export class MyMessagePlusExtra {
   e: number = MyEnumPlusExtra.E_FOO;
   repeatedE: number = [];
   repeatedPackedE: number = [];
@@ -254,7 +249,7 @@ export class MyMessagePlusExtra implements IMyMessagePlusExtra {
     return MyMessagePlusExtra.fields;
   }
 
-  constructor(obj?: Partial<IMyMessagePlusExtra>) {
+  constructor(obj?: MyMessagePlusExtra) {
     if (!obj) return;
 
     if (obj.e !== undefined) {
@@ -277,10 +272,7 @@ export class MyMessagePlusExtra implements IMyMessagePlusExtra {
     }
   }
 
-  public static encode(
-    m: IMyMessagePlusExtra,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: MyMessagePlusExtra, w: pjs.Writer): pjs.Writer {
     // MyEnumPlusExtra e = 1
     if (m.e !== MyEnumPlusExtra.E_FOO) {
       w.uint32(8);
@@ -309,13 +301,15 @@ export class MyMessagePlusExtra implements IMyMessagePlusExtra {
 
     // oneof MyEnumPlusExtra oneof_e_2 = 6
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): MyMessagePlusExtra {
-    const m = new MyMessagePlusExtra();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: MyMessagePlusExtra,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // MyEnumPlusExtra e = 1
@@ -362,10 +356,10 @@ export class MyMessagePlusExtra implements IMyMessagePlusExtra {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IMyMessagePlusExtra): IMyMessagePlusExtraObj {
+  public static toJSON(m: MyMessagePlusExtra): MyMessagePlusExtraJSON {
     return {
       e: MyEnumPlusExtra[m.e],
       repeatedE: MyEnumPlusExtra[m.repeatedE],
@@ -376,9 +370,10 @@ export class MyMessagePlusExtra implements IMyMessagePlusExtra {
     };
   }
 
-  public static fromJSON(obj: IMyMessagePlusExtraObj): IMyMessagePlusExtra {
-    const m = new MyMessagePlusExtra();
-
+  public static fromJSON(
+    m: MyMessagePlusExtra,
+    obj: MyMessagePlusExtraJSON
+  ): MyMessagePlusExtra {
     m.e = MyEnumPlusExtra[obj.e];
     m.repeatedE = MyEnumPlusExtra[obj.repeatedE];
     m.repeatedPackedE = MyEnumPlusExtra[obj.repeatedPackedE];
@@ -388,6 +383,25 @@ export class MyMessagePlusExtra implements IMyMessagePlusExtra {
     m.oneofE2 = MyEnumPlusExtra[obj.oneofE2];
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return MyMessagePlusExtra.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): MyMessagePlusExtra {
+    const r = new pjs.Reader(b);
+    MyMessagePlusExtra.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): MyMessagePlusExtraJSON {
+    return MyMessagePlusExtra.toJSON(this);
+  }
+
+  fromJSON(obj: MyMessagePlusExtraJSON): MyMessagePlusExtra {
+    return MyMessagePlusExtra.fromJSON(this, obj);
   }
 
   clone(): MyMessagePlusExtra {

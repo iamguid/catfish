@@ -10,6 +10,7 @@
 import * as unittest_import_public_lite_models from "unittest_import_public_lite_models";
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum ImportEnumLite {
   IMPORT_LITE_FOO = 7,
@@ -17,15 +18,11 @@ export enum ImportEnumLite {
   IMPORT_LITE_BAZ = 9,
 }
 
-export interface IImportMessageLiteObj {
+export interface ImportMessageLiteJSON {
   d: number;
 }
 
-export interface IImportMessageLite {
-  d: number;
-}
-
-export class ImportMessageLite implements IImportMessageLite {
+export class ImportMessageLite {
   d: number = 0;
 
   public static fields = ["d"];
@@ -34,7 +31,7 @@ export class ImportMessageLite implements IImportMessageLite {
     return ImportMessageLite.fields;
   }
 
-  constructor(obj?: Partial<IImportMessageLite>) {
+  constructor(obj?: ImportMessageLite) {
     if (!obj) return;
 
     if (obj.d !== undefined) {
@@ -42,23 +39,22 @@ export class ImportMessageLite implements IImportMessageLite {
     }
   }
 
-  public static encode(
-    m: IImportMessageLite,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: ImportMessageLite, w: pjs.Writer): pjs.Writer {
     // int32 d = 1
     if (m.d !== 0) {
       w.uint32(8);
       w.int32(m.d);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): ImportMessageLite {
-    const m = new ImportMessageLite();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: ImportMessageLite,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 d = 1
@@ -68,21 +64,41 @@ export class ImportMessageLite implements IImportMessageLite {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IImportMessageLite): IImportMessageLiteObj {
+  public static toJSON(m: ImportMessageLite): ImportMessageLiteJSON {
     return {
       d: m.d,
     };
   }
 
-  public static fromJSON(obj: IImportMessageLiteObj): IImportMessageLite {
-    const m = new ImportMessageLite();
-
+  public static fromJSON(
+    m: ImportMessageLite,
+    obj: ImportMessageLiteJSON
+  ): ImportMessageLite {
     m.d = obj.d;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return ImportMessageLite.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): ImportMessageLite {
+    const r = new pjs.Reader(b);
+    ImportMessageLite.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): ImportMessageLiteJSON {
+    return ImportMessageLite.toJSON(this);
+  }
+
+  fromJSON(obj: ImportMessageLiteJSON): ImportMessageLite {
+    return ImportMessageLite.fromJSON(this, obj);
   }
 
   clone(): ImportMessageLite {

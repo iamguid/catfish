@@ -8,20 +8,17 @@
 // file: unittest_no_generic_services.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum TestEnum {
   FOO = 1,
 }
 
-export interface ITestMessageObj {
+export interface TestMessageJSON {
   a: number;
 }
 
-export interface ITestMessage {
-  a: number;
-}
-
-export class TestMessage implements ITestMessage {
+export class TestMessage {
   a: number = 0;
 
   public static fields = ["a"];
@@ -30,7 +27,7 @@ export class TestMessage implements ITestMessage {
     return TestMessage.fields;
   }
 
-  constructor(obj?: Partial<ITestMessage>) {
+  constructor(obj?: TestMessage) {
     if (!obj) return;
 
     if (obj.a !== undefined) {
@@ -38,23 +35,18 @@ export class TestMessage implements ITestMessage {
     }
   }
 
-  public static encode(
-    m: ITestMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestMessage, w: pjs.Writer): pjs.Writer {
     // int32 a = 1
     if (m.a !== 0) {
       w.uint32(8);
       w.int32(m.a);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestMessage {
-    const m = new TestMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: TestMessage, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 a = 1
@@ -64,21 +56,38 @@ export class TestMessage implements ITestMessage {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestMessage): ITestMessageObj {
+  public static toJSON(m: TestMessage): TestMessageJSON {
     return {
       a: m.a,
     };
   }
 
-  public static fromJSON(obj: ITestMessageObj): ITestMessage {
-    const m = new TestMessage();
-
+  public static fromJSON(m: TestMessage, obj: TestMessageJSON): TestMessage {
     m.a = obj.a;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestMessage {
+    const r = new pjs.Reader(b);
+    TestMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestMessageJSON {
+    return TestMessage.toJSON(this);
+  }
+
+  fromJSON(obj: TestMessageJSON): TestMessage {
+    return TestMessage.fromJSON(this, obj);
   }
 
   clone(): TestMessage {

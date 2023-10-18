@@ -10,7 +10,7 @@
 import * as pjs from "protobufjs/minimal";
 import * as runtime from "@catfish/runtime";
 
-export interface IScalarTypesJSON {
+export interface ScalarTypesJSON {
   fInt32: number;
   fInt64: string;
   fUint32: number;
@@ -295,7 +295,7 @@ export class ScalarTypes {
     return r;
   }
 
-  public static toJSON(m: ScalarTypes): IScalarTypesJSON {
+  public static toJSON(m: ScalarTypes): ScalarTypesJSON {
     return {
       fInt32: m.fInt32,
       fInt64: m.fInt64.toString(),
@@ -315,7 +315,7 @@ export class ScalarTypes {
     };
   }
 
-  public static fromJSON(m: ScalarTypes, obj: IScalarTypesJSON): ScalarTypes {
+  public static fromJSON(m: ScalarTypes, obj: ScalarTypesJSON): ScalarTypes {
     m.fInt32 = obj.fInt32;
     m.fInt64 = pjs.util.Long.fromValue(obj.fInt64, false);
     m.fUint32 = obj.fUint32;
@@ -333,7 +333,7 @@ export class ScalarTypes {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.fBytes, tmpBuffer, 0);
-      m.fBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.fBytes = new pjs.util.Buffer(tmpBuffer);
     }
 
     return m;
@@ -350,11 +350,11 @@ export class ScalarTypes {
     return this;
   }
 
-  toJSON(): IScalarTypesJSON {
+  toJSON(): ScalarTypesJSON {
     return ScalarTypes.toJSON(this);
   }
 
-  fromJSON(obj: IScalarTypesJSON): ScalarTypes {
+  fromJSON(obj: ScalarTypesJSON): ScalarTypes {
     return ScalarTypes.fromJSON(this, obj);
   }
 

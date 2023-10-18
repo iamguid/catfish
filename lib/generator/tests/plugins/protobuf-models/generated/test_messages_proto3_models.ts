@@ -20,6 +20,7 @@ import * as google_protobuf_timestamp_models from "google/protobuf/timestamp_mod
 import * as google_protobuf_wrappers_models from "google/protobuf/wrappers_models";
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum ForeignEnum {
   FOREIGN_FOO = 0,
@@ -27,7 +28,7 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 2,
 }
 
-export interface ITestAllTypesProto3Obj {
+export interface TestAllTypesProto3JSON {
   optionalInt32: number;
   optionalInt64: string;
   optionalUint32: number;
@@ -43,14 +44,14 @@ export interface ITestAllTypesProto3Obj {
   optionalBool: boolean;
   optionalString: string;
   optionalBytes: string;
-  optionalNestedMessage: TestAllTypesProto3.NestedMessage;
-  optionalForeignMessage: ForeignMessage;
-  optionalNestedEnum: number;
-  optionalForeignEnum: number;
-  optionalAliasedEnum: number;
+  optionalNestedMessage: TestAllTypesProto3.NestedMessageJSON;
+  optionalForeignMessage: ForeignMessageJSON;
+  optionalNestedEnum: string;
+  optionalForeignEnum: string;
+  optionalAliasedEnum: string;
   optionalStringPiece: string;
   optionalCord: string;
-  recursiveMessage: TestAllTypesProto3;
+  recursiveMessage: TestAllTypesProto3JSON;
   repeatedInt32: number;
   repeatedInt64: string;
   repeatedUint32: number;
@@ -66,10 +67,10 @@ export interface ITestAllTypesProto3Obj {
   repeatedBool: boolean;
   repeatedString: string;
   repeatedBytes: string;
-  repeatedNestedMessage: TestAllTypesProto3.NestedMessage;
-  repeatedForeignMessage: ForeignMessage;
-  repeatedNestedEnum: number;
-  repeatedForeignEnum: number;
+  repeatedNestedMessage: TestAllTypesProto3.NestedMessageJSON;
+  repeatedForeignMessage: ForeignMessageJSON;
+  repeatedNestedEnum: string;
+  repeatedForeignEnum: string;
   repeatedStringPiece: string;
   repeatedCord: string;
   packedInt32: number;
@@ -85,7 +86,7 @@ export interface ITestAllTypesProto3Obj {
   packedFloat: number;
   packedDouble: number;
   packedBool: boolean;
-  packedNestedEnum: number;
+  packedNestedEnum: string;
   unpackedInt32: number;
   unpackedInt64: string;
   unpackedUint32: number;
@@ -99,7 +100,7 @@ export interface ITestAllTypesProto3Obj {
   unpackedFloat: number;
   unpackedDouble: number;
   unpackedBool: boolean;
-  unpackedNestedEnum: number;
+  unpackedNestedEnum: string;
   mapInt32Int32: Record<number, number>;
   mapInt64Int64: Record<string, string>;
   mapUint32Uint32: Record<number, number>;
@@ -115,52 +116,52 @@ export interface ITestAllTypesProto3Obj {
   mapBoolBool: Record<boolean, boolean>;
   mapStringString: Record<string, string>;
   mapStringBytes: Record<string, string>;
-  mapStringNestedMessage: Record<string, TestAllTypesProto3.NestedMessage>;
-  mapStringForeignMessage: Record<string, ForeignMessage>;
-  mapStringNestedEnum: Record<string, number>;
-  mapStringForeignEnum: Record<string, number>;
+  mapStringNestedMessage: Record<string, TestAllTypesProto3.NestedMessageJSON>;
+  mapStringForeignMessage: Record<string, ForeignMessageJSON>;
+  mapStringNestedEnum: Record<string, string>;
+  mapStringForeignEnum: Record<string, string>;
   oneofUint32?: number;
-  oneofNestedMessage?: TestAllTypesProto3.NestedMessage;
+  oneofNestedMessage?: TestAllTypesProto3.NestedMessageJSON;
   oneofString?: string;
   oneofBytes?: string;
   oneofBool?: boolean;
   oneofUint64?: string;
   oneofFloat?: number;
   oneofDouble?: number;
-  oneofEnum?: number;
-  oneofNullValue?: number;
-  optionalBoolWrapper: google.protobuf.BoolValue;
-  optionalInt32Wrapper: google.protobuf.Int32Value;
-  optionalInt64Wrapper: google.protobuf.Int64Value;
-  optionalUint32Wrapper: google.protobuf.UInt32Value;
-  optionalUint64Wrapper: google.protobuf.UInt64Value;
-  optionalFloatWrapper: google.protobuf.FloatValue;
-  optionalDoubleWrapper: google.protobuf.DoubleValue;
-  optionalStringWrapper: google.protobuf.StringValue;
-  optionalBytesWrapper: google.protobuf.BytesValue;
-  repeatedBoolWrapper: google.protobuf.BoolValue;
-  repeatedInt32Wrapper: google.protobuf.Int32Value;
-  repeatedInt64Wrapper: google.protobuf.Int64Value;
-  repeatedUint32Wrapper: google.protobuf.UInt32Value;
-  repeatedUint64Wrapper: google.protobuf.UInt64Value;
-  repeatedFloatWrapper: google.protobuf.FloatValue;
-  repeatedDoubleWrapper: google.protobuf.DoubleValue;
-  repeatedStringWrapper: google.protobuf.StringValue;
-  repeatedBytesWrapper: google.protobuf.BytesValue;
-  optionalDuration: google.protobuf.Duration;
-  optionalTimestamp: google.protobuf.Timestamp;
-  optionalFieldMask: google.protobuf.FieldMask;
-  optionalStruct: google.protobuf.Struct;
-  optionalAny: google.protobuf.Any;
-  optionalValue: google.protobuf.Value;
-  optionalNullValue: number;
-  repeatedDuration: google.protobuf.Duration;
-  repeatedTimestamp: google.protobuf.Timestamp;
-  repeatedFieldmask: google.protobuf.FieldMask;
-  repeatedStruct: google.protobuf.Struct;
-  repeatedAny: google.protobuf.Any;
-  repeatedValue: google.protobuf.Value;
-  repeatedListValue: google.protobuf.ListValue;
+  oneofEnum?: string;
+  oneofNullValue?: string;
+  optionalBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValueJSON;
+  optionalInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32ValueJSON;
+  optionalInt64Wrapper: google_protobuf_wrappers_models.google.protobuf.Int64ValueJSON;
+  optionalUint32Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt32ValueJSON;
+  optionalUint64Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt64ValueJSON;
+  optionalFloatWrapper: google_protobuf_wrappers_models.google.protobuf.FloatValueJSON;
+  optionalDoubleWrapper: google_protobuf_wrappers_models.google.protobuf.DoubleValueJSON;
+  optionalStringWrapper: google_protobuf_wrappers_models.google.protobuf.StringValueJSON;
+  optionalBytesWrapper: google_protobuf_wrappers_models.google.protobuf.BytesValueJSON;
+  repeatedBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValueJSON;
+  repeatedInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32ValueJSON;
+  repeatedInt64Wrapper: google_protobuf_wrappers_models.google.protobuf.Int64ValueJSON;
+  repeatedUint32Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt32ValueJSON;
+  repeatedUint64Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt64ValueJSON;
+  repeatedFloatWrapper: google_protobuf_wrappers_models.google.protobuf.FloatValueJSON;
+  repeatedDoubleWrapper: google_protobuf_wrappers_models.google.protobuf.DoubleValueJSON;
+  repeatedStringWrapper: google_protobuf_wrappers_models.google.protobuf.StringValueJSON;
+  repeatedBytesWrapper: google_protobuf_wrappers_models.google.protobuf.BytesValueJSON;
+  optionalDuration: google_protobuf_duration_models.google.protobuf.DurationJSON;
+  optionalTimestamp: google_protobuf_timestamp_models.google.protobuf.TimestampJSON;
+  optionalFieldMask: google_protobuf_field_mask_models.google.protobuf.FieldMaskJSON;
+  optionalStruct: google_protobuf_struct_models.google.protobuf.StructJSON;
+  optionalAny: google_protobuf_any_models.google.protobuf.AnyJSON;
+  optionalValue: google_protobuf_struct_models.google.protobuf.ValueJSON;
+  optionalNullValue: string;
+  repeatedDuration: google_protobuf_duration_models.google.protobuf.DurationJSON;
+  repeatedTimestamp: google_protobuf_timestamp_models.google.protobuf.TimestampJSON;
+  repeatedFieldmask: google_protobuf_field_mask_models.google.protobuf.FieldMaskJSON;
+  repeatedStruct: google_protobuf_struct_models.google.protobuf.StructJSON;
+  repeatedAny: google_protobuf_any_models.google.protobuf.AnyJSON;
+  repeatedValue: google_protobuf_struct_models.google.protobuf.ValueJSON;
+  repeatedListValue: google_protobuf_struct_models.google.protobuf.ListValueJSON;
   fieldname1: number;
   fieldName2: number;
   FieldName3: number;
@@ -181,161 +182,7 @@ export interface ITestAllTypesProto3Obj {
   fieldName18_: number;
 }
 
-export interface ITestAllTypesProto3 {
-  optionalInt32: number;
-  optionalInt64: pjs.Long;
-  optionalUint32: number;
-  optionalUint64: pjs.Long;
-  optionalSint32: number;
-  optionalSint64: pjs.Long;
-  optionalFixed32: number;
-  optionalFixed64: pjs.Long;
-  optionalSfixed32: number;
-  optionalSfixed64: pjs.Long;
-  optionalFloat: number;
-  optionalDouble: number;
-  optionalBool: boolean;
-  optionalString: string;
-  optionalBytes: Uint8Array | Buffer;
-  optionalNestedMessage: TestAllTypesProto3.NestedMessage;
-  optionalForeignMessage: ForeignMessage;
-  optionalNestedEnum: number;
-  optionalForeignEnum: number;
-  optionalAliasedEnum: number;
-  optionalStringPiece: string;
-  optionalCord: string;
-  recursiveMessage: TestAllTypesProto3;
-  repeatedInt32: number;
-  repeatedInt64: pjs.Long;
-  repeatedUint32: number;
-  repeatedUint64: pjs.Long;
-  repeatedSint32: number;
-  repeatedSint64: pjs.Long;
-  repeatedFixed32: number;
-  repeatedFixed64: pjs.Long;
-  repeatedSfixed32: number;
-  repeatedSfixed64: pjs.Long;
-  repeatedFloat: number;
-  repeatedDouble: number;
-  repeatedBool: boolean;
-  repeatedString: string;
-  repeatedBytes: Uint8Array | Buffer;
-  repeatedNestedMessage: TestAllTypesProto3.NestedMessage;
-  repeatedForeignMessage: ForeignMessage;
-  repeatedNestedEnum: number;
-  repeatedForeignEnum: number;
-  repeatedStringPiece: string;
-  repeatedCord: string;
-  packedInt32: number;
-  packedInt64: pjs.Long;
-  packedUint32: number;
-  packedUint64: pjs.Long;
-  packedSint32: number;
-  packedSint64: pjs.Long;
-  packedFixed32: number;
-  packedFixed64: pjs.Long;
-  packedSfixed32: number;
-  packedSfixed64: pjs.Long;
-  packedFloat: number;
-  packedDouble: number;
-  packedBool: boolean;
-  packedNestedEnum: number;
-  unpackedInt32: number;
-  unpackedInt64: pjs.Long;
-  unpackedUint32: number;
-  unpackedUint64: pjs.Long;
-  unpackedSint32: number;
-  unpackedSint64: pjs.Long;
-  unpackedFixed32: number;
-  unpackedFixed64: pjs.Long;
-  unpackedSfixed32: number;
-  unpackedSfixed64: pjs.Long;
-  unpackedFloat: number;
-  unpackedDouble: number;
-  unpackedBool: boolean;
-  unpackedNestedEnum: number;
-  mapInt32Int32: Map<number, number>;
-  mapInt64Int64: Map<pjs.Long, pjs.Long>;
-  mapUint32Uint32: Map<number, number>;
-  mapUint64Uint64: Map<pjs.Long, pjs.Long>;
-  mapSint32Sint32: Map<number, number>;
-  mapSint64Sint64: Map<pjs.Long, pjs.Long>;
-  mapFixed32Fixed32: Map<number, number>;
-  mapFixed64Fixed64: Map<pjs.Long, pjs.Long>;
-  mapSfixed32Sfixed32: Map<number, number>;
-  mapSfixed64Sfixed64: Map<pjs.Long, pjs.Long>;
-  mapInt32Float: Map<number, number>;
-  mapInt32Double: Map<number, number>;
-  mapBoolBool: Map<boolean, boolean>;
-  mapStringString: Map<string, string>;
-  mapStringBytes: Map<string, Uint8Array | Buffer>;
-  mapStringNestedMessage: Map<string, TestAllTypesProto3.NestedMessage>;
-  mapStringForeignMessage: Map<string, ForeignMessage>;
-  mapStringNestedEnum: Map<string, number>;
-  mapStringForeignEnum: Map<string, number>;
-  oneofUint32?: number;
-  oneofNestedMessage?: TestAllTypesProto3.NestedMessage;
-  oneofString?: string;
-  oneofBytes?: Uint8Array | Buffer;
-  oneofBool?: boolean;
-  oneofUint64?: pjs.Long;
-  oneofFloat?: number;
-  oneofDouble?: number;
-  oneofEnum?: number;
-  oneofNullValue?: number;
-  optionalBoolWrapper: google.protobuf.BoolValue;
-  optionalInt32Wrapper: google.protobuf.Int32Value;
-  optionalInt64Wrapper: google.protobuf.Int64Value;
-  optionalUint32Wrapper: google.protobuf.UInt32Value;
-  optionalUint64Wrapper: google.protobuf.UInt64Value;
-  optionalFloatWrapper: google.protobuf.FloatValue;
-  optionalDoubleWrapper: google.protobuf.DoubleValue;
-  optionalStringWrapper: google.protobuf.StringValue;
-  optionalBytesWrapper: google.protobuf.BytesValue;
-  repeatedBoolWrapper: google.protobuf.BoolValue;
-  repeatedInt32Wrapper: google.protobuf.Int32Value;
-  repeatedInt64Wrapper: google.protobuf.Int64Value;
-  repeatedUint32Wrapper: google.protobuf.UInt32Value;
-  repeatedUint64Wrapper: google.protobuf.UInt64Value;
-  repeatedFloatWrapper: google.protobuf.FloatValue;
-  repeatedDoubleWrapper: google.protobuf.DoubleValue;
-  repeatedStringWrapper: google.protobuf.StringValue;
-  repeatedBytesWrapper: google.protobuf.BytesValue;
-  optionalDuration: google.protobuf.Duration;
-  optionalTimestamp: google.protobuf.Timestamp;
-  optionalFieldMask: google.protobuf.FieldMask;
-  optionalStruct: google.protobuf.Struct;
-  optionalAny: google.protobuf.Any;
-  optionalValue: google.protobuf.Value;
-  optionalNullValue: number;
-  repeatedDuration: google.protobuf.Duration;
-  repeatedTimestamp: google.protobuf.Timestamp;
-  repeatedFieldmask: google.protobuf.FieldMask;
-  repeatedStruct: google.protobuf.Struct;
-  repeatedAny: google.protobuf.Any;
-  repeatedValue: google.protobuf.Value;
-  repeatedListValue: google.protobuf.ListValue;
-  fieldname1: number;
-  fieldName2: number;
-  FieldName3: number;
-  field_name4_: number;
-  field0name5: number;
-  field0Name6: number;
-  fieldName7: number;
-  fieldName8: number;
-  fieldName9: number;
-  fieldName10: number;
-  fIELDNAME11: number;
-  fIELDName12: number;
-  _fieldName13: number;
-  _FieldName14: number;
-  field_name15: number;
-  field_Name16: number;
-  fieldName17_: number;
-  fieldName18_: number;
-}
-
-export class TestAllTypesProto3 implements ITestAllTypesProto3 {
+export class TestAllTypesProto3 {
   optionalInt32: number = 0;
   optionalInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
   optionalUint32: number = 0;
@@ -409,25 +256,26 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
   unpackedDouble: number = [];
   unpackedBool: boolean = [];
   unpackedNestedEnum: number = [];
-  mapInt32Int32: Record<number, number> = {};
-  mapInt64Int64: Record<pjs.Long, pjs.Long> = {};
-  mapUint32Uint32: Record<number, number> = {};
-  mapUint64Uint64: Record<pjs.Long, pjs.Long> = {};
-  mapSint32Sint32: Record<number, number> = {};
-  mapSint64Sint64: Record<pjs.Long, pjs.Long> = {};
-  mapFixed32Fixed32: Record<number, number> = {};
-  mapFixed64Fixed64: Record<pjs.Long, pjs.Long> = {};
-  mapSfixed32Sfixed32: Record<number, number> = {};
-  mapSfixed64Sfixed64: Record<pjs.Long, pjs.Long> = {};
-  mapInt32Float: Record<number, number> = {};
-  mapInt32Double: Record<number, number> = {};
-  mapBoolBool: Record<boolean, boolean> = {};
-  mapStringString: Record<string, string> = {};
-  mapStringBytes: Record<string, Uint8Array | Buffer> = {};
-  mapStringNestedMessage: Record<string, TestAllTypesProto3.NestedMessage> = {};
-  mapStringForeignMessage: Record<string, ForeignMessage> = {};
-  mapStringNestedEnum: Record<string, number> = {};
-  mapStringForeignEnum: Record<string, number> = {};
+  mapInt32Int32: Map<number, number> = new Map();
+  mapInt64Int64: Map<pjs.Long, pjs.Long> = new Map();
+  mapUint32Uint32: Map<number, number> = new Map();
+  mapUint64Uint64: Map<pjs.Long, pjs.Long> = new Map();
+  mapSint32Sint32: Map<number, number> = new Map();
+  mapSint64Sint64: Map<pjs.Long, pjs.Long> = new Map();
+  mapFixed32Fixed32: Map<number, number> = new Map();
+  mapFixed64Fixed64: Map<pjs.Long, pjs.Long> = new Map();
+  mapSfixed32Sfixed32: Map<number, number> = new Map();
+  mapSfixed64Sfixed64: Map<pjs.Long, pjs.Long> = new Map();
+  mapInt32Float: Map<number, number> = new Map();
+  mapInt32Double: Map<number, number> = new Map();
+  mapBoolBool: Map<boolean, boolean> = new Map();
+  mapStringString: Map<string, string> = new Map();
+  mapStringBytes: Map<string, Uint8Array | Buffer> = new Map();
+  mapStringNestedMessage: Map<string, TestAllTypesProto3.NestedMessage> =
+    new Map();
+  mapStringForeignMessage: Map<string, ForeignMessage> = new Map();
+  mapStringNestedEnum: Map<string, number> = new Map();
+  mapStringForeignEnum: Map<string, number> = new Map();
   oneofUint32?: number = 0;
   oneofNestedMessage?: TestAllTypesProto3.NestedMessage =
     new TestAllTypesProto3.NestedMessage();
@@ -440,54 +288,67 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
   oneofEnum?: number = TestAllTypesProto3.NestedEnum.FOO;
   oneofNullValue?: number =
     google_protobuf_struct_models.google.protobuf.NullValue.NULL_VALUE;
-  optionalBoolWrapper: google.protobuf.BoolValue =
+  optionalBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValue =
     new google_protobuf_wrappers_models.google.protobuf.BoolValue();
-  optionalInt32Wrapper: google.protobuf.Int32Value =
+  optionalInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32Value =
     new google_protobuf_wrappers_models.google.protobuf.Int32Value();
-  optionalInt64Wrapper: google.protobuf.Int64Value =
+  optionalInt64Wrapper: google_protobuf_wrappers_models.google.protobuf.Int64Value =
     new google_protobuf_wrappers_models.google.protobuf.Int64Value();
-  optionalUint32Wrapper: google.protobuf.UInt32Value =
+  optionalUint32Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt32Value =
     new google_protobuf_wrappers_models.google.protobuf.UInt32Value();
-  optionalUint64Wrapper: google.protobuf.UInt64Value =
+  optionalUint64Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt64Value =
     new google_protobuf_wrappers_models.google.protobuf.UInt64Value();
-  optionalFloatWrapper: google.protobuf.FloatValue =
+  optionalFloatWrapper: google_protobuf_wrappers_models.google.protobuf.FloatValue =
     new google_protobuf_wrappers_models.google.protobuf.FloatValue();
-  optionalDoubleWrapper: google.protobuf.DoubleValue =
+  optionalDoubleWrapper: google_protobuf_wrappers_models.google.protobuf.DoubleValue =
     new google_protobuf_wrappers_models.google.protobuf.DoubleValue();
-  optionalStringWrapper: google.protobuf.StringValue =
+  optionalStringWrapper: google_protobuf_wrappers_models.google.protobuf.StringValue =
     new google_protobuf_wrappers_models.google.protobuf.StringValue();
-  optionalBytesWrapper: google.protobuf.BytesValue =
+  optionalBytesWrapper: google_protobuf_wrappers_models.google.protobuf.BytesValue =
     new google_protobuf_wrappers_models.google.protobuf.BytesValue();
-  repeatedBoolWrapper: google.protobuf.BoolValue = [];
-  repeatedInt32Wrapper: google.protobuf.Int32Value = [];
-  repeatedInt64Wrapper: google.protobuf.Int64Value = [];
-  repeatedUint32Wrapper: google.protobuf.UInt32Value = [];
-  repeatedUint64Wrapper: google.protobuf.UInt64Value = [];
-  repeatedFloatWrapper: google.protobuf.FloatValue = [];
-  repeatedDoubleWrapper: google.protobuf.DoubleValue = [];
-  repeatedStringWrapper: google.protobuf.StringValue = [];
-  repeatedBytesWrapper: google.protobuf.BytesValue = [];
-  optionalDuration: google.protobuf.Duration =
+  repeatedBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValue =
+    [];
+  repeatedInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32Value =
+    [];
+  repeatedInt64Wrapper: google_protobuf_wrappers_models.google.protobuf.Int64Value =
+    [];
+  repeatedUint32Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt32Value =
+    [];
+  repeatedUint64Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt64Value =
+    [];
+  repeatedFloatWrapper: google_protobuf_wrappers_models.google.protobuf.FloatValue =
+    [];
+  repeatedDoubleWrapper: google_protobuf_wrappers_models.google.protobuf.DoubleValue =
+    [];
+  repeatedStringWrapper: google_protobuf_wrappers_models.google.protobuf.StringValue =
+    [];
+  repeatedBytesWrapper: google_protobuf_wrappers_models.google.protobuf.BytesValue =
+    [];
+  optionalDuration: google_protobuf_duration_models.google.protobuf.Duration =
     new google_protobuf_duration_models.google.protobuf.Duration();
-  optionalTimestamp: google.protobuf.Timestamp =
+  optionalTimestamp: google_protobuf_timestamp_models.google.protobuf.Timestamp =
     new google_protobuf_timestamp_models.google.protobuf.Timestamp();
-  optionalFieldMask: google.protobuf.FieldMask =
+  optionalFieldMask: google_protobuf_field_mask_models.google.protobuf.FieldMask =
     new google_protobuf_field_mask_models.google.protobuf.FieldMask();
-  optionalStruct: google.protobuf.Struct =
+  optionalStruct: google_protobuf_struct_models.google.protobuf.Struct =
     new google_protobuf_struct_models.google.protobuf.Struct();
-  optionalAny: google.protobuf.Any =
+  optionalAny: google_protobuf_any_models.google.protobuf.Any =
     new google_protobuf_any_models.google.protobuf.Any();
-  optionalValue: google.protobuf.Value =
+  optionalValue: google_protobuf_struct_models.google.protobuf.Value =
     new google_protobuf_struct_models.google.protobuf.Value();
   optionalNullValue: number =
     google_protobuf_struct_models.google.protobuf.NullValue.NULL_VALUE;
-  repeatedDuration: google.protobuf.Duration = [];
-  repeatedTimestamp: google.protobuf.Timestamp = [];
-  repeatedFieldmask: google.protobuf.FieldMask = [];
-  repeatedStruct: google.protobuf.Struct = [];
-  repeatedAny: google.protobuf.Any = [];
-  repeatedValue: google.protobuf.Value = [];
-  repeatedListValue: google.protobuf.ListValue = [];
+  repeatedDuration: google_protobuf_duration_models.google.protobuf.Duration =
+    [];
+  repeatedTimestamp: google_protobuf_timestamp_models.google.protobuf.Timestamp =
+    [];
+  repeatedFieldmask: google_protobuf_field_mask_models.google.protobuf.FieldMask =
+    [];
+  repeatedStruct: google_protobuf_struct_models.google.protobuf.Struct = [];
+  repeatedAny: google_protobuf_any_models.google.protobuf.Any = [];
+  repeatedValue: google_protobuf_struct_models.google.protobuf.Value = [];
+  repeatedListValue: google_protobuf_struct_models.google.protobuf.ListValue =
+    [];
   fieldname1: number = 0;
   fieldName2: number = 0;
   FieldName3: number = 0;
@@ -665,7 +526,7 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     return TestAllTypesProto3.fields;
   }
 
-  constructor(obj?: Partial<ITestAllTypesProto3>) {
+  constructor(obj?: TestAllTypesProto3) {
     if (!obj) return;
 
     if (obj.optionalInt32 !== undefined) {
@@ -885,61 +746,99 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       this.unpackedNestedEnum = obj.unpackedNestedEnum;
     }
     if (obj.mapInt32Int32 !== undefined) {
-      this.mapInt32Int32 = obj.mapInt32Int32;
+      const entries = Array.from(obj.mapInt32Int32.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapInt32Int32 = new Map(copy);
     }
     if (obj.mapInt64Int64 !== undefined) {
-      this.mapInt64Int64 = obj.mapInt64Int64;
+      const entries = Array.from(obj.mapInt64Int64.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapInt64Int64 = new Map(copy);
     }
     if (obj.mapUint32Uint32 !== undefined) {
-      this.mapUint32Uint32 = obj.mapUint32Uint32;
+      const entries = Array.from(obj.mapUint32Uint32.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapUint32Uint32 = new Map(copy);
     }
     if (obj.mapUint64Uint64 !== undefined) {
-      this.mapUint64Uint64 = obj.mapUint64Uint64;
+      const entries = Array.from(obj.mapUint64Uint64.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapUint64Uint64 = new Map(copy);
     }
     if (obj.mapSint32Sint32 !== undefined) {
-      this.mapSint32Sint32 = obj.mapSint32Sint32;
+      const entries = Array.from(obj.mapSint32Sint32.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapSint32Sint32 = new Map(copy);
     }
     if (obj.mapSint64Sint64 !== undefined) {
-      this.mapSint64Sint64 = obj.mapSint64Sint64;
+      const entries = Array.from(obj.mapSint64Sint64.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapSint64Sint64 = new Map(copy);
     }
     if (obj.mapFixed32Fixed32 !== undefined) {
-      this.mapFixed32Fixed32 = obj.mapFixed32Fixed32;
+      const entries = Array.from(obj.mapFixed32Fixed32.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapFixed32Fixed32 = new Map(copy);
     }
     if (obj.mapFixed64Fixed64 !== undefined) {
-      this.mapFixed64Fixed64 = obj.mapFixed64Fixed64;
+      const entries = Array.from(obj.mapFixed64Fixed64.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapFixed64Fixed64 = new Map(copy);
     }
     if (obj.mapSfixed32Sfixed32 !== undefined) {
-      this.mapSfixed32Sfixed32 = obj.mapSfixed32Sfixed32;
+      const entries = Array.from(obj.mapSfixed32Sfixed32.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapSfixed32Sfixed32 = new Map(copy);
     }
     if (obj.mapSfixed64Sfixed64 !== undefined) {
-      this.mapSfixed64Sfixed64 = obj.mapSfixed64Sfixed64;
+      const entries = Array.from(obj.mapSfixed64Sfixed64.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapSfixed64Sfixed64 = new Map(copy);
     }
     if (obj.mapInt32Float !== undefined) {
-      this.mapInt32Float = obj.mapInt32Float;
+      const entries = Array.from(obj.mapInt32Float.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapInt32Float = new Map(copy);
     }
     if (obj.mapInt32Double !== undefined) {
-      this.mapInt32Double = obj.mapInt32Double;
+      const entries = Array.from(obj.mapInt32Double.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapInt32Double = new Map(copy);
     }
     if (obj.mapBoolBool !== undefined) {
-      this.mapBoolBool = obj.mapBoolBool;
+      const entries = Array.from(obj.mapBoolBool.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapBoolBool = new Map(copy);
     }
     if (obj.mapStringString !== undefined) {
-      this.mapStringString = obj.mapStringString;
+      const entries = Array.from(obj.mapStringString.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapStringString = new Map(copy);
     }
     if (obj.mapStringBytes !== undefined) {
-      this.mapStringBytes = obj.mapStringBytes;
+      const entries = Array.from(obj.mapStringBytes.entries());
+      const copy = entries.map(([key, val]) => [key, new pjs.util.Buffer(val)]);
+      this.mapStringBytes = new Map(copy);
     }
     if (obj.mapStringNestedMessage !== undefined) {
-      this.mapStringNestedMessage = obj.mapStringNestedMessage;
+      const entries = Array.from(obj.mapStringNestedMessage.entries());
+      const copy = entries.map(([key, val]) => [key, val.clone()]);
+      this.mapStringNestedMessage = new Map(copy);
     }
     if (obj.mapStringForeignMessage !== undefined) {
-      this.mapStringForeignMessage = obj.mapStringForeignMessage;
+      const entries = Array.from(obj.mapStringForeignMessage.entries());
+      const copy = entries.map(([key, val]) => [key, val.clone()]);
+      this.mapStringForeignMessage = new Map(copy);
     }
     if (obj.mapStringNestedEnum !== undefined) {
-      this.mapStringNestedEnum = obj.mapStringNestedEnum;
+      const entries = Array.from(obj.mapStringNestedEnum.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapStringNestedEnum = new Map(copy);
     }
     if (obj.mapStringForeignEnum !== undefined) {
-      this.mapStringForeignEnum = obj.mapStringForeignEnum;
+      const entries = Array.from(obj.mapStringForeignEnum.entries());
+      const copy = entries.map(([key, val]) => [key, val]);
+      this.mapStringForeignEnum = new Map(copy);
     }
     if (obj.oneofUint32 !== undefined) {
       this.oneofUint32 = obj.oneofUint32;
@@ -1123,10 +1022,7 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     }
   }
 
-  public static encode(
-    m: ITestAllTypesProto3,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestAllTypesProto3, w: pjs.Writer): pjs.Writer {
     // int32 optional_int32 = 1
     if (m.optionalInt32 !== 0) {
       w.uint32(8);
@@ -1220,13 +1116,13 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     // TestAllTypesProto3.NestedMessage optional_nested_message = 18
     if (m.optionalNestedMessage !== new TestAllTypesProto3.NestedMessage()) {
       w.uint32(146);
-      w.TestAllTypesProto3.NestedMessage(m.optionalNestedMessage);
+      TestAllTypesProto3.NestedMessage.encode(m.optionalNestedMessage, w);
     }
 
     // ForeignMessage optional_foreign_message = 19
     if (m.optionalForeignMessage !== new ForeignMessage()) {
       w.uint32(154);
-      w.ForeignMessage(m.optionalForeignMessage);
+      ForeignMessage.encode(m.optionalForeignMessage, w);
     }
 
     // TestAllTypesProto3.NestedEnum optional_nested_enum = 21
@@ -1262,7 +1158,7 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     // TestAllTypesProto3 recursive_message = 27
     if (m.recursiveMessage !== new TestAllTypesProto3()) {
       w.uint32(218);
-      w.TestAllTypesProto3(m.recursiveMessage);
+      TestAllTypesProto3.encode(m.recursiveMessage, w);
     }
 
     // int32 repeated_int32 = 31
@@ -1358,13 +1254,13 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     // TestAllTypesProto3.NestedMessage repeated_nested_message = 48
     if (m.repeatedNestedMessage !== []) {
       w.uint32(386);
-      w.TestAllTypesProto3.NestedMessage(m.repeatedNestedMessage);
+      TestAllTypesProto3.NestedMessage.encode(m.repeatedNestedMessage, w);
     }
 
     // ForeignMessage repeated_foreign_message = 49
     if (m.repeatedForeignMessage !== []) {
       w.uint32(394);
-      w.ForeignMessage(m.repeatedForeignMessage);
+      ForeignMessage.encode(m.repeatedForeignMessage, w);
     }
 
     // TestAllTypesProto3.NestedEnum repeated_nested_enum = 51
@@ -1560,42 +1456,118 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     }
 
     // map<int32, int32> map_int32_int32 = 56
+    for (const [key, val] of m.mapInt32Int32) {
+      w.int32(key);
+      w.int32(val);
+    }
 
     // map<int64, int64> map_int64_int64 = 57
+    for (const [key, val] of m.mapInt64Int64) {
+      w.int64(key);
+      w.int64(val);
+    }
 
     // map<uint32, uint32> map_uint32_uint32 = 58
+    for (const [key, val] of m.mapUint32Uint32) {
+      w.uint32(key);
+      w.uint32(val);
+    }
 
     // map<uint64, uint64> map_uint64_uint64 = 59
+    for (const [key, val] of m.mapUint64Uint64) {
+      w.uint64(key);
+      w.uint64(val);
+    }
 
     // map<sint32, sint32> map_sint32_sint32 = 60
+    for (const [key, val] of m.mapSint32Sint32) {
+      w.sint32(key);
+      w.sint32(val);
+    }
 
     // map<sint64, sint64> map_sint64_sint64 = 61
+    for (const [key, val] of m.mapSint64Sint64) {
+      w.sint64(key);
+      w.sint64(val);
+    }
 
     // map<fixed32, fixed32> map_fixed32_fixed32 = 62
+    for (const [key, val] of m.mapFixed32Fixed32) {
+      w.fixed32(key);
+      w.fixed32(val);
+    }
 
     // map<fixed64, fixed64> map_fixed64_fixed64 = 63
+    for (const [key, val] of m.mapFixed64Fixed64) {
+      w.fixed64(key);
+      w.fixed64(val);
+    }
 
     // map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64
+    for (const [key, val] of m.mapSfixed32Sfixed32) {
+      w.sfixed32(key);
+      w.sfixed32(val);
+    }
 
     // map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65
+    for (const [key, val] of m.mapSfixed64Sfixed64) {
+      w.sfixed64(key);
+      w.sfixed64(val);
+    }
 
     // map<int32, float> map_int32_float = 66
+    for (const [key, val] of m.mapInt32Float) {
+      w.int32(key);
+      w.float(val);
+    }
 
     // map<int32, double> map_int32_double = 67
+    for (const [key, val] of m.mapInt32Double) {
+      w.int32(key);
+      w.double(val);
+    }
 
     // map<bool, bool> map_bool_bool = 68
+    for (const [key, val] of m.mapBoolBool) {
+      w.bool(key);
+      w.bool(val);
+    }
 
     // map<string, string> map_string_string = 69
+    for (const [key, val] of m.mapStringString) {
+      w.string(key);
+      w.string(val);
+    }
 
     // map<string, bytes> map_string_bytes = 70
+    for (const [key, val] of m.mapStringBytes) {
+      w.string(key);
+      w.bytes(val);
+    }
 
     // map<string, TestAllTypesProto3.NestedMessage> map_string_nested_message = 71
+    for (const [key, val] of m.mapStringNestedMessage) {
+      w.string(key);
+      TestAllTypesProto3.NestedMessage.encode(val, w);
+    }
 
     // map<string, ForeignMessage> map_string_foreign_message = 72
+    for (const [key, val] of m.mapStringForeignMessage) {
+      w.string(key);
+      ForeignMessage.encode(val, w);
+    }
 
     // map<string, TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73
+    for (const [key, val] of m.mapStringNestedEnum) {
+      w.string(key);
+      w.uint32(val);
+    }
 
     // map<string, ForeignEnum> map_string_foreign_enum = 74
+    for (const [key, val] of m.mapStringForeignEnum) {
+      w.string(key);
+      w.uint32(val);
+    }
 
     // oneof uint32 oneof_uint32 = 111
 
@@ -1623,7 +1595,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.BoolValue()
     ) {
       w.uint32(1610);
-      w.google.protobuf.BoolValue(m.optionalBoolWrapper);
+      google_protobuf_wrappers_models.google.protobuf.BoolValue.encode(
+        m.optionalBoolWrapper,
+        w
+      );
     }
 
     // google.protobuf.Int32Value optional_int32_wrapper = 202
@@ -1632,7 +1607,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.Int32Value()
     ) {
       w.uint32(1618);
-      w.google.protobuf.Int32Value(m.optionalInt32Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.Int32Value.encode(
+        m.optionalInt32Wrapper,
+        w
+      );
     }
 
     // google.protobuf.Int64Value optional_int64_wrapper = 203
@@ -1641,7 +1619,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.Int64Value()
     ) {
       w.uint32(1626);
-      w.google.protobuf.Int64Value(m.optionalInt64Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.Int64Value.encode(
+        m.optionalInt64Wrapper,
+        w
+      );
     }
 
     // google.protobuf.UInt32Value optional_uint32_wrapper = 204
@@ -1650,7 +1631,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.UInt32Value()
     ) {
       w.uint32(1634);
-      w.google.protobuf.UInt32Value(m.optionalUint32Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.UInt32Value.encode(
+        m.optionalUint32Wrapper,
+        w
+      );
     }
 
     // google.protobuf.UInt64Value optional_uint64_wrapper = 205
@@ -1659,7 +1643,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.UInt64Value()
     ) {
       w.uint32(1642);
-      w.google.protobuf.UInt64Value(m.optionalUint64Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.UInt64Value.encode(
+        m.optionalUint64Wrapper,
+        w
+      );
     }
 
     // google.protobuf.FloatValue optional_float_wrapper = 206
@@ -1668,7 +1655,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.FloatValue()
     ) {
       w.uint32(1650);
-      w.google.protobuf.FloatValue(m.optionalFloatWrapper);
+      google_protobuf_wrappers_models.google.protobuf.FloatValue.encode(
+        m.optionalFloatWrapper,
+        w
+      );
     }
 
     // google.protobuf.DoubleValue optional_double_wrapper = 207
@@ -1677,7 +1667,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.DoubleValue()
     ) {
       w.uint32(1658);
-      w.google.protobuf.DoubleValue(m.optionalDoubleWrapper);
+      google_protobuf_wrappers_models.google.protobuf.DoubleValue.encode(
+        m.optionalDoubleWrapper,
+        w
+      );
     }
 
     // google.protobuf.StringValue optional_string_wrapper = 208
@@ -1686,7 +1679,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.StringValue()
     ) {
       w.uint32(1666);
-      w.google.protobuf.StringValue(m.optionalStringWrapper);
+      google_protobuf_wrappers_models.google.protobuf.StringValue.encode(
+        m.optionalStringWrapper,
+        w
+      );
     }
 
     // google.protobuf.BytesValue optional_bytes_wrapper = 209
@@ -1695,61 +1691,91 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_wrappers_models.google.protobuf.BytesValue()
     ) {
       w.uint32(1674);
-      w.google.protobuf.BytesValue(m.optionalBytesWrapper);
+      google_protobuf_wrappers_models.google.protobuf.BytesValue.encode(
+        m.optionalBytesWrapper,
+        w
+      );
     }
 
     // google.protobuf.BoolValue repeated_bool_wrapper = 211
     if (m.repeatedBoolWrapper !== []) {
       w.uint32(1690);
-      w.google.protobuf.BoolValue(m.repeatedBoolWrapper);
+      google_protobuf_wrappers_models.google.protobuf.BoolValue.encode(
+        m.repeatedBoolWrapper,
+        w
+      );
     }
 
     // google.protobuf.Int32Value repeated_int32_wrapper = 212
     if (m.repeatedInt32Wrapper !== []) {
       w.uint32(1698);
-      w.google.protobuf.Int32Value(m.repeatedInt32Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.Int32Value.encode(
+        m.repeatedInt32Wrapper,
+        w
+      );
     }
 
     // google.protobuf.Int64Value repeated_int64_wrapper = 213
     if (m.repeatedInt64Wrapper !== []) {
       w.uint32(1706);
-      w.google.protobuf.Int64Value(m.repeatedInt64Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.Int64Value.encode(
+        m.repeatedInt64Wrapper,
+        w
+      );
     }
 
     // google.protobuf.UInt32Value repeated_uint32_wrapper = 214
     if (m.repeatedUint32Wrapper !== []) {
       w.uint32(1714);
-      w.google.protobuf.UInt32Value(m.repeatedUint32Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.UInt32Value.encode(
+        m.repeatedUint32Wrapper,
+        w
+      );
     }
 
     // google.protobuf.UInt64Value repeated_uint64_wrapper = 215
     if (m.repeatedUint64Wrapper !== []) {
       w.uint32(1722);
-      w.google.protobuf.UInt64Value(m.repeatedUint64Wrapper);
+      google_protobuf_wrappers_models.google.protobuf.UInt64Value.encode(
+        m.repeatedUint64Wrapper,
+        w
+      );
     }
 
     // google.protobuf.FloatValue repeated_float_wrapper = 216
     if (m.repeatedFloatWrapper !== []) {
       w.uint32(1730);
-      w.google.protobuf.FloatValue(m.repeatedFloatWrapper);
+      google_protobuf_wrappers_models.google.protobuf.FloatValue.encode(
+        m.repeatedFloatWrapper,
+        w
+      );
     }
 
     // google.protobuf.DoubleValue repeated_double_wrapper = 217
     if (m.repeatedDoubleWrapper !== []) {
       w.uint32(1738);
-      w.google.protobuf.DoubleValue(m.repeatedDoubleWrapper);
+      google_protobuf_wrappers_models.google.protobuf.DoubleValue.encode(
+        m.repeatedDoubleWrapper,
+        w
+      );
     }
 
     // google.protobuf.StringValue repeated_string_wrapper = 218
     if (m.repeatedStringWrapper !== []) {
       w.uint32(1746);
-      w.google.protobuf.StringValue(m.repeatedStringWrapper);
+      google_protobuf_wrappers_models.google.protobuf.StringValue.encode(
+        m.repeatedStringWrapper,
+        w
+      );
     }
 
     // google.protobuf.BytesValue repeated_bytes_wrapper = 219
     if (m.repeatedBytesWrapper !== []) {
       w.uint32(1754);
-      w.google.protobuf.BytesValue(m.repeatedBytesWrapper);
+      google_protobuf_wrappers_models.google.protobuf.BytesValue.encode(
+        m.repeatedBytesWrapper,
+        w
+      );
     }
 
     // google.protobuf.Duration optional_duration = 301
@@ -1758,7 +1784,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_duration_models.google.protobuf.Duration()
     ) {
       w.uint32(2410);
-      w.google.protobuf.Duration(m.optionalDuration);
+      google_protobuf_duration_models.google.protobuf.Duration.encode(
+        m.optionalDuration,
+        w
+      );
     }
 
     // google.protobuf.Timestamp optional_timestamp = 302
@@ -1767,7 +1796,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_timestamp_models.google.protobuf.Timestamp()
     ) {
       w.uint32(2418);
-      w.google.protobuf.Timestamp(m.optionalTimestamp);
+      google_protobuf_timestamp_models.google.protobuf.Timestamp.encode(
+        m.optionalTimestamp,
+        w
+      );
     }
 
     // google.protobuf.FieldMask optional_field_mask = 303
@@ -1776,7 +1808,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_field_mask_models.google.protobuf.FieldMask()
     ) {
       w.uint32(2426);
-      w.google.protobuf.FieldMask(m.optionalFieldMask);
+      google_protobuf_field_mask_models.google.protobuf.FieldMask.encode(
+        m.optionalFieldMask,
+        w
+      );
     }
 
     // google.protobuf.Struct optional_struct = 304
@@ -1785,7 +1820,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_struct_models.google.protobuf.Struct()
     ) {
       w.uint32(2434);
-      w.google.protobuf.Struct(m.optionalStruct);
+      google_protobuf_struct_models.google.protobuf.Struct.encode(
+        m.optionalStruct,
+        w
+      );
     }
 
     // google.protobuf.Any optional_any = 305
@@ -1793,7 +1831,7 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       m.optionalAny !== new google_protobuf_any_models.google.protobuf.Any()
     ) {
       w.uint32(2442);
-      w.google.protobuf.Any(m.optionalAny);
+      google_protobuf_any_models.google.protobuf.Any.encode(m.optionalAny, w);
     }
 
     // google.protobuf.Value optional_value = 306
@@ -1802,7 +1840,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       new google_protobuf_struct_models.google.protobuf.Value()
     ) {
       w.uint32(2450);
-      w.google.protobuf.Value(m.optionalValue);
+      google_protobuf_struct_models.google.protobuf.Value.encode(
+        m.optionalValue,
+        w
+      );
     }
 
     // google.protobuf.NullValue optional_null_value = 307
@@ -1817,43 +1858,61 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     // google.protobuf.Duration repeated_duration = 311
     if (m.repeatedDuration !== []) {
       w.uint32(2490);
-      w.google.protobuf.Duration(m.repeatedDuration);
+      google_protobuf_duration_models.google.protobuf.Duration.encode(
+        m.repeatedDuration,
+        w
+      );
     }
 
     // google.protobuf.Timestamp repeated_timestamp = 312
     if (m.repeatedTimestamp !== []) {
       w.uint32(2498);
-      w.google.protobuf.Timestamp(m.repeatedTimestamp);
+      google_protobuf_timestamp_models.google.protobuf.Timestamp.encode(
+        m.repeatedTimestamp,
+        w
+      );
     }
 
     // google.protobuf.FieldMask repeated_fieldmask = 313
     if (m.repeatedFieldmask !== []) {
       w.uint32(2506);
-      w.google.protobuf.FieldMask(m.repeatedFieldmask);
+      google_protobuf_field_mask_models.google.protobuf.FieldMask.encode(
+        m.repeatedFieldmask,
+        w
+      );
     }
 
     // google.protobuf.Struct repeated_struct = 324
     if (m.repeatedStruct !== []) {
       w.uint32(2594);
-      w.google.protobuf.Struct(m.repeatedStruct);
+      google_protobuf_struct_models.google.protobuf.Struct.encode(
+        m.repeatedStruct,
+        w
+      );
     }
 
     // google.protobuf.Any repeated_any = 315
     if (m.repeatedAny !== []) {
       w.uint32(2522);
-      w.google.protobuf.Any(m.repeatedAny);
+      google_protobuf_any_models.google.protobuf.Any.encode(m.repeatedAny, w);
     }
 
     // google.protobuf.Value repeated_value = 316
     if (m.repeatedValue !== []) {
       w.uint32(2530);
-      w.google.protobuf.Value(m.repeatedValue);
+      google_protobuf_struct_models.google.protobuf.Value.encode(
+        m.repeatedValue,
+        w
+      );
     }
 
     // google.protobuf.ListValue repeated_list_value = 317
     if (m.repeatedListValue !== []) {
       w.uint32(2538);
-      w.google.protobuf.ListValue(m.repeatedListValue);
+      google_protobuf_struct_models.google.protobuf.ListValue.encode(
+        m.repeatedListValue,
+        w
+      );
     }
 
     // int32 fieldname1 = 401
@@ -1964,13 +2023,15 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       w.int32(m.fieldName18_);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestAllTypesProto3 {
-    const m = new TestAllTypesProto3();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestAllTypesProto3,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 optional_int32 = 1
@@ -2050,12 +2111,15 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
 
         // TestAllTypesProto3.NestedMessage optional_nested_message = 18
         case 146:
-          m.optionalNestedMessage = r.TestAllTypesProto3.NestedMessage();
+          m.optionalNestedMessage = TestAllTypesProto3.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // ForeignMessage optional_foreign_message = 19
         case 154:
-          m.optionalForeignMessage = r.ForeignMessage();
+          m.optionalForeignMessage = ForeignMessage.decode(r, r.uint32());
           continue;
 
         // TestAllTypesProto3.NestedEnum optional_nested_enum = 21
@@ -2085,7 +2149,7 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
 
         // TestAllTypesProto3 recursive_message = 27
         case 218:
-          m.recursiveMessage = r.TestAllTypesProto3();
+          m.recursiveMessage = TestAllTypesProto3.decode(r, r.uint32());
           continue;
 
         // repeated int32 repeated_int32 = 31
@@ -2226,7 +2290,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated TestAllTypesProto3.NestedMessage repeated_nested_message = 48
         case 386:
           {
-            const value = r.TestAllTypesProto3.NestedMessage();
+            const value = TestAllTypesProto3.NestedMessage.decode(
+              r,
+              r.uint32()
+            );
 
             m.repeatedNestedMessage.push(value);
           }
@@ -2235,7 +2302,7 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated ForeignMessage repeated_foreign_message = 49
         case 394:
           {
-            const value = r.ForeignMessage();
+            const value = ForeignMessage.decode(r, r.uint32());
 
             m.repeatedForeignMessage.push(value);
           }
@@ -2530,9 +2597,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<int32, int32> map_int32_int32 = 56
-        case null:
+        case 450:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.int32();
+            const valueTag = r.uint32();
             const value = r.int32();
 
             m.mapInt32Int32.set(key, value);
@@ -2540,9 +2610,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<int64, int64> map_int64_int64 = 57
-        case null:
+        case 458:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.int64();
+            const valueTag = r.uint32();
             const value = r.int64();
 
             m.mapInt64Int64.set(key, value);
@@ -2550,9 +2623,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<uint32, uint32> map_uint32_uint32 = 58
-        case null:
+        case 466:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.uint32();
+            const valueTag = r.uint32();
             const value = r.uint32();
 
             m.mapUint32Uint32.set(key, value);
@@ -2560,9 +2636,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<uint64, uint64> map_uint64_uint64 = 59
-        case null:
+        case 474:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.uint64();
+            const valueTag = r.uint32();
             const value = r.uint64();
 
             m.mapUint64Uint64.set(key, value);
@@ -2570,9 +2649,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<sint32, sint32> map_sint32_sint32 = 60
-        case null:
+        case 482:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.sint32();
+            const valueTag = r.uint32();
             const value = r.sint32();
 
             m.mapSint32Sint32.set(key, value);
@@ -2580,9 +2662,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<sint64, sint64> map_sint64_sint64 = 61
-        case null:
+        case 490:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.sint64();
+            const valueTag = r.uint32();
             const value = r.sint64();
 
             m.mapSint64Sint64.set(key, value);
@@ -2590,9 +2675,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<fixed32, fixed32> map_fixed32_fixed32 = 62
-        case null:
+        case 498:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.fixed32();
+            const valueTag = r.uint32();
             const value = r.fixed32();
 
             m.mapFixed32Fixed32.set(key, value);
@@ -2600,9 +2688,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<fixed64, fixed64> map_fixed64_fixed64 = 63
-        case null:
+        case 506:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.fixed64();
+            const valueTag = r.uint32();
             const value = r.fixed64();
 
             m.mapFixed64Fixed64.set(key, value);
@@ -2610,9 +2701,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64
-        case null:
+        case 514:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.sfixed32();
+            const valueTag = r.uint32();
             const value = r.sfixed32();
 
             m.mapSfixed32Sfixed32.set(key, value);
@@ -2620,9 +2714,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65
-        case null:
+        case 522:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.sfixed64();
+            const valueTag = r.uint32();
             const value = r.sfixed64();
 
             m.mapSfixed64Sfixed64.set(key, value);
@@ -2630,9 +2727,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<int32, float> map_int32_float = 66
-        case null:
+        case 530:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.int32();
+            const valueTag = r.uint32();
             const value = r.float();
 
             m.mapInt32Float.set(key, value);
@@ -2640,9 +2740,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<int32, double> map_int32_double = 67
-        case null:
+        case 538:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.int32();
+            const valueTag = r.uint32();
             const value = r.double();
 
             m.mapInt32Double.set(key, value);
@@ -2650,9 +2753,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<bool, bool> map_bool_bool = 68
-        case null:
+        case 546:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.bool();
+            const valueTag = r.uint32();
             const value = r.bool();
 
             m.mapBoolBool.set(key, value);
@@ -2660,9 +2766,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<string, string> map_string_string = 69
-        case null:
+        case 554:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.string();
+            const valueTag = r.uint32();
             const value = r.string();
 
             m.mapStringString.set(key, value);
@@ -2670,9 +2779,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<string, bytes> map_string_bytes = 70
-        case null:
+        case 562:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.string();
+            const valueTag = r.uint32();
             const value = r.bytes();
 
             m.mapStringBytes.set(key, value);
@@ -2680,29 +2792,41 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<string, TestAllTypesProto3.NestedMessage> map_string_nested_message = 71
-        case null:
+        case 570:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.string();
-            const value = r.TestAllTypesProto3.NestedMessage();
+            const valueTag = r.uint32();
+            const value = TestAllTypesProto3.NestedMessage.decode(
+              r,
+              r.uint32()
+            );
 
             m.mapStringNestedMessage.set(key, value);
           }
           continue;
 
         // map<string, ForeignMessage> map_string_foreign_message = 72
-        case null:
+        case 578:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.string();
-            const value = r.ForeignMessage();
+            const valueTag = r.uint32();
+            const value = ForeignMessage.decode(r, r.uint32());
 
             m.mapStringForeignMessage.set(key, value);
           }
           continue;
 
         // map<string, TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73
-        case null:
+        case 586:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.string();
+            const valueTag = r.uint32();
             const value = r.uint32();
 
             m.mapStringNestedEnum.set(key, value);
@@ -2710,9 +2834,12 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
           continue;
 
         // map<string, ForeignEnum> map_string_foreign_enum = 74
-        case null:
+        case 594:
           {
+            const len = r.uint32();
+            const keyTag = r.uint32();
             const key = r.string();
+            const valueTag = r.uint32();
             const value = r.uint32();
 
             m.mapStringForeignEnum.set(key, value);
@@ -2726,7 +2853,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
 
         // TestAllTypesProto3.NestedMessage oneof_nested_message = 112
         case 898:
-          m.oneofNestedMessage = r.TestAllTypesProto3.NestedMessage();
+          m.oneofNestedMessage = TestAllTypesProto3.NestedMessage.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // string oneof_string = 113
@@ -2771,53 +2901,93 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
 
         // google.protobuf.BoolValue optional_bool_wrapper = 201
         case 1610:
-          m.optionalBoolWrapper = r.google.protobuf.BoolValue();
+          m.optionalBoolWrapper =
+            google_protobuf_wrappers_models.google.protobuf.BoolValue.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.Int32Value optional_int32_wrapper = 202
         case 1618:
-          m.optionalInt32Wrapper = r.google.protobuf.Int32Value();
+          m.optionalInt32Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.Int32Value.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.Int64Value optional_int64_wrapper = 203
         case 1626:
-          m.optionalInt64Wrapper = r.google.protobuf.Int64Value();
+          m.optionalInt64Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.Int64Value.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.UInt32Value optional_uint32_wrapper = 204
         case 1634:
-          m.optionalUint32Wrapper = r.google.protobuf.UInt32Value();
+          m.optionalUint32Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.UInt32Value.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.UInt64Value optional_uint64_wrapper = 205
         case 1642:
-          m.optionalUint64Wrapper = r.google.protobuf.UInt64Value();
+          m.optionalUint64Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.UInt64Value.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.FloatValue optional_float_wrapper = 206
         case 1650:
-          m.optionalFloatWrapper = r.google.protobuf.FloatValue();
+          m.optionalFloatWrapper =
+            google_protobuf_wrappers_models.google.protobuf.FloatValue.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.DoubleValue optional_double_wrapper = 207
         case 1658:
-          m.optionalDoubleWrapper = r.google.protobuf.DoubleValue();
+          m.optionalDoubleWrapper =
+            google_protobuf_wrappers_models.google.protobuf.DoubleValue.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.StringValue optional_string_wrapper = 208
         case 1666:
-          m.optionalStringWrapper = r.google.protobuf.StringValue();
+          m.optionalStringWrapper =
+            google_protobuf_wrappers_models.google.protobuf.StringValue.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.BytesValue optional_bytes_wrapper = 209
         case 1674:
-          m.optionalBytesWrapper = r.google.protobuf.BytesValue();
+          m.optionalBytesWrapper =
+            google_protobuf_wrappers_models.google.protobuf.BytesValue.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // repeated google.protobuf.BoolValue repeated_bool_wrapper = 211
         case 1690:
           {
-            const value = r.google.protobuf.BoolValue();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.BoolValue.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedBoolWrapper.push(value);
           }
@@ -2826,7 +2996,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Int32Value repeated_int32_wrapper = 212
         case 1698:
           {
-            const value = r.google.protobuf.Int32Value();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.Int32Value.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedInt32Wrapper.push(value);
           }
@@ -2835,7 +3009,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Int64Value repeated_int64_wrapper = 213
         case 1706:
           {
-            const value = r.google.protobuf.Int64Value();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.Int64Value.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedInt64Wrapper.push(value);
           }
@@ -2844,7 +3022,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.UInt32Value repeated_uint32_wrapper = 214
         case 1714:
           {
-            const value = r.google.protobuf.UInt32Value();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.UInt32Value.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedUint32Wrapper.push(value);
           }
@@ -2853,7 +3035,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.UInt64Value repeated_uint64_wrapper = 215
         case 1722:
           {
-            const value = r.google.protobuf.UInt64Value();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.UInt64Value.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedUint64Wrapper.push(value);
           }
@@ -2862,7 +3048,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.FloatValue repeated_float_wrapper = 216
         case 1730:
           {
-            const value = r.google.protobuf.FloatValue();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.FloatValue.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedFloatWrapper.push(value);
           }
@@ -2871,7 +3061,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.DoubleValue repeated_double_wrapper = 217
         case 1738:
           {
-            const value = r.google.protobuf.DoubleValue();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.DoubleValue.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedDoubleWrapper.push(value);
           }
@@ -2880,7 +3074,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.StringValue repeated_string_wrapper = 218
         case 1746:
           {
-            const value = r.google.protobuf.StringValue();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.StringValue.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedStringWrapper.push(value);
           }
@@ -2889,7 +3087,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.BytesValue repeated_bytes_wrapper = 219
         case 1754:
           {
-            const value = r.google.protobuf.BytesValue();
+            const value =
+              google_protobuf_wrappers_models.google.protobuf.BytesValue.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedBytesWrapper.push(value);
           }
@@ -2897,32 +3099,55 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
 
         // google.protobuf.Duration optional_duration = 301
         case 2410:
-          m.optionalDuration = r.google.protobuf.Duration();
+          m.optionalDuration =
+            google_protobuf_duration_models.google.protobuf.Duration.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.Timestamp optional_timestamp = 302
         case 2418:
-          m.optionalTimestamp = r.google.protobuf.Timestamp();
+          m.optionalTimestamp =
+            google_protobuf_timestamp_models.google.protobuf.Timestamp.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.FieldMask optional_field_mask = 303
         case 2426:
-          m.optionalFieldMask = r.google.protobuf.FieldMask();
+          m.optionalFieldMask =
+            google_protobuf_field_mask_models.google.protobuf.FieldMask.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.Struct optional_struct = 304
         case 2434:
-          m.optionalStruct = r.google.protobuf.Struct();
+          m.optionalStruct =
+            google_protobuf_struct_models.google.protobuf.Struct.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.Any optional_any = 305
         case 2442:
-          m.optionalAny = r.google.protobuf.Any();
+          m.optionalAny = google_protobuf_any_models.google.protobuf.Any.decode(
+            r,
+            r.uint32()
+          );
           continue;
 
         // google.protobuf.Value optional_value = 306
         case 2450:
-          m.optionalValue = r.google.protobuf.Value();
+          m.optionalValue =
+            google_protobuf_struct_models.google.protobuf.Value.decode(
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.NullValue optional_null_value = 307
@@ -2933,7 +3158,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Duration repeated_duration = 311
         case 2490:
           {
-            const value = r.google.protobuf.Duration();
+            const value =
+              google_protobuf_duration_models.google.protobuf.Duration.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedDuration.push(value);
           }
@@ -2942,7 +3171,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Timestamp repeated_timestamp = 312
         case 2498:
           {
-            const value = r.google.protobuf.Timestamp();
+            const value =
+              google_protobuf_timestamp_models.google.protobuf.Timestamp.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedTimestamp.push(value);
           }
@@ -2951,7 +3184,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.FieldMask repeated_fieldmask = 313
         case 2506:
           {
-            const value = r.google.protobuf.FieldMask();
+            const value =
+              google_protobuf_field_mask_models.google.protobuf.FieldMask.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedFieldmask.push(value);
           }
@@ -2960,7 +3197,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Struct repeated_struct = 324
         case 2594:
           {
-            const value = r.google.protobuf.Struct();
+            const value =
+              google_protobuf_struct_models.google.protobuf.Struct.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedStruct.push(value);
           }
@@ -2969,7 +3210,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Any repeated_any = 315
         case 2522:
           {
-            const value = r.google.protobuf.Any();
+            const value = google_protobuf_any_models.google.protobuf.Any.decode(
+              r,
+              r.uint32()
+            );
 
             m.repeatedAny.push(value);
           }
@@ -2978,7 +3222,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.Value repeated_value = 316
         case 2530:
           {
-            const value = r.google.protobuf.Value();
+            const value =
+              google_protobuf_struct_models.google.protobuf.Value.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedValue.push(value);
           }
@@ -2987,7 +3235,11 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
         // repeated google.protobuf.ListValue repeated_list_value = 317
         case 2538:
           {
-            const value = r.google.protobuf.ListValue();
+            const value =
+              google_protobuf_struct_models.google.protobuf.ListValue.decode(
+                r,
+                r.uint32()
+              );
 
             m.repeatedListValue.push(value);
           }
@@ -3085,10 +3337,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestAllTypesProto3): ITestAllTypesProto3Obj {
+  public static toJSON(m: TestAllTypesProto3): TestAllTypesProto3JSON {
     return {
       optionalInt32: m.optionalInt32,
       optionalInt64: m.optionalInt64.toString(),
@@ -3171,25 +3423,69 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       unpackedDouble: m.unpackedDouble,
       unpackedBool: m.unpackedBool,
       unpackedNestedEnum: TestAllTypesProto3.NestedEnum[m.unpackedNestedEnum],
-      mapInt32Int32: m.mapInt32Int32,
-      mapInt64Int64: m.mapInt64Int64,
-      mapUint32Uint32: m.mapUint32Uint32,
-      mapUint64Uint64: m.mapUint64Uint64,
-      mapSint32Sint32: m.mapSint32Sint32,
-      mapSint64Sint64: m.mapSint64Sint64,
-      mapFixed32Fixed32: m.mapFixed32Fixed32,
-      mapFixed64Fixed64: m.mapFixed64Fixed64,
-      mapSfixed32Sfixed32: m.mapSfixed32Sfixed32,
-      mapSfixed64Sfixed64: m.mapSfixed64Sfixed64,
-      mapInt32Float: m.mapInt32Float,
-      mapInt32Double: m.mapInt32Double,
-      mapBoolBool: m.mapBoolBool,
-      mapStringString: m.mapStringString,
-      mapStringBytes: m.mapStringBytes,
-      mapStringNestedMessage: m.mapStringNestedMessage,
-      mapStringForeignMessage: m.mapStringForeignMessage,
-      mapStringNestedEnum: m.mapStringNestedEnum,
-      mapStringForeignEnum: m.mapStringForeignEnum,
+      mapInt32Int32: runtime.convertMapToRecord(m.mapInt32Int32, (val) => val),
+      mapInt64Int64: runtime.convertMapToRecord(m.mapInt64Int64, (val) =>
+        val.toString()
+      ),
+      mapUint32Uint32: runtime.convertMapToRecord(
+        m.mapUint32Uint32,
+        (val) => val
+      ),
+      mapUint64Uint64: runtime.convertMapToRecord(m.mapUint64Uint64, (val) =>
+        val.toString()
+      ),
+      mapSint32Sint32: runtime.convertMapToRecord(
+        m.mapSint32Sint32,
+        (val) => val
+      ),
+      mapSint64Sint64: runtime.convertMapToRecord(m.mapSint64Sint64, (val) =>
+        val.toString()
+      ),
+      mapFixed32Fixed32: runtime.convertMapToRecord(
+        m.mapFixed32Fixed32,
+        (val) => val
+      ),
+      mapFixed64Fixed64: runtime.convertMapToRecord(
+        m.mapFixed64Fixed64,
+        (val) => val.toString()
+      ),
+      mapSfixed32Sfixed32: runtime.convertMapToRecord(
+        m.mapSfixed32Sfixed32,
+        (val) => val
+      ),
+      mapSfixed64Sfixed64: runtime.convertMapToRecord(
+        m.mapSfixed64Sfixed64,
+        (val) => val.toString()
+      ),
+      mapInt32Float: runtime.convertMapToRecord(m.mapInt32Float, (val) => val),
+      mapInt32Double: runtime.convertMapToRecord(
+        m.mapInt32Double,
+        (val) => val
+      ),
+      mapBoolBool: runtime.convertMapToRecord(m.mapBoolBool, (val) => val),
+      mapStringString: runtime.convertMapToRecord(
+        m.mapStringString,
+        (val) => val
+      ),
+      mapStringBytes: runtime.convertMapToRecord(m.mapStringBytes, (val) =>
+        pjs.util.base64.encode(val, 0, val.length)
+      ),
+      mapStringNestedMessage: runtime.convertMapToRecord(
+        m.mapStringNestedMessage,
+        (val) => val.toJSON()
+      ),
+      mapStringForeignMessage: runtime.convertMapToRecord(
+        m.mapStringForeignMessage,
+        (val) => val.toJSON()
+      ),
+      mapStringNestedEnum: runtime.convertMapToRecord(
+        m.mapStringNestedEnum,
+        (val) => TestAllTypesProto3.NestedEnum[val]
+      ),
+      mapStringForeignEnum: runtime.convertMapToRecord(
+        m.mapStringForeignEnum,
+        (val) => ForeignEnum[val]
+      ),
       oneofUint32: m.oneofUint32,
       oneofNestedMessage: m.oneofNestedMessage.toJSON(),
       oneofString: m.oneofString,
@@ -3259,9 +3555,10 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     };
   }
 
-  public static fromJSON(obj: ITestAllTypesProto3Obj): ITestAllTypesProto3 {
-    const m = new TestAllTypesProto3();
-
+  public static fromJSON(
+    m: TestAllTypesProto3,
+    obj: TestAllTypesProto3JSON
+  ): TestAllTypesProto3 {
     m.optionalInt32 = obj.optionalInt32;
     m.optionalInt64 = pjs.util.Long.fromValue(obj.optionalInt64, false);
     m.optionalUint32 = obj.optionalUint32;
@@ -3279,10 +3576,14 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.optionalBytes, tmpBuffer, 0);
-      m.optionalBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.optionalBytes = new pjs.util.Buffer(tmpBuffer);
     }
-    m.optionalNestedMessage.fromJSON(obj.optionalNestedMessage);
-    m.optionalForeignMessage.fromJSON(obj.optionalForeignMessage);
+    m.optionalNestedMessage = new TestAllTypesProto3.NestedMessage().fromJSON(
+      obj.optionalNestedMessage
+    );
+    m.optionalForeignMessage = new ForeignMessage().fromJSON(
+      obj.optionalForeignMessage
+    );
     m.optionalNestedEnum =
       TestAllTypesProto3.NestedEnum[obj.optionalNestedEnum];
     m.optionalForeignEnum = ForeignEnum[obj.optionalForeignEnum];
@@ -3290,7 +3591,9 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       TestAllTypesProto3.AliasedEnum[obj.optionalAliasedEnum];
     m.optionalStringPiece = obj.optionalStringPiece;
     m.optionalCord = obj.optionalCord;
-    m.recursiveMessage.fromJSON(obj.recursiveMessage);
+    m.recursiveMessage = new TestAllTypesProto3().fromJSON(
+      obj.recursiveMessage
+    );
     m.repeatedInt32 = obj.repeatedInt32;
     m.repeatedInt64 = pjs.util.Long.fromValue(obj.repeatedInt64, false);
     m.repeatedUint32 = obj.repeatedUint32;
@@ -3308,10 +3611,14 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.repeatedBytes, tmpBuffer, 0);
-      m.repeatedBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.repeatedBytes = new pjs.util.Buffer(tmpBuffer);
     }
-    m.repeatedNestedMessage.fromJSON(obj.repeatedNestedMessage);
-    m.repeatedForeignMessage.fromJSON(obj.repeatedForeignMessage);
+    m.repeatedNestedMessage = new TestAllTypesProto3.NestedMessage().fromJSON(
+      obj.repeatedNestedMessage
+    );
+    m.repeatedForeignMessage = new ForeignMessage().fromJSON(
+      obj.repeatedForeignMessage
+    );
     m.repeatedNestedEnum =
       TestAllTypesProto3.NestedEnum[obj.repeatedNestedEnum];
     m.repeatedForeignEnum = ForeignEnum[obj.repeatedForeignEnum];
@@ -3346,32 +3653,86 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     m.unpackedBool = obj.unpackedBool;
     m.unpackedNestedEnum =
       TestAllTypesProto3.NestedEnum[obj.unpackedNestedEnum];
-    m.mapInt32Int32 = obj.mapInt32Int32;
-    m.mapInt64Int64 = obj.mapInt64Int64;
-    m.mapUint32Uint32 = obj.mapUint32Uint32;
-    m.mapUint64Uint64 = obj.mapUint64Uint64;
-    m.mapSint32Sint32 = obj.mapSint32Sint32;
-    m.mapSint64Sint64 = obj.mapSint64Sint64;
-    m.mapFixed32Fixed32 = obj.mapFixed32Fixed32;
-    m.mapFixed64Fixed64 = obj.mapFixed64Fixed64;
-    m.mapSfixed32Sfixed32 = obj.mapSfixed32Sfixed32;
-    m.mapSfixed64Sfixed64 = obj.mapSfixed64Sfixed64;
-    m.mapInt32Float = obj.mapInt32Float;
-    m.mapInt32Double = obj.mapInt32Double;
-    m.mapBoolBool = obj.mapBoolBool;
-    m.mapStringString = obj.mapStringString;
-    m.mapStringBytes = obj.mapStringBytes;
-    m.mapStringNestedMessage = obj.mapStringNestedMessage;
-    m.mapStringForeignMessage = obj.mapStringForeignMessage;
-    m.mapStringNestedEnum = obj.mapStringNestedEnum;
-    m.mapStringForeignEnum = obj.mapStringForeignEnum;
+    m.mapInt32Int32 = runtime.convertRecordToMap(
+      obj.mapInt32Int32,
+      (val) => val
+    );
+    m.mapInt64Int64 = runtime.convertRecordToMap(obj.mapInt64Int64, (val) =>
+      pjs.util.Long.fromValue(val, false)
+    );
+    m.mapUint32Uint32 = runtime.convertRecordToMap(
+      obj.mapUint32Uint32,
+      (val) => val
+    );
+    m.mapUint64Uint64 = runtime.convertRecordToMap(obj.mapUint64Uint64, (val) =>
+      pjs.util.Long.fromValue(val, true)
+    );
+    m.mapSint32Sint32 = runtime.convertRecordToMap(
+      obj.mapSint32Sint32,
+      (val) => val
+    );
+    m.mapSint64Sint64 = runtime.convertRecordToMap(obj.mapSint64Sint64, (val) =>
+      pjs.util.Long.fromValue(val, false)
+    );
+    m.mapFixed32Fixed32 = runtime.convertRecordToMap(
+      obj.mapFixed32Fixed32,
+      (val) => val
+    );
+    m.mapFixed64Fixed64 = runtime.convertRecordToMap(
+      obj.mapFixed64Fixed64,
+      (val) => pjs.util.Long.fromValue(val, true)
+    );
+    m.mapSfixed32Sfixed32 = runtime.convertRecordToMap(
+      obj.mapSfixed32Sfixed32,
+      (val) => val
+    );
+    m.mapSfixed64Sfixed64 = runtime.convertRecordToMap(
+      obj.mapSfixed64Sfixed64,
+      (val) => pjs.util.Long.fromValue(val, false)
+    );
+    m.mapInt32Float = runtime.convertRecordToMap(
+      obj.mapInt32Float,
+      (val) => val
+    );
+    m.mapInt32Double = runtime.convertRecordToMap(
+      obj.mapInt32Double,
+      (val) => val
+    );
+    m.mapBoolBool = runtime.convertRecordToMap(obj.mapBoolBool, (val) => val);
+    m.mapStringString = runtime.convertRecordToMap(
+      obj.mapStringString,
+      (val) => val
+    );
+    m.mapStringBytes = runtime.convertRecordToMap(obj.mapStringBytes, (val) => {
+      const tmpBuffer = [];
+      pjs.util.base64.decode(val, tmpBuffer, 0);
+      return new pjs.util.Buffer(tmpBuffer);
+    });
+    m.mapStringNestedMessage = runtime.convertRecordToMap(
+      obj.mapStringNestedMessage,
+      (val) => new TestAllTypesProto3.NestedMessage().fromJSON(val)
+    );
+    m.mapStringForeignMessage = runtime.convertRecordToMap(
+      obj.mapStringForeignMessage,
+      (val) => new ForeignMessage().fromJSON(val)
+    );
+    m.mapStringNestedEnum = runtime.convertRecordToMap(
+      obj.mapStringNestedEnum,
+      (val) => TestAllTypesProto3.NestedEnum[val]
+    );
+    m.mapStringForeignEnum = runtime.convertRecordToMap(
+      obj.mapStringForeignEnum,
+      (val) => ForeignEnum[val]
+    );
     m.oneofUint32 = obj.oneofUint32;
-    m.oneofNestedMessage.fromJSON(obj.oneofNestedMessage);
+    m.oneofNestedMessage = new TestAllTypesProto3.NestedMessage().fromJSON(
+      obj.oneofNestedMessage
+    );
     m.oneofString = obj.oneofString;
     {
       const tmpBuffer = [];
       pjs.util.base64.decode(obj.oneofBytes, tmpBuffer, 0);
-      m.oneofBytes = pjs.util.Buffer.from(tmpBuffer);
+      m.oneofBytes = new pjs.util.Buffer(tmpBuffer);
     }
     m.oneofBool = obj.oneofBool;
     m.oneofUint64 = pjs.util.Long.fromValue(obj.oneofUint64, true);
@@ -3382,41 +3743,134 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
       google_protobuf_struct_models.google.protobuf.NullValue[
         obj.oneofNullValue
       ];
-    m.optionalBoolWrapper.fromJSON(obj.optionalBoolWrapper);
-    m.optionalInt32Wrapper.fromJSON(obj.optionalInt32Wrapper);
-    m.optionalInt64Wrapper.fromJSON(obj.optionalInt64Wrapper);
-    m.optionalUint32Wrapper.fromJSON(obj.optionalUint32Wrapper);
-    m.optionalUint64Wrapper.fromJSON(obj.optionalUint64Wrapper);
-    m.optionalFloatWrapper.fromJSON(obj.optionalFloatWrapper);
-    m.optionalDoubleWrapper.fromJSON(obj.optionalDoubleWrapper);
-    m.optionalStringWrapper.fromJSON(obj.optionalStringWrapper);
-    m.optionalBytesWrapper.fromJSON(obj.optionalBytesWrapper);
-    m.repeatedBoolWrapper.fromJSON(obj.repeatedBoolWrapper);
-    m.repeatedInt32Wrapper.fromJSON(obj.repeatedInt32Wrapper);
-    m.repeatedInt64Wrapper.fromJSON(obj.repeatedInt64Wrapper);
-    m.repeatedUint32Wrapper.fromJSON(obj.repeatedUint32Wrapper);
-    m.repeatedUint64Wrapper.fromJSON(obj.repeatedUint64Wrapper);
-    m.repeatedFloatWrapper.fromJSON(obj.repeatedFloatWrapper);
-    m.repeatedDoubleWrapper.fromJSON(obj.repeatedDoubleWrapper);
-    m.repeatedStringWrapper.fromJSON(obj.repeatedStringWrapper);
-    m.repeatedBytesWrapper.fromJSON(obj.repeatedBytesWrapper);
-    m.optionalDuration.fromJSON(obj.optionalDuration);
-    m.optionalTimestamp.fromJSON(obj.optionalTimestamp);
-    m.optionalFieldMask.fromJSON(obj.optionalFieldMask);
-    m.optionalStruct.fromJSON(obj.optionalStruct);
-    m.optionalAny.fromJSON(obj.optionalAny);
-    m.optionalValue.fromJSON(obj.optionalValue);
+    m.optionalBoolWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.BoolValue().fromJSON(
+        obj.optionalBoolWrapper
+      );
+    m.optionalInt32Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.Int32Value().fromJSON(
+        obj.optionalInt32Wrapper
+      );
+    m.optionalInt64Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.Int64Value().fromJSON(
+        obj.optionalInt64Wrapper
+      );
+    m.optionalUint32Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.UInt32Value().fromJSON(
+        obj.optionalUint32Wrapper
+      );
+    m.optionalUint64Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.UInt64Value().fromJSON(
+        obj.optionalUint64Wrapper
+      );
+    m.optionalFloatWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.FloatValue().fromJSON(
+        obj.optionalFloatWrapper
+      );
+    m.optionalDoubleWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.DoubleValue().fromJSON(
+        obj.optionalDoubleWrapper
+      );
+    m.optionalStringWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.StringValue().fromJSON(
+        obj.optionalStringWrapper
+      );
+    m.optionalBytesWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.BytesValue().fromJSON(
+        obj.optionalBytesWrapper
+      );
+    m.repeatedBoolWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.BoolValue().fromJSON(
+        obj.repeatedBoolWrapper
+      );
+    m.repeatedInt32Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.Int32Value().fromJSON(
+        obj.repeatedInt32Wrapper
+      );
+    m.repeatedInt64Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.Int64Value().fromJSON(
+        obj.repeatedInt64Wrapper
+      );
+    m.repeatedUint32Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.UInt32Value().fromJSON(
+        obj.repeatedUint32Wrapper
+      );
+    m.repeatedUint64Wrapper =
+      new google_protobuf_wrappers_models.google.protobuf.UInt64Value().fromJSON(
+        obj.repeatedUint64Wrapper
+      );
+    m.repeatedFloatWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.FloatValue().fromJSON(
+        obj.repeatedFloatWrapper
+      );
+    m.repeatedDoubleWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.DoubleValue().fromJSON(
+        obj.repeatedDoubleWrapper
+      );
+    m.repeatedStringWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.StringValue().fromJSON(
+        obj.repeatedStringWrapper
+      );
+    m.repeatedBytesWrapper =
+      new google_protobuf_wrappers_models.google.protobuf.BytesValue().fromJSON(
+        obj.repeatedBytesWrapper
+      );
+    m.optionalDuration =
+      new google_protobuf_duration_models.google.protobuf.Duration().fromJSON(
+        obj.optionalDuration
+      );
+    m.optionalTimestamp =
+      new google_protobuf_timestamp_models.google.protobuf.Timestamp().fromJSON(
+        obj.optionalTimestamp
+      );
+    m.optionalFieldMask =
+      new google_protobuf_field_mask_models.google.protobuf.FieldMask().fromJSON(
+        obj.optionalFieldMask
+      );
+    m.optionalStruct =
+      new google_protobuf_struct_models.google.protobuf.Struct().fromJSON(
+        obj.optionalStruct
+      );
+    m.optionalAny =
+      new google_protobuf_any_models.google.protobuf.Any().fromJSON(
+        obj.optionalAny
+      );
+    m.optionalValue =
+      new google_protobuf_struct_models.google.protobuf.Value().fromJSON(
+        obj.optionalValue
+      );
     m.optionalNullValue =
       google_protobuf_struct_models.google.protobuf.NullValue[
         obj.optionalNullValue
       ];
-    m.repeatedDuration.fromJSON(obj.repeatedDuration);
-    m.repeatedTimestamp.fromJSON(obj.repeatedTimestamp);
-    m.repeatedFieldmask.fromJSON(obj.repeatedFieldmask);
-    m.repeatedStruct.fromJSON(obj.repeatedStruct);
-    m.repeatedAny.fromJSON(obj.repeatedAny);
-    m.repeatedValue.fromJSON(obj.repeatedValue);
-    m.repeatedListValue.fromJSON(obj.repeatedListValue);
+    m.repeatedDuration =
+      new google_protobuf_duration_models.google.protobuf.Duration().fromJSON(
+        obj.repeatedDuration
+      );
+    m.repeatedTimestamp =
+      new google_protobuf_timestamp_models.google.protobuf.Timestamp().fromJSON(
+        obj.repeatedTimestamp
+      );
+    m.repeatedFieldmask =
+      new google_protobuf_field_mask_models.google.protobuf.FieldMask().fromJSON(
+        obj.repeatedFieldmask
+      );
+    m.repeatedStruct =
+      new google_protobuf_struct_models.google.protobuf.Struct().fromJSON(
+        obj.repeatedStruct
+      );
+    m.repeatedAny =
+      new google_protobuf_any_models.google.protobuf.Any().fromJSON(
+        obj.repeatedAny
+      );
+    m.repeatedValue =
+      new google_protobuf_struct_models.google.protobuf.Value().fromJSON(
+        obj.repeatedValue
+      );
+    m.repeatedListValue =
+      new google_protobuf_struct_models.google.protobuf.ListValue().fromJSON(
+        obj.repeatedListValue
+      );
     m.fieldname1 = obj.fieldname1;
     m.fieldName2 = obj.fieldName2;
     m.FieldName3 = obj.FieldName3;
@@ -3437,6 +3891,25 @@ export class TestAllTypesProto3 implements ITestAllTypesProto3 {
     m.fieldName18_ = obj.fieldName18_;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestAllTypesProto3.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestAllTypesProto3 {
+    const r = new pjs.Reader(b);
+    TestAllTypesProto3.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestAllTypesProto3JSON {
+    return TestAllTypesProto3.toJSON(this);
+  }
+
+  fromJSON(obj: TestAllTypesProto3JSON): TestAllTypesProto3 {
+    return TestAllTypesProto3.fromJSON(this, obj);
   }
 
   clone(): TestAllTypesProto3 {
@@ -3461,17 +3934,12 @@ export namespace TestAllTypesProto3 {
     bAz = 2,
   }
 
-  export interface INestedMessageObj {
+  export interface NestedMessageJSON {
     a: number;
-    corecursive: TestAllTypesProto3;
+    corecursive: TestAllTypesProto3JSON;
   }
 
-  export interface INestedMessage {
-    a: number;
-    corecursive: TestAllTypesProto3;
-  }
-
-  export class NestedMessage implements INestedMessage {
+  export class NestedMessage {
     a: number = 0;
     corecursive: TestAllTypesProto3 = new TestAllTypesProto3();
 
@@ -3481,7 +3949,7 @@ export namespace TestAllTypesProto3 {
       return NestedMessage.fields;
     }
 
-    constructor(obj?: Partial<INestedMessage>) {
+    constructor(obj?: NestedMessage) {
       if (!obj) return;
 
       if (obj.a !== undefined) {
@@ -3492,10 +3960,7 @@ export namespace TestAllTypesProto3 {
       }
     }
 
-    public static encode(
-      m: INestedMessage,
-      w: pjs.Writer = pjs.Writer.create()
-    ): Uint8Array {
+    public static encode(m: NestedMessage, w: pjs.Writer): pjs.Writer {
       // int32 a = 1
       if (m.a !== 0) {
         w.uint32(8);
@@ -3505,16 +3970,18 @@ export namespace TestAllTypesProto3 {
       // TestAllTypesProto3 corecursive = 2
       if (m.corecursive !== new TestAllTypesProto3()) {
         w.uint32(18);
-        w.TestAllTypesProto3(m.corecursive);
+        TestAllTypesProto3.encode(m.corecursive, w);
       }
 
-      return w.finish();
+      return w;
     }
 
-    public static decode(b: Uint8Array): NestedMessage {
-      const m = new NestedMessage();
-      const r = pjs.Reader.create(b);
-      while (r.pos < r.len) {
+    public static decode(
+      m: NestedMessage,
+      r: pjs.Reader,
+      l: number
+    ): pjs.Reader {
+      while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
           // int32 a = 1
@@ -3524,28 +3991,48 @@ export namespace TestAllTypesProto3 {
 
           // TestAllTypesProto3 corecursive = 2
           case 18:
-            m.corecursive = r.TestAllTypesProto3();
+            m.corecursive = TestAllTypesProto3.decode(r, r.uint32());
             continue;
         }
       }
 
-      return m;
+      return r;
     }
 
-    public static toJSON(m: INestedMessage): INestedMessageObj {
+    public static toJSON(m: NestedMessage): NestedMessageJSON {
       return {
         a: m.a,
         corecursive: m.corecursive.toJSON(),
       };
     }
 
-    public static fromJSON(obj: INestedMessageObj): INestedMessage {
-      const m = new NestedMessage();
-
+    public static fromJSON(
+      m: NestedMessage,
+      obj: NestedMessageJSON
+    ): NestedMessage {
       m.a = obj.a;
-      m.corecursive.fromJSON(obj.corecursive);
+      m.corecursive = new TestAllTypesProto3().fromJSON(obj.corecursive);
 
       return m;
+    }
+
+    serialize(): Uint8Array | Buffer {
+      const w = pjs.Writer.create();
+      return NestedMessage.encode(this, w).finish();
+    }
+
+    deserialize(b: Uint8Array | Buffer): NestedMessage {
+      const r = new pjs.Reader(b);
+      NestedMessage.decode(this, r, r.len);
+      return this;
+    }
+
+    toJSON(): NestedMessageJSON {
+      return NestedMessage.toJSON(this);
+    }
+
+    fromJSON(obj: NestedMessageJSON): NestedMessage {
+      return NestedMessage.fromJSON(this, obj);
     }
 
     clone(): NestedMessage {
@@ -3560,15 +4047,11 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 2,
 }
 
-export interface IForeignMessageObj {
+export interface ForeignMessageJSON {
   c: number;
 }
 
-export interface IForeignMessage {
-  c: number;
-}
-
-export class ForeignMessage implements IForeignMessage {
+export class ForeignMessage {
   c: number = 0;
 
   public static fields = ["c"];
@@ -3577,7 +4060,7 @@ export class ForeignMessage implements IForeignMessage {
     return ForeignMessage.fields;
   }
 
-  constructor(obj?: Partial<IForeignMessage>) {
+  constructor(obj?: ForeignMessage) {
     if (!obj) return;
 
     if (obj.c !== undefined) {
@@ -3585,23 +4068,22 @@ export class ForeignMessage implements IForeignMessage {
     }
   }
 
-  public static encode(
-    m: IForeignMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: ForeignMessage, w: pjs.Writer): pjs.Writer {
     // int32 c = 1
     if (m.c !== 0) {
       w.uint32(8);
       w.int32(m.c);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): ForeignMessage {
-    const m = new ForeignMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: ForeignMessage,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 c = 1
@@ -3611,21 +4093,41 @@ export class ForeignMessage implements IForeignMessage {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IForeignMessage): IForeignMessageObj {
+  public static toJSON(m: ForeignMessage): ForeignMessageJSON {
     return {
       c: m.c,
     };
   }
 
-  public static fromJSON(obj: IForeignMessageObj): IForeignMessage {
-    const m = new ForeignMessage();
-
+  public static fromJSON(
+    m: ForeignMessage,
+    obj: ForeignMessageJSON
+  ): ForeignMessage {
     m.c = obj.c;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return ForeignMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): ForeignMessage {
+    const r = new pjs.Reader(b);
+    ForeignMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): ForeignMessageJSON {
+    return ForeignMessage.toJSON(this);
+  }
+
+  fromJSON(obj: ForeignMessageJSON): ForeignMessage {
+    return ForeignMessage.fromJSON(this, obj);
   }
 
   clone(): ForeignMessage {
@@ -3639,48 +4141,65 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 2,
 }
 
-export interface INullHypothesisProto3Obj {}
+export interface NullHypothesisProto3JSON {}
 
-export interface INullHypothesisProto3 {}
-
-export class NullHypothesisProto3 implements INullHypothesisProto3 {
+export class NullHypothesisProto3 {
   public static fields = [];
 
   public get fields() {
     return NullHypothesisProto3.fields;
   }
 
-  constructor(obj?: Partial<INullHypothesisProto3>) {
+  constructor(obj?: NullHypothesisProto3) {
     if (!obj) return;
   }
 
-  public static encode(
-    m: INullHypothesisProto3,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
-    return w.finish();
+  public static encode(m: NullHypothesisProto3, w: pjs.Writer): pjs.Writer {
+    return w;
   }
 
-  public static decode(b: Uint8Array): NullHypothesisProto3 {
-    const m = new NullHypothesisProto3();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: NullHypothesisProto3,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: INullHypothesisProto3): INullHypothesisProto3Obj {
+  public static toJSON(m: NullHypothesisProto3): NullHypothesisProto3JSON {
     return {};
   }
 
-  public static fromJSON(obj: INullHypothesisProto3Obj): INullHypothesisProto3 {
-    const m = new NullHypothesisProto3();
-
+  public static fromJSON(
+    m: NullHypothesisProto3,
+    obj: NullHypothesisProto3JSON
+  ): NullHypothesisProto3 {
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return NullHypothesisProto3.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): NullHypothesisProto3 {
+    const r = new pjs.Reader(b);
+    NullHypothesisProto3.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): NullHypothesisProto3JSON {
+    return NullHypothesisProto3.toJSON(this);
+  }
+
+  fromJSON(obj: NullHypothesisProto3JSON): NullHypothesisProto3 {
+    return NullHypothesisProto3.fromJSON(this, obj);
   }
 
   clone(): NullHypothesisProto3 {
@@ -3694,48 +4213,65 @@ export enum ForeignEnum {
   FOREIGN_BAZ = 2,
 }
 
-export interface IEnumOnlyProto3Obj {}
+export interface EnumOnlyProto3JSON {}
 
-export interface IEnumOnlyProto3 {}
-
-export class EnumOnlyProto3 implements IEnumOnlyProto3 {
+export class EnumOnlyProto3 {
   public static fields = [];
 
   public get fields() {
     return EnumOnlyProto3.fields;
   }
 
-  constructor(obj?: Partial<IEnumOnlyProto3>) {
+  constructor(obj?: EnumOnlyProto3) {
     if (!obj) return;
   }
 
-  public static encode(
-    m: IEnumOnlyProto3,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
-    return w.finish();
+  public static encode(m: EnumOnlyProto3, w: pjs.Writer): pjs.Writer {
+    return w;
   }
 
-  public static decode(b: Uint8Array): EnumOnlyProto3 {
-    const m = new EnumOnlyProto3();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: EnumOnlyProto3,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IEnumOnlyProto3): IEnumOnlyProto3Obj {
+  public static toJSON(m: EnumOnlyProto3): EnumOnlyProto3JSON {
     return {};
   }
 
-  public static fromJSON(obj: IEnumOnlyProto3Obj): IEnumOnlyProto3 {
-    const m = new EnumOnlyProto3();
-
+  public static fromJSON(
+    m: EnumOnlyProto3,
+    obj: EnumOnlyProto3JSON
+  ): EnumOnlyProto3 {
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return EnumOnlyProto3.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): EnumOnlyProto3 {
+    const r = new pjs.Reader(b);
+    EnumOnlyProto3.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): EnumOnlyProto3JSON {
+    return EnumOnlyProto3.toJSON(this);
+  }
+
+  fromJSON(obj: EnumOnlyProto3JSON): EnumOnlyProto3 {
+    return EnumOnlyProto3.fromJSON(this, obj);
   }
 
   clone(): EnumOnlyProto3 {

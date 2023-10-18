@@ -17,7 +17,7 @@ export enum TestEnum {
   BAZ = 3,
 }
 
-export interface IEnumMessageJSON {
+export interface EnumMessageJSON {
   fEnum: string;
 }
 
@@ -62,13 +62,13 @@ export class EnumMessage {
     return r;
   }
 
-  public static toJSON(m: EnumMessage): IEnumMessageJSON {
+  public static toJSON(m: EnumMessage): EnumMessageJSON {
     return {
       fEnum: TestEnum[m.fEnum],
     };
   }
 
-  public static fromJSON(m: EnumMessage, obj: IEnumMessageJSON): EnumMessage {
+  public static fromJSON(m: EnumMessage, obj: EnumMessageJSON): EnumMessage {
     m.fEnum = TestEnum[obj.fEnum];
 
     return m;
@@ -85,11 +85,11 @@ export class EnumMessage {
     return this;
   }
 
-  toJSON(): IEnumMessageJSON {
+  toJSON(): EnumMessageJSON {
     return EnumMessage.toJSON(this);
   }
 
-  fromJSON(obj: IEnumMessageJSON): EnumMessage {
+  fromJSON(obj: EnumMessageJSON): EnumMessage {
     return EnumMessage.fromJSON(this, obj);
   }
 

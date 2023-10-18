@@ -14,17 +14,14 @@ import * as unittest_import_models from "unittest_import_models";
 import * as unittest_import_public_models from "unittest_import_public_models";
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
-export interface ITestLiteImportsNonliteObj {
-  message: TestAllTypes;
+export interface TestLiteImportsNonliteJSON {
+  message: unittest_proto3_models.proto3_unittest.TestAllTypesJSON;
 }
 
-export interface ITestLiteImportsNonlite {
-  message: TestAllTypes;
-}
-
-export class TestLiteImportsNonlite implements ITestLiteImportsNonlite {
-  message: TestAllTypes =
+export class TestLiteImportsNonlite {
+  message: unittest_proto3_models.proto3_unittest.TestAllTypes =
     new unittest_proto3_models.proto3_unittest.TestAllTypes();
 
   public static fields = ["message"];
@@ -33,7 +30,7 @@ export class TestLiteImportsNonlite implements ITestLiteImportsNonlite {
     return TestLiteImportsNonlite.fields;
   }
 
-  constructor(obj?: Partial<ITestLiteImportsNonlite>) {
+  constructor(obj?: TestLiteImportsNonlite) {
     if (!obj) return;
 
     if (obj.message !== undefined) {
@@ -41,51 +38,75 @@ export class TestLiteImportsNonlite implements ITestLiteImportsNonlite {
     }
   }
 
-  public static encode(
-    m: ITestLiteImportsNonlite,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: TestLiteImportsNonlite, w: pjs.Writer): pjs.Writer {
     // TestAllTypes message = 1
     if (
       m.message !== new unittest_proto3_models.proto3_unittest.TestAllTypes()
     ) {
       w.uint32(10);
-      w.TestAllTypes(m.message);
+      unittest_proto3_models.proto3_unittest.TestAllTypes.encode(m.message, w);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): TestLiteImportsNonlite {
-    const m = new TestLiteImportsNonlite();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: TestLiteImportsNonlite,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // TestAllTypes message = 1
         case 10:
-          m.message = r.TestAllTypes();
+          m.message =
+            unittest_proto3_models.proto3_unittest.TestAllTypes.decode(
+              r,
+              r.uint32()
+            );
           continue;
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: ITestLiteImportsNonlite): ITestLiteImportsNonliteObj {
+  public static toJSON(m: TestLiteImportsNonlite): TestLiteImportsNonliteJSON {
     return {
       message: m.message.toJSON(),
     };
   }
 
   public static fromJSON(
-    obj: ITestLiteImportsNonliteObj
-  ): ITestLiteImportsNonlite {
-    const m = new TestLiteImportsNonlite();
-
-    m.message.fromJSON(obj.message);
+    m: TestLiteImportsNonlite,
+    obj: TestLiteImportsNonliteJSON
+  ): TestLiteImportsNonlite {
+    m.message =
+      new unittest_proto3_models.proto3_unittest.TestAllTypes().fromJSON(
+        obj.message
+      );
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return TestLiteImportsNonlite.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): TestLiteImportsNonlite {
+    const r = new pjs.Reader(b);
+    TestLiteImportsNonlite.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): TestLiteImportsNonliteJSON {
+    return TestLiteImportsNonlite.toJSON(this);
+  }
+
+  fromJSON(obj: TestLiteImportsNonliteJSON): TestLiteImportsNonlite {
+    return TestLiteImportsNonlite.fromJSON(this, obj);
   }
 
   clone(): TestLiteImportsNonlite {

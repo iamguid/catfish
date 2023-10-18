@@ -8,3 +8,4 @@
 // file: unittest_empty.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";

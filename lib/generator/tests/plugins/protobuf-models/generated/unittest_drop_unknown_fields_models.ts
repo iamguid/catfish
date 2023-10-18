@@ -8,18 +8,14 @@
 // file: unittest_drop_unknown_fields.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
-export interface IFooObj {
+export interface FooJSON {
   int32Value: number;
-  enumValue: number;
+  enumValue: string;
 }
 
-export interface IFoo {
-  int32Value: number;
-  enumValue: number;
-}
-
-export class Foo implements IFoo {
+export class Foo {
   int32Value: number = 0;
   enumValue: number = Foo.NestedEnum.FOO;
 
@@ -29,7 +25,7 @@ export class Foo implements IFoo {
     return Foo.fields;
   }
 
-  constructor(obj?: Partial<IFoo>) {
+  constructor(obj?: Foo) {
     if (!obj) return;
 
     if (obj.int32Value !== undefined) {
@@ -40,10 +36,7 @@ export class Foo implements IFoo {
     }
   }
 
-  public static encode(
-    m: IFoo,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: Foo, w: pjs.Writer): pjs.Writer {
     // int32 int32_value = 1
     if (m.int32Value !== 0) {
       w.uint32(8);
@@ -56,13 +49,11 @@ export class Foo implements IFoo {
       w.uint32(m.enumValue);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): Foo {
-    const m = new Foo();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: Foo, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 int32_value = 1
@@ -77,23 +68,40 @@ export class Foo implements IFoo {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IFoo): IFooObj {
+  public static toJSON(m: Foo): FooJSON {
     return {
       int32Value: m.int32Value,
       enumValue: Foo.NestedEnum[m.enumValue],
     };
   }
 
-  public static fromJSON(obj: IFooObj): IFoo {
-    const m = new Foo();
-
+  public static fromJSON(m: Foo, obj: FooJSON): Foo {
     m.int32Value = obj.int32Value;
     m.enumValue = Foo.NestedEnum[obj.enumValue];
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return Foo.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): Foo {
+    const r = new pjs.Reader(b);
+    Foo.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): FooJSON {
+    return Foo.toJSON(this);
+  }
+
+  fromJSON(obj: FooJSON): Foo {
+    return Foo.fromJSON(this, obj);
   }
 
   clone(): Foo {
@@ -103,19 +111,13 @@ export class Foo implements IFoo {
 
 export namespace Foo {}
 
-export interface IFooWithExtraFieldsObj {
+export interface FooWithExtraFieldsJSON {
   int32Value: number;
-  enumValue: number;
+  enumValue: string;
   extraInt32Value: number;
 }
 
-export interface IFooWithExtraFields {
-  int32Value: number;
-  enumValue: number;
-  extraInt32Value: number;
-}
-
-export class FooWithExtraFields implements IFooWithExtraFields {
+export class FooWithExtraFields {
   int32Value: number = 0;
   enumValue: number = FooWithExtraFields.NestedEnum.FOO;
   extraInt32Value: number = 0;
@@ -126,7 +128,7 @@ export class FooWithExtraFields implements IFooWithExtraFields {
     return FooWithExtraFields.fields;
   }
 
-  constructor(obj?: Partial<IFooWithExtraFields>) {
+  constructor(obj?: FooWithExtraFields) {
     if (!obj) return;
 
     if (obj.int32Value !== undefined) {
@@ -140,10 +142,7 @@ export class FooWithExtraFields implements IFooWithExtraFields {
     }
   }
 
-  public static encode(
-    m: IFooWithExtraFields,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: FooWithExtraFields, w: pjs.Writer): pjs.Writer {
     // int32 int32_value = 1
     if (m.int32Value !== 0) {
       w.uint32(8);
@@ -162,13 +161,15 @@ export class FooWithExtraFields implements IFooWithExtraFields {
       w.int32(m.extraInt32Value);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): FooWithExtraFields {
-    const m = new FooWithExtraFields();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(
+    m: FooWithExtraFields,
+    r: pjs.Reader,
+    l: number
+  ): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 int32_value = 1
@@ -188,10 +189,10 @@ export class FooWithExtraFields implements IFooWithExtraFields {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IFooWithExtraFields): IFooWithExtraFieldsObj {
+  public static toJSON(m: FooWithExtraFields): FooWithExtraFieldsJSON {
     return {
       int32Value: m.int32Value,
       enumValue: FooWithExtraFields.NestedEnum[m.enumValue],
@@ -199,14 +200,34 @@ export class FooWithExtraFields implements IFooWithExtraFields {
     };
   }
 
-  public static fromJSON(obj: IFooWithExtraFieldsObj): IFooWithExtraFields {
-    const m = new FooWithExtraFields();
-
+  public static fromJSON(
+    m: FooWithExtraFields,
+    obj: FooWithExtraFieldsJSON
+  ): FooWithExtraFields {
     m.int32Value = obj.int32Value;
     m.enumValue = FooWithExtraFields.NestedEnum[obj.enumValue];
     m.extraInt32Value = obj.extraInt32Value;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return FooWithExtraFields.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): FooWithExtraFields {
+    const r = new pjs.Reader(b);
+    FooWithExtraFields.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): FooWithExtraFieldsJSON {
+    return FooWithExtraFields.toJSON(this);
+  }
+
+  fromJSON(obj: FooWithExtraFieldsJSON): FooWithExtraFields {
+    return FooWithExtraFields.fromJSON(this, obj);
   }
 
   clone(): FooWithExtraFields {

@@ -31,7 +31,7 @@ describe("Map value types", () => {
     const pjsScalarTypes = loadProtoFileByProtobufjs(protoFilePath, 'map_types.MapTypes', EXPECTED_MESSAGE_OBJ);
 
     beforeAll(() => {
-        generateModels(__dirname);
+        // generateModels(__dirname);
     })
 
     it("initial", () => {

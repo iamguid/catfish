@@ -10,6 +10,7 @@
 import * as unittest_import_public_models from "unittest_import_public_models";
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";
 
 export enum ImportEnum {
   IMPORT_FOO = 7,
@@ -23,15 +24,11 @@ export enum ImportEnumForMap {
   BAR = 2,
 }
 
-export interface IImportMessageObj {
+export interface ImportMessageJSON {
   d: number;
 }
 
-export interface IImportMessage {
-  d: number;
-}
-
-export class ImportMessage implements IImportMessage {
+export class ImportMessage {
   d: number = 0;
 
   public static fields = ["d"];
@@ -40,7 +37,7 @@ export class ImportMessage implements IImportMessage {
     return ImportMessage.fields;
   }
 
-  constructor(obj?: Partial<IImportMessage>) {
+  constructor(obj?: ImportMessage) {
     if (!obj) return;
 
     if (obj.d !== undefined) {
@@ -48,23 +45,18 @@ export class ImportMessage implements IImportMessage {
     }
   }
 
-  public static encode(
-    m: IImportMessage,
-    w: pjs.Writer = pjs.Writer.create()
-  ): Uint8Array {
+  public static encode(m: ImportMessage, w: pjs.Writer): pjs.Writer {
     // int32 d = 1
     if (m.d !== 0) {
       w.uint32(8);
       w.int32(m.d);
     }
 
-    return w.finish();
+    return w;
   }
 
-  public static decode(b: Uint8Array): ImportMessage {
-    const m = new ImportMessage();
-    const r = pjs.Reader.create(b);
-    while (r.pos < r.len) {
+  public static decode(m: ImportMessage, r: pjs.Reader, l: number): pjs.Reader {
+    while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // int32 d = 1
@@ -74,21 +66,41 @@ export class ImportMessage implements IImportMessage {
       }
     }
 
-    return m;
+    return r;
   }
 
-  public static toJSON(m: IImportMessage): IImportMessageObj {
+  public static toJSON(m: ImportMessage): ImportMessageJSON {
     return {
       d: m.d,
     };
   }
 
-  public static fromJSON(obj: IImportMessageObj): IImportMessage {
-    const m = new ImportMessage();
-
+  public static fromJSON(
+    m: ImportMessage,
+    obj: ImportMessageJSON
+  ): ImportMessage {
     m.d = obj.d;
 
     return m;
+  }
+
+  serialize(): Uint8Array | Buffer {
+    const w = pjs.Writer.create();
+    return ImportMessage.encode(this, w).finish();
+  }
+
+  deserialize(b: Uint8Array | Buffer): ImportMessage {
+    const r = new pjs.Reader(b);
+    ImportMessage.decode(this, r, r.len);
+    return this;
+  }
+
+  toJSON(): ImportMessageJSON {
+    return ImportMessage.toJSON(this);
+  }
+
+  fromJSON(obj: ImportMessageJSON): ImportMessage {
+    return ImportMessage.fromJSON(this, obj);
   }
 
   clone(): ImportMessage {

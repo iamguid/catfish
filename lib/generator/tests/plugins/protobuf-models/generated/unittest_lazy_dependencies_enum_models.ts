@@ -8,3 +8,4 @@
 // file: unittest_lazy_dependencies_enum.proto
 
 import * as pjs from "protobufjs/minimal";
+import * as runtime from "@catfish/runtime";

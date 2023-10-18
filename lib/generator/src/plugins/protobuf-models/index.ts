@@ -1,10 +1,12 @@
-import { BaseDescriptor, EnumDescriptor, FieldDescriptor, FileDescriptor, MessageDescriptor } from '../../../../parser';
+import { MapField } from 'protobufjs';
+import { BaseDescriptor, EnumDescriptor, MessageFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor } from '../../../../parser';
 import { Context, Import } from '../../Context';
 import { Plugin, PluginOutputFile } from '../../Plugin';
 import { filePathToPseudoNamespace, lowerCaseFirst, replaceProtoSuffix, snakeToCamel } from '../../utils';
 import { templates } from './templates';
-import { EnumCtx, EnumFieldCtx, MapTypeCtx, MessageCtx, MessageFieldCtx, FileCtx, TypeInfoCtx } from './types';
-import { getBasicWireType, getJsonTypeByProtoType as getJsonTypeByTypeInfo, getTsTypeByProtoType as getTsTypeByTypeInfo, getTypeMarkerByProtoType as getTypeMarkerByTypeInfo } from './utils';
+import { getWireTypeByTypeInfo, getJsonTypeByTypeInfo as getJsonTypeByTypeInfo, getTsTypeByTypeInfo as getTsTypeByTypeInfo, getTypeMarkerTypeInfo as getTypeMarkerByTypeInfo } from './utils';
+import { CtxEnum, CtxEnumField, CtxFile, CtxMapField, CtxMessage, CtxMessageField, CtxOneof } from './reflection';
+import { MapFieldDescriptor } from '@catfish/parser/src/reflection/MapFieldDescriptor';
 
 const plugin: Plugin<void> = (context, projectOptions) => {
     const result: PluginOutputFile[] = []
@@ -19,70 +21,61 @@ const plugin: Plugin<void> = (context, projectOptions) => {
     return { files: result }
 }
 
-const buildFileContext = (context: Context, descriptor: FileDescriptor): FileCtx => {
-    return {
-        context,
-        descriptor: descriptor,
-        imports: getImports(context, descriptor),
-        enums: descriptor.enums.map(enm => buildEnumContext(enm)),
-        messges: descriptor.messages.map(msg => buildMessageContext(context, descriptor, msg)),
-    }
+
+const buildFileContext = (ctx: Context, file: FileDescriptor): CtxFile => {
+    return new CtxFile(
+        ctx,
+        file,
+        getImports(ctx, file),
+        file.enums.map(enm => buildEnumCtx(ctx, file, enm)),
+        file.messages.map(msg => buildMessageCtx(ctx, msg)),
+    )
 }
 
-const getImports = (context: Context, descriptor: FileDescriptor): Import[] => {
-    const imports: Import[] = [];
-    const dependencies = context.getDependencies(descriptor, true);
-
-    for (const dependency of dependencies) {
-        const filePath = context.getFilePathByDescriptor(dependency);
-        const modelsFilePath = replaceProtoSuffix(filePath, 'models');
-        const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
-
-        imports.push({
-            path: modelsFilePath,
-            name: modelsFileImportName
-        })
-    }
-
-    return imports;
+const buildEnumCtx = (ctx: Context, file: FileDescriptor, desc: EnumDescriptor) => {
+    return new CtxEnum(ctx, desc, desc.fields.map(fld => new CtxEnumField(ctx, fld)));
 }
 
-const buildEnumContext = (enm: EnumDescriptor): EnumCtx => {
-    const enumFields: EnumFieldCtx[] = enm.fields.map(field => {
-        return {
-            fieldName: field.fieldName,
-            fieldValue: field.fieldValue,
-        }
-    })
+const buildMessageCtx = (ctx: Context, file: FileDescriptor, desc: MessageDescriptor): CtxMessage => {
+    const fileds = desc.fields.map(field => buildFieldCtx(ctx, file, field))
+    const nestedEnums = desc.enums.map(enm => buildEnumCtx(ctx, file, enm));
+    const nestedMessages = desc.messages.map(msg => buildMessageCtx(ctx, file, msg));
 
-    return {
-        name: enm.name,
-        fields: enumFields,
-    }
+    return new CtxMessage(
+        ctx,
+        desc,
+        fileds,
+        nestedEnums,
+        nestedMessages,
+    )
 }
 
-const buildMessageContext = (context: Context, descriptor: FileDescriptor, message: MessageDescriptor): MessageCtx => {
-    const fileds = message.fields.map(field => buildMessageFieldContext(context, descriptor, field))
-    const nestedEnums = message.enums.map(enm => buildEnumContext(enm));
-    const nestedMessages = message.messages.map(msg => buildMessageContext(context, descriptor, msg));
-
-    return {
-        messageIndex: message.index!,
-        modelClassName: message.name,
-        jsonIfaceName: `${message.name}JSON`,
-        pivot: getPivot(message),
-        enums: nestedEnums,
-        mesages: nestedMessages,
-        fields: fileds,
+const buildFieldCtx = (ctx: Context, file: FileDescriptor, desc: BaseDescriptor) => {
+    if (desc instanceof MessageFieldDescriptor) {
+        return new CtxMessageField(ctx, desc)
     }
+
+    if (desc instanceof OneofDescriptor) {
+        return new CtxOneof(ctx, desc)
+    }
+
+    if (desc instanceof MapFieldDescriptor) {
+        return new CtxMapField(ctx, desc)
+    }
+
+    throw new Error("Invalid descriptor")
 }
 
-const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, field: FieldDescriptor): MessageFieldCtx => {
-    let mapType: MapTypeCtx | undefined = undefined;
+const buildMessageFieldCtx = (context: Context, descriptor: FileDescriptor, field: BaseDescriptor): PrimitiveFieldCtx => {
+    if (field instanceof MapField) {
+        retrun 
+    }
+
+    let mapType: MapFieldCtx | undefined = undefined;
 
     if (field.map) {
-        const keyTypeInfo = getTypeInfoCtx(context, descriptor, field.map.keyType);
-        const valueTypeInfo = getTypeInfoCtx(context, descriptor, field.map.valueType);
+        const keyTypeInfo = getTypeInfoCtx(context, descriptor, field.map.keyType, 1);
+        const valueTypeInfo = getTypeInfoCtx(context, descriptor, field.map.valueType, 2);
 
         mapType = {
             keyTypeInfo: keyTypeInfo,
@@ -90,15 +83,13 @@ const buildMessageFieldContext = (context: Context, descriptor: FileDescriptor, 
         }
     }
 
-    const fieldTypeInfo = field.type ? getTypeInfoCtx(context, descriptor, field.type) : null;
-    const fieldTag = ((field.fieldNumber << 3) | (fieldTypeInfo ? getBasicWireType(fieldTypeInfo!) : 2)) >>> 0;
+    const fieldTypeInfo = field.type ? getTypeInfoCtx(context, descriptor, field.type, field.fieldNumber) : null;
 
     return {
         rawName: field.name,
-        fieldName: snakeToCamel(lowerCaseFirst(field.name)),
-        fieldNumber: field.fieldNumber,
-        fieldTag,
-        fieldTypeInfo,
+        name: snakeToCamel(lowerCaseFirst(field.name)),
+        number: field.fieldNumber,
+        typeInfo: fieldTypeInfo,
         isMap: Boolean(field.map),
         isOneof: Boolean(field.oneofName),
         isRepeated: field.repeated,
@@ -121,12 +112,13 @@ export const getFullImportPath = (context: Context, file: FileDescriptor, descri
     }
 }
 
-export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor, type: string): TypeInfoCtx => {
+export const getTypeInfoCtx = (context: Context, fileDescriptor: FileDescriptor, type: string, fieldNumber: number): TypeInfoCtx => {
     const typeInfo = context.getTypeInfo(fileDescriptor, type);
     const fullImportPath = typeInfo.descriptor ? getFullImportPath(context, fileDescriptor, typeInfo.descriptor) : null
 
     return {
         ...typeInfo,
+        tag: ((fieldNumber << 3) | getWireTypeByTypeInfo(typeInfo)) >>> 0,
         typeMarker: getTypeMarkerByTypeInfo(typeInfo),
         tsType: getTsTypeByTypeInfo(typeInfo) ?? fullImportPath ?? '',
         jsonType: getJsonTypeByTypeInfo(typeInfo) ?? `${fullImportPath}JSON` ?? '',
@@ -160,6 +152,24 @@ export const protoTypeToPjsFn = (protoType: string) => {
     case 'enum': return 'int32';
     default: return protoType
   }
+}
+
+const getImports = (ctx: Context, file: FileDescriptor): Import[] => {
+    const imports: Import[] = [];
+    const dependencies = ctx.getDependencies(file, true);
+
+    for (const dependency of dependencies) {
+        const filePath = ctx.getFilePathByDescriptor(dependency);
+        const modelsFilePath = replaceProtoSuffix(filePath, 'models');
+        const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
+
+        imports.push({
+            path: modelsFilePath,
+            name: modelsFileImportName
+        })
+    }
+
+    return imports;
 }
 
 export default plugin;

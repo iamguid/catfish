@@ -1,6 +1,6 @@
 import { protoTypeToPjsFn } from ".";
 import { templates } from "./templates";
-import { EnumCtx, FileCtx, MessageCtx, MessageFieldCtx, TypeInfoCtx } from "./types";
+import { EnumCtx, FileCtx, MessageCtx, PrimitiveFieldCtx, TypeInfoCtx } from "./reflection";
 import { getFieldDefaultValue } from "./utils";
 
 export const modelsTemplate = (ctx: FileCtx): string => `
@@ -48,7 +48,7 @@ export const modelClassTemplate = (ctx: { message: MessageCtx }): string => {
         message: ctx.message
       })}
 
-      public static fields = [${ctx.message.fields.map(f => `'${f.fieldName}'`).join(",")}]
+      public static fields = [${ctx.message.fields.map(f => `'${f.name}'`).join(",")}]
 
       public get fields() {
         return ${ctx.message.modelClassName}.fields
@@ -79,9 +79,10 @@ export const modelClassTemplate = (ctx: { message: MessageCtx }): string => {
         return ${ctx.message.modelClassName}.encode(this, w).finish();
       }
 
-      deserialize(b: Uint8Array | Buffer): ${ctx.message.modelClassName} {
-        const r = new pjs.Reader(b);
-        ${ctx.message.modelClassName}.decode(this, r, r.len);
+      deserialize(buffer: Uint8Array | Buffer | pjs.Reader, length?: number): ${ctx.message.modelClassName} {
+        const r = (buffer instanceof pjs.Reader) ? buffer : new pjs.Reader(buffer);
+        const l = length ?? r.len
+        ${ctx.message.modelClassName}.decode(this, r, l);
         return this;
       }
 
@@ -122,11 +123,11 @@ export const jsonIfaceTemplate = (ctx: { message: MessageCtx }) => `
     ${ctx.message.fields.map((field) => {
       switch (true) {
         case field.isMap:
-          return `${field.fieldName}: Record<${field.mapType?.keyTypeInfo.jsonType}, ${field.mapType?.valueTypeInfo.jsonType}>;`
+          return `${field.name}: Record<${field.mapType?.keyTypeInfo.jsonType}, ${field.mapType?.valueTypeInfo.jsonType}>;`
         case field.isOneof:
-          return `${field.fieldName}?: ${field.fieldTypeInfo?.jsonType};`
+          return `${field.name}?: ${field.typeInfo?.jsonType};`
         default:
-          return `${field.fieldName}: ${field.fieldTypeInfo?.jsonType}${field.isOptional ? ' | undefined' : ''};`
+          return `${field.name}: ${field.typeInfo?.jsonType}${field.isOptional ? ' | undefined' : ''};`
       }
     }).join('\n')}
   }
@@ -144,11 +145,11 @@ export const modelClassCtorTemplate = (ctx: { message: MessageCtx }): string => 
       if (!obj) return;
 
       ${ctx.message.fields.map((field) => {
-        return `if (obj.${field.fieldName} !== undefined) {
+        return `if (obj.${field.name} !== undefined) {
           ${(() => {
             if (field.isMap) {
               return `
-                const entries = Array.from(obj.${field.fieldName}.entries());
+                const entries = Array.from(obj.${field.name}.entries());
                 ${(() => {
                   switch (field.mapType!.valueTypeInfo.typeMarker) {
                     case "Message":
@@ -159,10 +160,10 @@ export const modelClassCtorTemplate = (ctx: { message: MessageCtx }): string => 
                       return `const copy = entries.map(([key, val]) => [key, val]);`
                   }
                 })()}
-                this.${field.fieldName} = new Map(copy);
+                this.${field.name} = new Map(copy);
               `
             } else {
-              return `this.${field.fieldName} = obj.${field.fieldName};`
+              return `this.${field.name} = obj.${field.name};`
             }
           })()}
         }`
@@ -175,11 +176,11 @@ export const modelClassFieldsTemplate = (ctx: { message: MessageCtx }): string =
   return ctx.message.fields.map((field) => {
     switch (true) {
       case field.isMap:
-        return `${field.fieldName}: Map<${field.mapType?.keyTypeInfo.tsType}, ${field.mapType?.valueTypeInfo.tsType}> = ${field.isOptional ? 'undefined' : 'new Map()'};`
+        return `${field.name}: Map<${field.mapType?.keyTypeInfo.tsType}, ${field.mapType?.valueTypeInfo.tsType}> = ${field.isOptional ? 'undefined' : 'new Map()'};`
       case field.isOneof:
-        return `${field.fieldName}?: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : getFieldDefaultValue(field)};`
+        return `${field.name}?: ${field.typeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : getFieldDefaultValue(field)};`
       default:
-        return `${field.fieldName}: ${field.fieldTypeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : getFieldDefaultValue(field)};`
+        return `${field.name}: ${field.typeInfo?.tsType}${field.isOptional ? ' | undefined' : ''} = ${field.isOptional ? 'undefined' : getFieldDefaultValue(field)};`
     }
   }).join('\n')
 }
@@ -191,22 +192,25 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageCtx }): string =
         switch (true) {
           case field.isMap:
             return `
-              // map<${field.mapType?.keyTypeInfo.protoType}, ${field.mapType!.valueTypeInfo.protoType}> ${field.rawName} = ${field.fieldNumber}
-              for (const [key, val] of m.${field.fieldName}) {
+              // map<${field.mapType?.keyTypeInfo.protoType}, ${field.mapType!.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
+              w.uint32(${((field.number << 3) | 2) >>> 0});
+              for (const [key, val] of m.${field.name}) {
+                w.uint32(${field.mapType!.keyTypeInfo.tag});
                 ${templates.render('models.encodeField', { typeInfo: field.mapType!.keyTypeInfo!, variable: 'key' })}
+                w.uint32(${field.mapType!.valueTypeInfo.tag});
                 ${templates.render('models.encodeField', { typeInfo: field.mapType!.valueTypeInfo!, variable: 'val' })}
               }
             `
           case field.isOneof:
             return `
-              // oneof ${field.fieldTypeInfo?.protoType} ${field.rawName} = ${field.fieldNumber}
+              // oneof ${field.typeInfo?.protoType} ${field.rawName} = ${field.number}
             `
           default:
             return `
-              // ${field.fieldTypeInfo?.protoType} ${field.rawName} = ${field.fieldNumber}
-              if (m.${field.fieldName} !== ${getFieldDefaultValue(field)}) {
-                w.uint32(${field.fieldTag});
-                ${templates.render('models.encodeField', { typeInfo: field.fieldTypeInfo!, variable: `m.${field.fieldName}` })}
+              // ${field.typeInfo?.protoType} ${field.rawName} = ${field.number}
+              if (m.${field.name} !== ${getFieldDefaultValue(field)}) {
+                w.uint32(${field.typeInfo!.tag});
+                ${templates.render('models.encodeField', { typeInfo: field.typeInfo!, variable: `m.${field.name}` })}
               }
             `
         }
@@ -219,7 +223,8 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageCtx }): string =
 
 export const modelClassDecodeTemplate = (ctx: { message: MessageCtx }): string => {
   return `
-    public static decode(m: ${ctx.message.modelClassName}, r: pjs.Reader, l: number): pjs.Reader {
+    public static decode(m: ${ctx.message.modelClassName}, r: pjs.Reader, length: number): pjs.Reader {
+      const l = r.pos + length;
       while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
@@ -227,49 +232,63 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageCtx }): string =
             switch (true) {
               case field.isMap:
                 return `
-                  // map<${field.mapType?.keyTypeInfo.protoType}, ${field.mapType?.valueTypeInfo.protoType}> ${field.rawName} = ${field.fieldNumber}
-                  case ${field.fieldTag}:
+                  // map<${field.mapType?.keyTypeInfo.protoType}, ${field.mapType?.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
+                  case ${((field.number << 3) | 2) >>> 0}:
                     {
-                      const len = r.uint32();
+                      // r.skipType(0); // uint32 - ???
+                      // r.skipType(0); // uint32 - Key Tag
+                      const length = r.uint32();
                       const keyTag = r.uint32();
                       const key = ${templates.render('models.decodeField', { typeInfo: field.mapType!.keyTypeInfo })}
-                      const valueTag = r.uint32();
-                      const value = ${templates.render('models.decodeField', { typeInfo: field.mapType!.valueTypeInfo })}
+                      ${(() => {
+                        if (field.mapType!.valueTypeInfo.typeMarker === "Message") {
+                          return `const value = ${templates.render('models.decodeField', { typeInfo: field.mapType!.valueTypeInfo })}`
+                        } else {
+                          return  `
+                            r.skipType(0); // uint32 - Value Tag
+                            const value = ${templates.render('models.decodeField', { typeInfo: field.mapType!.valueTypeInfo })}
+                          `
+                        }
+                      })()}
   
                       ${field.isOptional ? `
-                      if (m.${field.fieldName} === undefined) {
-                        m.${field.fieldName} = new Map();
+                      if (m.${field.name} === undefined) {
+                        m.${field.name} = new Map();
                       }` : ''}
   
-                      m.${field.fieldName}.set(key, value)
+                      m.${field.name}.set(key, value)
                     }
                     continue;
                 `
               case field.isRepeated:
                 return `
-                  // repeated ${field.fieldTypeInfo?.protoType} ${field.rawName} = ${field.fieldNumber}
-                  case ${field.fieldTag}:
+                  // repeated ${field.typeInfo?.protoType} ${field.rawName} = ${field.number}
+                  case ${field.typeInfo!.tag}:
                     {
-                      const value = ${templates.render('models.decodeField', { typeInfo: field.fieldTypeInfo! })}
+                      const value = ${templates.render('models.decodeField', { typeInfo: field.typeInfo! })}
 
                       ${field.isOptional ? `
-                      if (m.${field.fieldName} === undefined) {
-                        m.${field.fieldName} = [];
+                      if (m.${field.name} === undefined) {
+                        m.${field.name} = [];
                       }` : ''}
   
-                      m.${field.fieldName}.push(value)
+                      m.${field.name}.push(value)
                     }
                     continue;
                 `
               default:
                 return `
-                  // ${field.fieldTypeInfo?.protoType} ${field.rawName} = ${field.fieldNumber}
-                  case ${field.fieldTag}:
-                    m.${field.fieldName} = ${templates.render('models.decodeField', { typeInfo: field.fieldTypeInfo! })}
+                  // ${field.typeInfo?.protoType} ${field.rawName} = ${field.number}
+                  case ${field.typeInfo!.tag}:
+                    m.${field.name} = ${templates.render('models.decodeField', { typeInfo: field.typeInfo! })}
                     continue;
                 `
             }
           }).join('\n')}
+        }
+
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
         }
       }
 
@@ -284,9 +303,9 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageCtx }): string =
       return {
         ${ctx.message.fields.map((field) => {
           if (field.isMap) {
-            return `${field.fieldName}: runtime.convertMapToRecord(m.${field.fieldName}, (val) => ${templates.render('models.toJsonValue', { typeInfo: field.mapType!.valueTypeInfo, variable: 'val' })}),`
+            return `${field.name}: runtime.convertMapToRecord(m.${field.name}, (val) => ${templates.render('models.toJsonValue', { typeInfo: field.mapType!.valueTypeInfo, variable: 'val' })}),`
           } else {
-            return `${field.fieldName}: ${templates.render('models.toJsonValue', { typeInfo: field.fieldTypeInfo!, variable: `m.${field.fieldName}` })},`
+            return `${field.name}: ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo!, variable: `m.${field.name}` })},`
           }
         }).join('\n')}
       }
@@ -300,22 +319,22 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageCtx }): string
       ${ctx.message.fields.map((field) => {
         if (field.isMap) {
           if (field.mapType?.valueTypeInfo.typeMarker === "Bytes") {
-            return `m.${field.fieldName} = runtime.convertRecordToMap(obj.${field.fieldName}, (val) => {
+            return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => {
               const tmpBuffer = []
               pjs.util.base64.decode(val, tmpBuffer, 0);
               return ${templates.render('models.fromJsonValue', { typeInfo: field.mapType!.valueTypeInfo, variable: 'tmpBuffer' })};
             });`
           } else {
-            return `m.${field.fieldName} = runtime.convertRecordToMap(obj.${field.fieldName}, (val) => ${templates.render('models.fromJsonValue', { typeInfo: field.mapType!.valueTypeInfo, variable: 'val' })});`
+            return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${templates.render('models.fromJsonValue', { typeInfo: field.mapType!.valueTypeInfo, variable: 'val' })});`
           }
-        } else if (field.fieldTypeInfo?.typeMarker === "Bytes") {
+        } else if (field.typeInfo?.typeMarker === "Bytes") {
           return `{
             const tmpBuffer = []
-            pjs.util.base64.decode(obj.${field.fieldName}, tmpBuffer, 0);
-            m.${field.fieldName} = ${templates.render('models.fromJsonValue', { typeInfo: field.fieldTypeInfo!, variable: 'tmpBuffer' })}
+            pjs.util.base64.decode(obj.${field.name}, tmpBuffer, 0);
+            m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: 'tmpBuffer' })}
           }`
         } else {
-            return `m.${field.fieldName} = ${templates.render('models.fromJsonValue', { typeInfo: field.fieldTypeInfo!, variable: `obj.${field.fieldName}` })}`
+            return `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
         }
       }).join('\n')}
 
@@ -363,7 +382,7 @@ export const decodeFieldTemplate = (ctx: { typeInfo: TypeInfoCtx }): string => {
     case "Bytes":
       return `r.${protoTypeToPjsFn(ctx.typeInfo.protoType)}()`
     case "Message":
-      return `${ctx.typeInfo.tsType!}.decode(r, r.uint32())`
+      return `new ${ctx.typeInfo.tsType!}().deserialize(r, r.uint32())`
   }
 }
 

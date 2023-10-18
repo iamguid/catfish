@@ -1,57 +1,21 @@
 import { EnumDescriptor } from "@catfish/parser";
-import { MessageCtx, MessageFieldCtx, TypeMarker } from "./types";
+import { MessageCtx, PrimitiveFieldCtx, TypeMarker } from "./reflection";
 import { TypeInfo } from '../../Context';
 
-export const getRepeatedFieldsArray = (message: MessageCtx): number[] => {
-  return message.fields.filter(field => field.isRepeated).map(field => field.fieldNumber);
-}
-
-export const getOneofGroups = (message: MessageCtx): { name: string; fields: number[] }[] => {
-  return message.fields
-    .filter(field => field.isOneof)
-    .reduce((accum, field) => {
-      if (accum.findIndex(group => group.name === field.oneofName) === -1) {
-        accum.push({ name: field.oneofName!, fields: [] })
-      }
-
-      const currentGroup = accum.find(group => group.name === field.oneofName)!
-      currentGroup.fields.push(field.fieldNumber);
-      return accum;
-    }, [] as { name: string; fields: number[] }[]);
-}
-
-export const getOneofGroupsArray = (message: MessageCtx): number[][] => {
-  return getOneofGroups(message).map(groups => groups.fields);
-}
-
-export const getOneofGroupsArrayIndex = (message: MessageCtx, oneofName: string): number => {
-  return getOneofGroups(message).findIndex(group => group.name === oneofName);
-}
-
-export const renderOneofGroupsArray = (groups: number[][]) => {
-  let result: string[] = [];
-
-  for (const group of groups) {
-    result.push(`[${group.join(', ')}]`);
-  }
-
-  return `[${result.join(', ')}]`;
-}
-
-export const getFieldDefaultValue = (field: MessageFieldCtx) => {
-  if (field.isRepeated) {
+export const getFieldDefaultValue = (field: PrimitiveFieldCtx) => {
+  if (field.repeated) {
     return "[]";
   }
 
-  if (field.fieldTypeInfo?.typeMarker === "Message") {
-    return `new ${field.fieldTypeInfo.tsType}()`;
+  if (field.typeInfo.typeMarker === "Message") {
+    return `new ${field.typeInfo.tsType}()`;
   }
 
-  if (field.fieldTypeInfo?.typeMarker === "Enum") {
-    return `${field.fieldTypeInfo.fullType}.${(field.fieldTypeInfo.descriptor as EnumDescriptor).fields[0].fieldName}`;
+  if (field.typeInfo.typeMarker === "Enum") {
+    return `${field.typeInfo.fullType}.${(field.typeInfo.descriptor as EnumDescriptor).fields[0].fieldName}`;
   }
 
-  switch (field.fieldTypeInfo?.protoType) {
+  switch (field.typeInfo.protoType) {
     case "double": return '0';
     case "float": return '0';
     case "int32": return '0';
@@ -69,11 +33,11 @@ export const getFieldDefaultValue = (field: MessageFieldCtx) => {
     case "bytes": return 'pjs.util.newBuffer(0)';
   }
 
-  throw new Error(`Cannot get default TS type for proto type ${field.fieldTypeInfo?.protoType}`)
+  throw new Error(`Cannot get default TS type for proto type ${field.typeInfo.typeMarker} ${field.typeInfo.protoType}`)
 }
 
 // Based on https://github.com/protobufjs/protobuf.js/blob/master/src/types.js#L37
-export const getBasicWireType = (typeInfo: TypeInfo): number => {
+export const getWireTypeByTypeInfo = (typeInfo: TypeInfo): number => {
   switch (typeInfo.protoType) {
     case "int32":
     case "uint32":
@@ -103,7 +67,7 @@ export const getBasicWireType = (typeInfo: TypeInfo): number => {
   }
 }
 
-export const getTsTypeByProtoType = (typeInfo: TypeInfo) => {
+export const getTsTypeByTypeInfo = (typeInfo: TypeInfo) => {
   switch (typeInfo.protoType) {
     case 'double': return 'number';
     case "float": return 'number';
@@ -129,7 +93,7 @@ export const getTsTypeByProtoType = (typeInfo: TypeInfo) => {
   }
 }
 
-export const getJsonTypeByProtoType = (typeInfo: TypeInfo) => {
+export const getJsonTypeByTypeInfo = (typeInfo: TypeInfo) => {
   switch (typeInfo.protoType) {
     case 'double': return 'number';
     case "float": return 'number';
@@ -155,7 +119,7 @@ export const getJsonTypeByProtoType = (typeInfo: TypeInfo) => {
   }
 }
 
-export const getTypeMarkerByProtoType = (typeInfo: TypeInfo): TypeMarker => {
+export const getTypeMarkerTypeInfo = (typeInfo: TypeInfo): TypeMarker => {
   switch (typeInfo.protoType) {
     case "float":
     case "int32":

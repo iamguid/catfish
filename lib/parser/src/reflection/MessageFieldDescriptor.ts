@@ -1,28 +1,19 @@
 import { BaseDescriptor, IBaseDescriptorProps } from "./BaseDescriptor";
 import { Options } from "./Options";
 
-export interface MapField {
-    keyType: string;
-    valueType: string;
-}
-
-export class FieldDescriptor extends BaseDescriptor {
+export class MessageFieldDescriptor extends BaseDescriptor {
     public readonly options: Options[];
-    public readonly type?: string;
+    public readonly type: string;
     public readonly fieldNumber: number;
     public readonly repeated: boolean;
     public readonly optional: boolean;
-    public readonly map?: MapField;
-    public readonly oneofName?: string;
 
     constructor(props: IBaseDescriptorProps & {
         options: Options[];
-        type?: string;
+        type: string;
         fieldNumber: number;
         repeated: boolean;
         optional: boolean;
-        map?: MapField;
-        oneofName?: string;
     }) {
         super(props);
         this.options = props.options;
@@ -30,8 +21,6 @@ export class FieldDescriptor extends BaseDescriptor {
         this.fieldNumber = props.fieldNumber;
         this.repeated = props.repeated;
         this.optional = props.optional;
-        this.map = props.map;
-        this.oneofName = props.oneofName;
     }
 
     public toObject() {
@@ -41,8 +30,6 @@ export class FieldDescriptor extends BaseDescriptor {
             fieldNumber: this.fieldNumber,
             repeated: this.repeated,
             optional: this.optional,
-            map: this.map,
-            oneofName: this.oneofName
         })
     }
 }
