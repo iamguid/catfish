@@ -211,7 +211,12 @@ export class ScalarTypes {
     return w;
   }
 
-  public static decode(m: ScalarTypes, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: ScalarTypes,
+    r: pjs.Reader,
+    length: number
+  ): pjs.Reader {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -290,6 +295,10 @@ export class ScalarTypes {
           m.fBytes = r.bytes();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
     return r;
@@ -330,11 +339,7 @@ export class ScalarTypes {
     m.fDouble = obj.fDouble;
     m.fBool = obj.fBool;
     m.fString = obj.fString;
-    {
-      const tmpBuffer = [];
-      pjs.util.base64.decode(obj.fBytes, tmpBuffer, 0);
-      m.fBytes = new pjs.util.Buffer(tmpBuffer);
-    }
+    m.fBytes = new pjs.util.Buffer(obj.fBytes);
 
     return m;
   }
@@ -344,9 +349,13 @@ export class ScalarTypes {
     return ScalarTypes.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): ScalarTypes {
-    const r = new pjs.Reader(b);
-    ScalarTypes.decode(this, r, r.len);
+  deserialize(
+    buffer: Uint8Array | Buffer | pjs.Reader,
+    length?: number
+  ): ScalarTypes {
+    const r = buffer instanceof pjs.Reader ? buffer : new pjs.Reader(buffer);
+    const l = length ?? r.len;
+    ScalarTypes.decode(this, r, l);
     return this;
   }
 

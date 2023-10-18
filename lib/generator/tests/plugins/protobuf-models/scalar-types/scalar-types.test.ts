@@ -1,12 +1,12 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
 import Long from "long";
-import { ScalarTypes, IScalarTypesJSON } from "./scalar-types_models";
+import { ScalarTypes, ScalarTypesJSON } from "./scalar-types_models";
 import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
 
 pjs.util.Long = Long
 
-const EXPECTED_MESSAGE_OBJ: IScalarTypesJSON = {
+const EXPECTED_MESSAGE_OBJ: ScalarTypesJSON = {
     fInt32: 1,
     fInt64: '2',
     fUint32: 3,
@@ -24,7 +24,7 @@ const EXPECTED_MESSAGE_OBJ: IScalarTypesJSON = {
     fBytes: pjs.util.base64.encode(Buffer.from([15, 16, 17]), 0, 3),
 }
 
-const INITIAL_MESSAGE_OBJ: IScalarTypesJSON = {
+const INITIAL_MESSAGE_OBJ: ScalarTypesJSON = {
     fInt32: 0,
     fInt64: '0',
     fUint32: 0,

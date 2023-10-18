@@ -1,21 +1,10 @@
-import { EnumDescriptor } from "@catfish/parser";
-import { MessageCtx, PrimitiveFieldCtx, TypeMarker } from "./reflection";
-import { TypeInfo } from '../../Context';
+import { BaseDescriptor, EnumDescriptor, FileDescriptor } from "@catfish/parser";
+import { CtxTypeInfo, TypeMarker } from "./reflection";
+import { Context, Import, TypeInfo } from '../../Context';
+import { filePathToPseudoNamespace, replaceProtoSuffix } from "../../utils";
 
-export const getFieldDefaultValue = (field: PrimitiveFieldCtx) => {
-  if (field.repeated) {
-    return "[]";
-  }
-
-  if (field.typeInfo.typeMarker === "Message") {
-    return `new ${field.typeInfo.tsType}()`;
-  }
-
-  if (field.typeInfo.typeMarker === "Enum") {
-    return `${field.typeInfo.fullType}.${(field.typeInfo.descriptor as EnumDescriptor).fields[0].fieldName}`;
-  }
-
-  switch (field.typeInfo.protoType) {
+export const getScalarDefaultValue = (typeInfo: TypeInfo) => {
+  switch (typeInfo.protoType) {
     case "double": return '0';
     case "float": return '0';
     case "int32": return '0';
@@ -31,13 +20,12 @@ export const getFieldDefaultValue = (field: PrimitiveFieldCtx) => {
     case "bool": return 'false';
     case "string": return '""';
     case "bytes": return 'pjs.util.newBuffer(0)';
+    default: return null;
   }
-
-  throw new Error(`Cannot get default TS type for proto type ${field.typeInfo.typeMarker} ${field.typeInfo.protoType}`)
 }
 
 // Based on https://github.com/protobufjs/protobuf.js/blob/master/src/types.js#L37
-export const getWireTypeByTypeInfo = (typeInfo: TypeInfo): number => {
+export const getWireTypeByTypeInfo = (typeInfo: CtxTypeInfo): number => {
   switch (typeInfo.protoType) {
     case "int32":
     case "uint32":
@@ -59,7 +47,7 @@ export const getWireTypeByTypeInfo = (typeInfo: TypeInfo): number => {
     case "sfixed32":
       return 5;
     default:
-      if (typeInfo.descriptor instanceof EnumDescriptor) {
+      if (typeInfo.desc instanceof EnumDescriptor) {
         return 0;
       } else {
         return 2;
@@ -119,7 +107,7 @@ export const getJsonTypeByTypeInfo = (typeInfo: TypeInfo) => {
   }
 }
 
-export const getTypeMarkerTypeInfo = (typeInfo: TypeInfo): TypeMarker => {
+export const getTypeMarkerByTypeInfo = (typeInfo: TypeInfo): TypeMarker => {
   switch (typeInfo.protoType) {
     case "float":
     case "int32":
@@ -146,4 +134,43 @@ export const getTypeMarkerTypeInfo = (typeInfo: TypeInfo): TypeMarker => {
         return "Message"
       }
   }
+}
+
+export const getPjsFnNameByTypeInfo = (typeInfo: TypeInfo) => {
+  if (typeInfo.descriptor instanceof EnumDescriptor) {
+    return "int32";
+  }
+
+  return typeInfo.protoType;
+}
+
+export const getFullImportPath = (ctx: Context, file: FileDescriptor, desc: BaseDescriptor) => {
+    const filePath = ctx.getFilePathByDescriptor(desc.fileDescriptor);
+    const modelsFilePath = replaceProtoSuffix(filePath, 'models');
+    const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
+
+    // Model defined in current file
+    if (desc.fileDescriptor === file) {
+        return desc.fullname
+    } else {
+        return `${modelsFileImportName}.${desc.fullpath}`
+    }
+}
+
+export const getImports = (ctx: Context, file: FileDescriptor): Import[] => {
+    const imports: Import[] = [];
+    const dependencies = ctx.getDependencies(file, true);
+
+    for (const dependency of dependencies) {
+        const filePath = ctx.getFilePathByDescriptor(dependency);
+        const modelsFilePath = replaceProtoSuffix(filePath, 'models');
+        const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
+
+        imports.push({
+            path: modelsFilePath,
+            name: modelsFileImportName
+        })
+    }
+
+    return imports;
 }

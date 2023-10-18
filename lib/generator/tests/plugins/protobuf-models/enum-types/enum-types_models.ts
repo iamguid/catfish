@@ -48,7 +48,12 @@ export class EnumMessage {
     return w;
   }
 
-  public static decode(m: EnumMessage, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: EnumMessage,
+    r: pjs.Reader,
+    length: number
+  ): pjs.Reader {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -56,6 +61,10 @@ export class EnumMessage {
         case 8:
           m.fEnum = r.uint32();
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
@@ -79,9 +88,13 @@ export class EnumMessage {
     return EnumMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): EnumMessage {
-    const r = new pjs.Reader(b);
-    EnumMessage.decode(this, r, r.len);
+  deserialize(
+    buffer: Uint8Array | Buffer | pjs.Reader,
+    length?: number
+  ): EnumMessage {
+    const r = buffer instanceof pjs.Reader ? buffer : new pjs.Reader(buffer);
+    const l = length ?? r.len;
+    EnumMessage.decode(this, r, l);
     return this;
   }
 
