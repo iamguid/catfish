@@ -28,25 +28,22 @@ export interface MyMessageJSON {
   repeatedE: string;
   repeatedPackedE: string;
   repeatedPackedUnexpectedE: string;
-  oneofE1?: string;
-  oneofE2?: string;
+  // NOT IMPLEMENTED
 }
 
 export class MyMessage {
   e: number = MyEnum.FOO;
-  repeatedE: number = [];
-  repeatedPackedE: number = [];
-  repeatedPackedUnexpectedE: number = [];
-  oneofE1?: number = MyEnum.FOO;
-  oneofE2?: number = MyEnum.FOO;
+  repeatedE: number = MyEnum.FOO;
+  repeatedPackedE: number = MyEnum.FOO;
+  repeatedPackedUnexpectedE: number = MyEnumPlusExtra.E_FOO;
+  // NOT IMPLEMENTED
 
   public static fields = [
     "e",
     "repeatedE",
     "repeatedPackedE",
     "repeatedPackedUnexpectedE",
-    "oneofE1",
-    "oneofE2",
+    "o",
   ];
 
   public get fields() {
@@ -68,11 +65,8 @@ export class MyMessage {
     if (obj.repeatedPackedUnexpectedE !== undefined) {
       this.repeatedPackedUnexpectedE = obj.repeatedPackedUnexpectedE;
     }
-    if (obj.oneofE1 !== undefined) {
-      this.oneofE1 = obj.oneofE1;
-    }
-    if (obj.oneofE2 !== undefined) {
-      this.oneofE2 = obj.oneofE2;
+    if (obj.o !== undefined) {
+      // NOT IMPLEMENTED
     }
   }
 
@@ -80,83 +74,66 @@ export class MyMessage {
     // MyEnum e = 1
     if (m.e !== MyEnum.FOO) {
       w.uint32(8);
-      w.uint32(m.e);
+      w.int32(m.e);
     }
 
     // MyEnum repeated_e = 2
-    if (m.repeatedE !== []) {
+    if (m.repeatedE !== MyEnum.FOO) {
       w.uint32(16);
-      w.uint32(m.repeatedE);
+      w.int32(m.repeatedE);
     }
 
     // MyEnum repeated_packed_e = 3
-    if (m.repeatedPackedE !== []) {
+    if (m.repeatedPackedE !== MyEnum.FOO) {
       w.uint32(24);
-      w.uint32(m.repeatedPackedE);
+      w.int32(m.repeatedPackedE);
     }
 
     // MyEnumPlusExtra repeated_packed_unexpected_e = 4
-    if (m.repeatedPackedUnexpectedE !== []) {
+    if (m.repeatedPackedUnexpectedE !== MyEnumPlusExtra.E_FOO) {
       w.uint32(32);
-      w.uint32(m.repeatedPackedUnexpectedE);
+      w.int32(m.repeatedPackedUnexpectedE);
     }
 
-    // oneof MyEnum oneof_e_1 = 5
-
-    // oneof MyEnum oneof_e_2 = 6
+    // NOT IMPLEMENTED
 
     return w;
   }
 
-  public static decode(m: MyMessage, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(m: MyMessage, r: pjs.Reader, length: number): MyMessage {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // MyEnum e = 1
         case 8:
-          m.e = r.uint32();
+          m.e = r.int32();
           continue;
 
-        // repeated MyEnum repeated_e = 2
+        // MyEnum repeated_e = 2
         case 16:
-          {
-            const value = r.uint32();
-
-            m.repeatedE.push(value);
-          }
+          m.repeatedE = r.int32();
           continue;
 
-        // repeated MyEnum repeated_packed_e = 3
+        // MyEnum repeated_packed_e = 3
         case 24:
-          {
-            const value = r.uint32();
-
-            m.repeatedPackedE.push(value);
-          }
+          m.repeatedPackedE = r.int32();
           continue;
 
-        // repeated MyEnumPlusExtra repeated_packed_unexpected_e = 4
+        // MyEnumPlusExtra repeated_packed_unexpected_e = 4
         case 32:
-          {
-            const value = r.uint32();
-
-            m.repeatedPackedUnexpectedE.push(value);
-          }
+          m.repeatedPackedUnexpectedE = r.int32();
           continue;
 
-        // MyEnum oneof_e_1 = 5
-        case 40:
-          m.oneofE1 = r.uint32();
-          continue;
+        // NOT IMPLEMENTED
+      }
 
-        // MyEnum oneof_e_2 = 6
-        case 48:
-          m.oneofE2 = r.uint32();
-          continue;
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: MyMessage): MyMessageJSON {
@@ -165,8 +142,7 @@ export class MyMessage {
       repeatedE: MyEnum[m.repeatedE],
       repeatedPackedE: MyEnum[m.repeatedPackedE],
       repeatedPackedUnexpectedE: MyEnumPlusExtra[m.repeatedPackedUnexpectedE],
-      oneofE1: MyEnum[m.oneofE1],
-      oneofE2: MyEnum[m.oneofE2],
+      // NOT IMPLEMENTED
     };
   }
 
@@ -176,8 +152,7 @@ export class MyMessage {
     m.repeatedPackedE = MyEnum[obj.repeatedPackedE];
     m.repeatedPackedUnexpectedE =
       MyEnumPlusExtra[obj.repeatedPackedUnexpectedE];
-    m.oneofE1 = MyEnum[obj.oneofE1];
-    m.oneofE2 = MyEnum[obj.oneofE2];
+    // NOT IMPLEMENTED
 
     return m;
   }
@@ -187,10 +162,9 @@ export class MyMessage {
     return MyMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): MyMessage {
-    const r = new pjs.Reader(b);
-    MyMessage.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): MyMessage {
+    const r = new pjs.Reader(buffer);
+    return MyMessage.decode(this, r, r.len);
   }
 
   toJSON(): MyMessageJSON {
@@ -224,25 +198,22 @@ export interface MyMessagePlusExtraJSON {
   repeatedE: string;
   repeatedPackedE: string;
   repeatedPackedUnexpectedE: string;
-  oneofE1?: string;
-  oneofE2?: string;
+  // NOT IMPLEMENTED
 }
 
 export class MyMessagePlusExtra {
   e: number = MyEnumPlusExtra.E_FOO;
-  repeatedE: number = [];
-  repeatedPackedE: number = [];
-  repeatedPackedUnexpectedE: number = [];
-  oneofE1?: number = MyEnumPlusExtra.E_FOO;
-  oneofE2?: number = MyEnumPlusExtra.E_FOO;
+  repeatedE: number = MyEnumPlusExtra.E_FOO;
+  repeatedPackedE: number = MyEnumPlusExtra.E_FOO;
+  repeatedPackedUnexpectedE: number = MyEnumPlusExtra.E_FOO;
+  // NOT IMPLEMENTED
 
   public static fields = [
     "e",
     "repeatedE",
     "repeatedPackedE",
     "repeatedPackedUnexpectedE",
-    "oneofE1",
-    "oneofE2",
+    "o",
   ];
 
   public get fields() {
@@ -264,11 +235,8 @@ export class MyMessagePlusExtra {
     if (obj.repeatedPackedUnexpectedE !== undefined) {
       this.repeatedPackedUnexpectedE = obj.repeatedPackedUnexpectedE;
     }
-    if (obj.oneofE1 !== undefined) {
-      this.oneofE1 = obj.oneofE1;
-    }
-    if (obj.oneofE2 !== undefined) {
-      this.oneofE2 = obj.oneofE2;
+    if (obj.o !== undefined) {
+      // NOT IMPLEMENTED
     }
   }
 
@@ -276,30 +244,28 @@ export class MyMessagePlusExtra {
     // MyEnumPlusExtra e = 1
     if (m.e !== MyEnumPlusExtra.E_FOO) {
       w.uint32(8);
-      w.uint32(m.e);
+      w.int32(m.e);
     }
 
     // MyEnumPlusExtra repeated_e = 2
-    if (m.repeatedE !== []) {
+    if (m.repeatedE !== MyEnumPlusExtra.E_FOO) {
       w.uint32(16);
-      w.uint32(m.repeatedE);
+      w.int32(m.repeatedE);
     }
 
     // MyEnumPlusExtra repeated_packed_e = 3
-    if (m.repeatedPackedE !== []) {
+    if (m.repeatedPackedE !== MyEnumPlusExtra.E_FOO) {
       w.uint32(24);
-      w.uint32(m.repeatedPackedE);
+      w.int32(m.repeatedPackedE);
     }
 
     // MyEnumPlusExtra repeated_packed_unexpected_e = 4
-    if (m.repeatedPackedUnexpectedE !== []) {
+    if (m.repeatedPackedUnexpectedE !== MyEnumPlusExtra.E_FOO) {
       w.uint32(32);
-      w.uint32(m.repeatedPackedUnexpectedE);
+      w.int32(m.repeatedPackedUnexpectedE);
     }
 
-    // oneof MyEnumPlusExtra oneof_e_1 = 5
-
-    // oneof MyEnumPlusExtra oneof_e_2 = 6
+    // NOT IMPLEMENTED
 
     return w;
   }
@@ -307,56 +273,41 @@ export class MyMessagePlusExtra {
   public static decode(
     m: MyMessagePlusExtra,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): MyMessagePlusExtra {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // MyEnumPlusExtra e = 1
         case 8:
-          m.e = r.uint32();
+          m.e = r.int32();
           continue;
 
-        // repeated MyEnumPlusExtra repeated_e = 2
+        // MyEnumPlusExtra repeated_e = 2
         case 16:
-          {
-            const value = r.uint32();
-
-            m.repeatedE.push(value);
-          }
+          m.repeatedE = r.int32();
           continue;
 
-        // repeated MyEnumPlusExtra repeated_packed_e = 3
+        // MyEnumPlusExtra repeated_packed_e = 3
         case 24:
-          {
-            const value = r.uint32();
-
-            m.repeatedPackedE.push(value);
-          }
+          m.repeatedPackedE = r.int32();
           continue;
 
-        // repeated MyEnumPlusExtra repeated_packed_unexpected_e = 4
+        // MyEnumPlusExtra repeated_packed_unexpected_e = 4
         case 32:
-          {
-            const value = r.uint32();
-
-            m.repeatedPackedUnexpectedE.push(value);
-          }
+          m.repeatedPackedUnexpectedE = r.int32();
           continue;
 
-        // MyEnumPlusExtra oneof_e_1 = 5
-        case 40:
-          m.oneofE1 = r.uint32();
-          continue;
+        // NOT IMPLEMENTED
+      }
 
-        // MyEnumPlusExtra oneof_e_2 = 6
-        case 48:
-          m.oneofE2 = r.uint32();
-          continue;
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: MyMessagePlusExtra): MyMessagePlusExtraJSON {
@@ -365,8 +316,7 @@ export class MyMessagePlusExtra {
       repeatedE: MyEnumPlusExtra[m.repeatedE],
       repeatedPackedE: MyEnumPlusExtra[m.repeatedPackedE],
       repeatedPackedUnexpectedE: MyEnumPlusExtra[m.repeatedPackedUnexpectedE],
-      oneofE1: MyEnumPlusExtra[m.oneofE1],
-      oneofE2: MyEnumPlusExtra[m.oneofE2],
+      // NOT IMPLEMENTED
     };
   }
 
@@ -379,8 +329,7 @@ export class MyMessagePlusExtra {
     m.repeatedPackedE = MyEnumPlusExtra[obj.repeatedPackedE];
     m.repeatedPackedUnexpectedE =
       MyEnumPlusExtra[obj.repeatedPackedUnexpectedE];
-    m.oneofE1 = MyEnumPlusExtra[obj.oneofE1];
-    m.oneofE2 = MyEnumPlusExtra[obj.oneofE2];
+    // NOT IMPLEMENTED
 
     return m;
   }
@@ -390,10 +339,9 @@ export class MyMessagePlusExtra {
     return MyMessagePlusExtra.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): MyMessagePlusExtra {
-    const r = new pjs.Reader(b);
-    MyMessagePlusExtra.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): MyMessagePlusExtra {
+    const r = new pjs.Reader(buffer);
+    return MyMessagePlusExtra.decode(this, r, r.len);
   }
 
   toJSON(): MyMessagePlusExtraJSON {

@@ -44,7 +44,10 @@ export class TestLiteImportsNonlite {
       m.message !== new unittest_proto3_models.proto3_unittest.TestAllTypes()
     ) {
       w.uint32(10);
-      unittest_proto3_models.proto3_unittest.TestAllTypes.encode(m.message, w);
+      unittest_proto3_models.proto3_unittest.TestAllTypes.encode(
+        m.message,
+        w.fork()
+      ).ldelim();
     }
 
     return w;
@@ -53,8 +56,9 @@ export class TestLiteImportsNonlite {
   public static decode(
     m: TestLiteImportsNonlite,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestLiteImportsNonlite {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -62,14 +66,19 @@ export class TestLiteImportsNonlite {
         case 10:
           m.message =
             unittest_proto3_models.proto3_unittest.TestAllTypes.decode(
+              undefined,
               r,
               r.uint32()
             );
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestLiteImportsNonlite): TestLiteImportsNonliteJSON {
@@ -95,10 +104,9 @@ export class TestLiteImportsNonlite {
     return TestLiteImportsNonlite.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestLiteImportsNonlite {
-    const r = new pjs.Reader(b);
-    TestLiteImportsNonlite.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestLiteImportsNonlite {
+    const r = new pjs.Reader(buffer);
+    return TestLiteImportsNonlite.decode(this, r, r.len);
   }
 
   toJSON(): TestLiteImportsNonliteJSON {

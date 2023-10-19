@@ -70,10 +70,7 @@ export interface TestAllTypesJSON {
   repeatedStringPiece: string;
   repeatedCord: string;
   repeatedLazyMessage: TestAllTypes.NestedMessageJSON;
-  oneofUint32?: number;
-  oneofNestedMessage?: TestAllTypes.NestedMessageJSON;
-  oneofString?: string;
-  oneofBytes?: string;
+  // NOT IMPLEMENTED
 }
 
 export class TestAllTypes {
@@ -107,35 +104,33 @@ export class TestAllTypes {
     new TestAllTypes.NestedMessage();
   optionalLazyImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessage =
     new unittest_import_models.protobuf_unittest_import.ImportMessage();
-  repeatedInt32: number = [];
-  repeatedInt64: pjs.Long = [];
-  repeatedUint32: number = [];
-  repeatedUint64: pjs.Long = [];
-  repeatedSint32: number = [];
-  repeatedSint64: pjs.Long = [];
-  repeatedFixed32: number = [];
-  repeatedFixed64: pjs.Long = [];
-  repeatedSfixed32: number = [];
-  repeatedSfixed64: pjs.Long = [];
-  repeatedFloat: number = [];
-  repeatedDouble: number = [];
-  repeatedBool: boolean = [];
-  repeatedString: string = [];
-  repeatedBytes: Uint8Array | Buffer = [];
-  repeatedNestedMessage: TestAllTypes.NestedMessage = [];
-  repeatedForeignMessage: ForeignMessage = [];
-  repeatedImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessage =
-    [];
-  repeatedNestedEnum: number = [];
-  repeatedForeignEnum: number = [];
-  repeatedStringPiece: string = [];
-  repeatedCord: string = [];
-  repeatedLazyMessage: TestAllTypes.NestedMessage = [];
-  oneofUint32?: number = 0;
-  oneofNestedMessage?: TestAllTypes.NestedMessage =
+  repeatedInt32: number = 0;
+  repeatedInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedUint32: number = 0;
+  repeatedUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  repeatedSint32: number = 0;
+  repeatedSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedFixed32: number = 0;
+  repeatedFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  repeatedSfixed32: number = 0;
+  repeatedSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedFloat: number = 0;
+  repeatedDouble: number = 0;
+  repeatedBool: boolean = false;
+  repeatedString: string = "";
+  repeatedBytes: Uint8Array | Buffer = pjs.util.newBuffer(0);
+  repeatedNestedMessage: TestAllTypes.NestedMessage =
     new TestAllTypes.NestedMessage();
-  oneofString?: string = "";
-  oneofBytes?: Uint8Array | Buffer = pjs.util.newBuffer(0);
+  repeatedForeignMessage: ForeignMessage = new ForeignMessage();
+  repeatedImportMessage: unittest_import_models.protobuf_unittest_import.ImportMessage =
+    new unittest_import_models.protobuf_unittest_import.ImportMessage();
+  repeatedNestedEnum: number = TestAllTypes.NestedEnum.ZERO;
+  repeatedForeignEnum: number = ForeignEnum.FOREIGN_ZERO;
+  repeatedStringPiece: string = "";
+  repeatedCord: string = "";
+  repeatedLazyMessage: TestAllTypes.NestedMessage =
+    new TestAllTypes.NestedMessage();
+  // NOT IMPLEMENTED
 
   public static fields = [
     "optionalInt32",
@@ -186,10 +181,7 @@ export class TestAllTypes {
     "repeatedStringPiece",
     "repeatedCord",
     "repeatedLazyMessage",
-    "oneofUint32",
-    "oneofNestedMessage",
-    "oneofString",
-    "oneofBytes",
+    "oneof_field",
   ];
 
   public get fields() {
@@ -343,17 +335,8 @@ export class TestAllTypes {
     if (obj.repeatedLazyMessage !== undefined) {
       this.repeatedLazyMessage = obj.repeatedLazyMessage;
     }
-    if (obj.oneofUint32 !== undefined) {
-      this.oneofUint32 = obj.oneofUint32;
-    }
-    if (obj.oneofNestedMessage !== undefined) {
-      this.oneofNestedMessage = obj.oneofNestedMessage;
-    }
-    if (obj.oneofString !== undefined) {
-      this.oneofString = obj.oneofString;
-    }
-    if (obj.oneofBytes !== undefined) {
-      this.oneofBytes = obj.oneofBytes;
+    if (obj.oneof_field !== undefined) {
+      // NOT IMPLEMENTED
     }
   }
 
@@ -451,7 +434,7 @@ export class TestAllTypes {
     // ForeignMessage optional_foreign_message = 19
     if (m.optionalForeignMessage !== new ForeignMessage()) {
       w.uint32(154);
-      ForeignMessage.encode(m.optionalForeignMessage, w);
+      ForeignMessage.encode(m.optionalForeignMessage, w.fork()).ldelim();
     }
 
     // protobuf_unittest_import.ImportMessage optional_import_message = 20
@@ -462,20 +445,20 @@ export class TestAllTypes {
       w.uint32(162);
       unittest_import_models.protobuf_unittest_import.ImportMessage.encode(
         m.optionalImportMessage,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // TestAllTypes.NestedEnum optional_nested_enum = 21
     if (m.optionalNestedEnum !== TestAllTypes.NestedEnum.ZERO) {
       w.uint32(168);
-      w.uint32(m.optionalNestedEnum);
+      w.int32(m.optionalNestedEnum);
     }
 
     // ForeignEnum optional_foreign_enum = 22
     if (m.optionalForeignEnum !== ForeignEnum.FOREIGN_ZERO) {
       w.uint32(176);
-      w.uint32(m.optionalForeignEnum);
+      w.int32(m.optionalForeignEnum);
     }
 
     // string optional_string_piece = 24
@@ -498,20 +481,26 @@ export class TestAllTypes {
       w.uint32(210);
       unittest_import_public_models.protobuf_unittest_import.PublicImportMessage.encode(
         m.optionalPublicImportMessage,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // TestAllTypes.NestedMessage optional_lazy_message = 27
     if (m.optionalLazyMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(218);
-      TestAllTypes.NestedMessage.encode(m.optionalLazyMessage, w);
+      TestAllTypes.NestedMessage.encode(
+        m.optionalLazyMessage,
+        w.fork()
+      ).ldelim();
     }
 
     // TestAllTypes.NestedMessage optional_unverified_lazy_message = 28
     if (m.optionalUnverifiedLazyMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(226);
-      TestAllTypes.NestedMessage.encode(m.optionalUnverifiedLazyMessage, w);
+      TestAllTypes.NestedMessage.encode(
+        m.optionalUnverifiedLazyMessage,
+        w.fork()
+      ).ldelim();
     }
 
     // protobuf_unittest_import.ImportMessage optional_lazy_import_message = 115
@@ -522,163 +511,171 @@ export class TestAllTypes {
       w.uint32(922);
       unittest_import_models.protobuf_unittest_import.ImportMessage.encode(
         m.optionalLazyImportMessage,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // int32 repeated_int32 = 31
-    if (m.repeatedInt32 !== []) {
+    if (m.repeatedInt32 !== 0) {
       w.uint32(248);
       w.int32(m.repeatedInt32);
     }
 
     // int64 repeated_int64 = 32
-    if (m.repeatedInt64 !== []) {
+    if (m.repeatedInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(256);
       w.int64(m.repeatedInt64);
     }
 
     // uint32 repeated_uint32 = 33
-    if (m.repeatedUint32 !== []) {
+    if (m.repeatedUint32 !== 0) {
       w.uint32(264);
       w.uint32(m.repeatedUint32);
     }
 
     // uint64 repeated_uint64 = 34
-    if (m.repeatedUint64 !== []) {
+    if (m.repeatedUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(272);
       w.uint64(m.repeatedUint64);
     }
 
     // sint32 repeated_sint32 = 35
-    if (m.repeatedSint32 !== []) {
+    if (m.repeatedSint32 !== 0) {
       w.uint32(280);
       w.sint32(m.repeatedSint32);
     }
 
     // sint64 repeated_sint64 = 36
-    if (m.repeatedSint64 !== []) {
+    if (m.repeatedSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(288);
       w.sint64(m.repeatedSint64);
     }
 
     // fixed32 repeated_fixed32 = 37
-    if (m.repeatedFixed32 !== []) {
+    if (m.repeatedFixed32 !== 0) {
       w.uint32(301);
       w.fixed32(m.repeatedFixed32);
     }
 
     // fixed64 repeated_fixed64 = 38
-    if (m.repeatedFixed64 !== []) {
+    if (m.repeatedFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(305);
       w.fixed64(m.repeatedFixed64);
     }
 
     // sfixed32 repeated_sfixed32 = 39
-    if (m.repeatedSfixed32 !== []) {
+    if (m.repeatedSfixed32 !== 0) {
       w.uint32(317);
       w.sfixed32(m.repeatedSfixed32);
     }
 
     // sfixed64 repeated_sfixed64 = 40
-    if (m.repeatedSfixed64 !== []) {
+    if (m.repeatedSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(321);
       w.sfixed64(m.repeatedSfixed64);
     }
 
     // float repeated_float = 41
-    if (m.repeatedFloat !== []) {
+    if (m.repeatedFloat !== 0) {
       w.uint32(333);
       w.float(m.repeatedFloat);
     }
 
     // double repeated_double = 42
-    if (m.repeatedDouble !== []) {
+    if (m.repeatedDouble !== 0) {
       w.uint32(337);
       w.double(m.repeatedDouble);
     }
 
     // bool repeated_bool = 43
-    if (m.repeatedBool !== []) {
+    if (m.repeatedBool !== false) {
       w.uint32(344);
       w.bool(m.repeatedBool);
     }
 
     // string repeated_string = 44
-    if (m.repeatedString !== []) {
+    if (m.repeatedString !== "") {
       w.uint32(354);
       w.string(m.repeatedString);
     }
 
     // bytes repeated_bytes = 45
-    if (m.repeatedBytes !== []) {
+    if (m.repeatedBytes !== pjs.util.newBuffer(0)) {
       w.uint32(362);
       w.bytes(m.repeatedBytes);
     }
 
     // TestAllTypes.NestedMessage repeated_nested_message = 48
-    if (m.repeatedNestedMessage !== []) {
+    if (m.repeatedNestedMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(386);
-      TestAllTypes.NestedMessage.encode(m.repeatedNestedMessage, w);
+      TestAllTypes.NestedMessage.encode(
+        m.repeatedNestedMessage,
+        w.fork()
+      ).ldelim();
     }
 
     // ForeignMessage repeated_foreign_message = 49
-    if (m.repeatedForeignMessage !== []) {
+    if (m.repeatedForeignMessage !== new ForeignMessage()) {
       w.uint32(394);
-      ForeignMessage.encode(m.repeatedForeignMessage, w);
+      ForeignMessage.encode(m.repeatedForeignMessage, w.fork()).ldelim();
     }
 
     // protobuf_unittest_import.ImportMessage repeated_import_message = 50
-    if (m.repeatedImportMessage !== []) {
+    if (
+      m.repeatedImportMessage !==
+      new unittest_import_models.protobuf_unittest_import.ImportMessage()
+    ) {
       w.uint32(402);
       unittest_import_models.protobuf_unittest_import.ImportMessage.encode(
         m.repeatedImportMessage,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // TestAllTypes.NestedEnum repeated_nested_enum = 51
-    if (m.repeatedNestedEnum !== []) {
+    if (m.repeatedNestedEnum !== TestAllTypes.NestedEnum.ZERO) {
       w.uint32(408);
-      w.uint32(m.repeatedNestedEnum);
+      w.int32(m.repeatedNestedEnum);
     }
 
     // ForeignEnum repeated_foreign_enum = 52
-    if (m.repeatedForeignEnum !== []) {
+    if (m.repeatedForeignEnum !== ForeignEnum.FOREIGN_ZERO) {
       w.uint32(416);
-      w.uint32(m.repeatedForeignEnum);
+      w.int32(m.repeatedForeignEnum);
     }
 
     // string repeated_string_piece = 54
-    if (m.repeatedStringPiece !== []) {
+    if (m.repeatedStringPiece !== "") {
       w.uint32(434);
       w.string(m.repeatedStringPiece);
     }
 
     // string repeated_cord = 55
-    if (m.repeatedCord !== []) {
+    if (m.repeatedCord !== "") {
       w.uint32(442);
       w.string(m.repeatedCord);
     }
 
     // TestAllTypes.NestedMessage repeated_lazy_message = 57
-    if (m.repeatedLazyMessage !== []) {
+    if (m.repeatedLazyMessage !== new TestAllTypes.NestedMessage()) {
       w.uint32(458);
-      TestAllTypes.NestedMessage.encode(m.repeatedLazyMessage, w);
+      TestAllTypes.NestedMessage.encode(
+        m.repeatedLazyMessage,
+        w.fork()
+      ).ldelim();
     }
 
-    // oneof uint32 oneof_uint32 = 111
-
-    // oneof TestAllTypes.NestedMessage oneof_nested_message = 112
-
-    // oneof string oneof_string = 113
-
-    // oneof bytes oneof_bytes = 114
+    // NOT IMPLEMENTED
 
     return w;
   }
 
-  public static decode(m: TestAllTypes, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: TestAllTypes,
+    r: pjs.Reader,
+    length: number
+  ): TestAllTypes {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -759,13 +756,18 @@ export class TestAllTypes {
 
         // ForeignMessage optional_foreign_message = 19
         case 154:
-          m.optionalForeignMessage = ForeignMessage.decode(r, r.uint32());
+          m.optionalForeignMessage = ForeignMessage.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
           continue;
 
         // protobuf_unittest_import.ImportMessage optional_import_message = 20
         case 162:
           m.optionalImportMessage =
             unittest_import_models.protobuf_unittest_import.ImportMessage.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -773,12 +775,12 @@ export class TestAllTypes {
 
         // TestAllTypes.NestedEnum optional_nested_enum = 21
         case 168:
-          m.optionalNestedEnum = r.uint32();
+          m.optionalNestedEnum = r.int32();
           continue;
 
         // ForeignEnum optional_foreign_enum = 22
         case 176:
-          m.optionalForeignEnum = r.uint32();
+          m.optionalForeignEnum = r.int32();
           continue;
 
         // string optional_string_piece = 24
@@ -795,6 +797,7 @@ export class TestAllTypes {
         case 210:
           m.optionalPublicImportMessage =
             unittest_import_public_models.protobuf_unittest_import.PublicImportMessage.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -803,6 +806,7 @@ export class TestAllTypes {
         // TestAllTypes.NestedMessage optional_lazy_message = 27
         case 218:
           m.optionalLazyMessage = TestAllTypes.NestedMessage.decode(
+            undefined,
             r,
             r.uint32()
           );
@@ -811,6 +815,7 @@ export class TestAllTypes {
         // TestAllTypes.NestedMessage optional_unverified_lazy_message = 28
         case 226:
           m.optionalUnverifiedLazyMessage = TestAllTypes.NestedMessage.decode(
+            undefined,
             r,
             r.uint32()
           );
@@ -820,248 +825,153 @@ export class TestAllTypes {
         case 922:
           m.optionalLazyImportMessage =
             unittest_import_models.protobuf_unittest_import.ImportMessage.decode(
+              undefined,
               r,
               r.uint32()
             );
           continue;
 
-        // repeated int32 repeated_int32 = 31
+        // int32 repeated_int32 = 31
         case 248:
-          {
-            const value = r.int32();
-
-            m.repeatedInt32.push(value);
-          }
+          m.repeatedInt32 = r.int32();
           continue;
 
-        // repeated int64 repeated_int64 = 32
+        // int64 repeated_int64 = 32
         case 256:
-          {
-            const value = r.int64();
-
-            m.repeatedInt64.push(value);
-          }
+          m.repeatedInt64 = r.int64();
           continue;
 
-        // repeated uint32 repeated_uint32 = 33
+        // uint32 repeated_uint32 = 33
         case 264:
-          {
-            const value = r.uint32();
-
-            m.repeatedUint32.push(value);
-          }
+          m.repeatedUint32 = r.uint32();
           continue;
 
-        // repeated uint64 repeated_uint64 = 34
+        // uint64 repeated_uint64 = 34
         case 272:
-          {
-            const value = r.uint64();
-
-            m.repeatedUint64.push(value);
-          }
+          m.repeatedUint64 = r.uint64();
           continue;
 
-        // repeated sint32 repeated_sint32 = 35
+        // sint32 repeated_sint32 = 35
         case 280:
-          {
-            const value = r.sint32();
-
-            m.repeatedSint32.push(value);
-          }
+          m.repeatedSint32 = r.sint32();
           continue;
 
-        // repeated sint64 repeated_sint64 = 36
+        // sint64 repeated_sint64 = 36
         case 288:
-          {
-            const value = r.sint64();
-
-            m.repeatedSint64.push(value);
-          }
+          m.repeatedSint64 = r.sint64();
           continue;
 
-        // repeated fixed32 repeated_fixed32 = 37
+        // fixed32 repeated_fixed32 = 37
         case 301:
-          {
-            const value = r.fixed32();
-
-            m.repeatedFixed32.push(value);
-          }
+          m.repeatedFixed32 = r.fixed32();
           continue;
 
-        // repeated fixed64 repeated_fixed64 = 38
+        // fixed64 repeated_fixed64 = 38
         case 305:
-          {
-            const value = r.fixed64();
-
-            m.repeatedFixed64.push(value);
-          }
+          m.repeatedFixed64 = r.fixed64();
           continue;
 
-        // repeated sfixed32 repeated_sfixed32 = 39
+        // sfixed32 repeated_sfixed32 = 39
         case 317:
-          {
-            const value = r.sfixed32();
-
-            m.repeatedSfixed32.push(value);
-          }
+          m.repeatedSfixed32 = r.sfixed32();
           continue;
 
-        // repeated sfixed64 repeated_sfixed64 = 40
+        // sfixed64 repeated_sfixed64 = 40
         case 321:
-          {
-            const value = r.sfixed64();
-
-            m.repeatedSfixed64.push(value);
-          }
+          m.repeatedSfixed64 = r.sfixed64();
           continue;
 
-        // repeated float repeated_float = 41
+        // float repeated_float = 41
         case 333:
-          {
-            const value = r.float();
-
-            m.repeatedFloat.push(value);
-          }
+          m.repeatedFloat = r.float();
           continue;
 
-        // repeated double repeated_double = 42
+        // double repeated_double = 42
         case 337:
-          {
-            const value = r.double();
-
-            m.repeatedDouble.push(value);
-          }
+          m.repeatedDouble = r.double();
           continue;
 
-        // repeated bool repeated_bool = 43
+        // bool repeated_bool = 43
         case 344:
-          {
-            const value = r.bool();
-
-            m.repeatedBool.push(value);
-          }
+          m.repeatedBool = r.bool();
           continue;
 
-        // repeated string repeated_string = 44
+        // string repeated_string = 44
         case 354:
-          {
-            const value = r.string();
-
-            m.repeatedString.push(value);
-          }
+          m.repeatedString = r.string();
           continue;
 
-        // repeated bytes repeated_bytes = 45
+        // bytes repeated_bytes = 45
         case 362:
-          {
-            const value = r.bytes();
-
-            m.repeatedBytes.push(value);
-          }
+          m.repeatedBytes = r.bytes();
           continue;
 
-        // repeated TestAllTypes.NestedMessage repeated_nested_message = 48
+        // TestAllTypes.NestedMessage repeated_nested_message = 48
         case 386:
-          {
-            const value = TestAllTypes.NestedMessage.decode(r, r.uint32());
-
-            m.repeatedNestedMessage.push(value);
-          }
-          continue;
-
-        // repeated ForeignMessage repeated_foreign_message = 49
-        case 394:
-          {
-            const value = ForeignMessage.decode(r, r.uint32());
-
-            m.repeatedForeignMessage.push(value);
-          }
-          continue;
-
-        // repeated protobuf_unittest_import.ImportMessage repeated_import_message = 50
-        case 402:
-          {
-            const value =
-              unittest_import_models.protobuf_unittest_import.ImportMessage.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedImportMessage.push(value);
-          }
-          continue;
-
-        // repeated TestAllTypes.NestedEnum repeated_nested_enum = 51
-        case 408:
-          {
-            const value = r.uint32();
-
-            m.repeatedNestedEnum.push(value);
-          }
-          continue;
-
-        // repeated ForeignEnum repeated_foreign_enum = 52
-        case 416:
-          {
-            const value = r.uint32();
-
-            m.repeatedForeignEnum.push(value);
-          }
-          continue;
-
-        // repeated string repeated_string_piece = 54
-        case 434:
-          {
-            const value = r.string();
-
-            m.repeatedStringPiece.push(value);
-          }
-          continue;
-
-        // repeated string repeated_cord = 55
-        case 442:
-          {
-            const value = r.string();
-
-            m.repeatedCord.push(value);
-          }
-          continue;
-
-        // repeated TestAllTypes.NestedMessage repeated_lazy_message = 57
-        case 458:
-          {
-            const value = TestAllTypes.NestedMessage.decode(r, r.uint32());
-
-            m.repeatedLazyMessage.push(value);
-          }
-          continue;
-
-        // uint32 oneof_uint32 = 111
-        case 888:
-          m.oneofUint32 = r.uint32();
-          continue;
-
-        // TestAllTypes.NestedMessage oneof_nested_message = 112
-        case 898:
-          m.oneofNestedMessage = TestAllTypes.NestedMessage.decode(
+          m.repeatedNestedMessage = TestAllTypes.NestedMessage.decode(
+            undefined,
             r,
             r.uint32()
           );
           continue;
 
-        // string oneof_string = 113
-        case 906:
-          m.oneofString = r.string();
+        // ForeignMessage repeated_foreign_message = 49
+        case 394:
+          m.repeatedForeignMessage = ForeignMessage.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
           continue;
 
-        // bytes oneof_bytes = 114
-        case 914:
-          m.oneofBytes = r.bytes();
+        // protobuf_unittest_import.ImportMessage repeated_import_message = 50
+        case 402:
+          m.repeatedImportMessage =
+            unittest_import_models.protobuf_unittest_import.ImportMessage.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
+
+        // TestAllTypes.NestedEnum repeated_nested_enum = 51
+        case 408:
+          m.repeatedNestedEnum = r.int32();
+          continue;
+
+        // ForeignEnum repeated_foreign_enum = 52
+        case 416:
+          m.repeatedForeignEnum = r.int32();
+          continue;
+
+        // string repeated_string_piece = 54
+        case 434:
+          m.repeatedStringPiece = r.string();
+          continue;
+
+        // string repeated_cord = 55
+        case 442:
+          m.repeatedCord = r.string();
+          continue;
+
+        // TestAllTypes.NestedMessage repeated_lazy_message = 57
+        case 458:
+          m.repeatedLazyMessage = TestAllTypes.NestedMessage.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
+          continue;
+
+        // NOT IMPLEMENTED
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestAllTypes): TestAllTypesJSON {
@@ -1122,10 +1032,7 @@ export class TestAllTypes {
       repeatedStringPiece: m.repeatedStringPiece,
       repeatedCord: m.repeatedCord,
       repeatedLazyMessage: m.repeatedLazyMessage.toJSON(),
-      oneofUint32: m.oneofUint32,
-      oneofNestedMessage: m.oneofNestedMessage.toJSON(),
-      oneofString: m.oneofString,
-      oneofBytes: pjs.util.base64.encode(m.oneofBytes, 0, m.oneofBytes.length),
+      // NOT IMPLEMENTED
     };
   }
 
@@ -1210,16 +1117,7 @@ export class TestAllTypes {
     m.repeatedLazyMessage = new TestAllTypes.NestedMessage().fromJSON(
       obj.repeatedLazyMessage
     );
-    m.oneofUint32 = obj.oneofUint32;
-    m.oneofNestedMessage = new TestAllTypes.NestedMessage().fromJSON(
-      obj.oneofNestedMessage
-    );
-    m.oneofString = obj.oneofString;
-    {
-      const tmpBuffer = [];
-      pjs.util.base64.decode(obj.oneofBytes, tmpBuffer, 0);
-      m.oneofBytes = new pjs.util.Buffer(tmpBuffer);
-    }
+    // NOT IMPLEMENTED
 
     return m;
   }
@@ -1229,10 +1127,9 @@ export class TestAllTypes {
     return TestAllTypes.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestAllTypes {
-    const r = new pjs.Reader(b);
-    TestAllTypes.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestAllTypes {
+    const r = new pjs.Reader(buffer);
+    return TestAllTypes.decode(this, r, r.len);
   }
 
   toJSON(): TestAllTypesJSON {
@@ -1291,8 +1188,9 @@ export namespace TestAllTypes {
     public static decode(
       m: NestedMessage,
       r: pjs.Reader,
-      l: number
-    ): pjs.Reader {
+      length: number
+    ): NestedMessage {
+      const l = r.pos + length;
       while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
@@ -1301,9 +1199,13 @@ export namespace TestAllTypes {
             m.bb = r.int32();
             continue;
         }
+
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
       }
 
-      return r;
+      return m;
     }
 
     public static toJSON(m: NestedMessage): NestedMessageJSON {
@@ -1326,10 +1228,9 @@ export namespace TestAllTypes {
       return NestedMessage.encode(this, w).finish();
     }
 
-    deserialize(b: Uint8Array | Buffer): NestedMessage {
-      const r = new pjs.Reader(b);
-      NestedMessage.decode(this, r, r.len);
-      return this;
+    deserialize(buffer: Uint8Array | Buffer): NestedMessage {
+      const r = new pjs.Reader(buffer);
+      return NestedMessage.decode(this, r, r.len);
     }
 
     toJSON(): NestedMessageJSON {
@@ -1371,20 +1272,20 @@ export interface TestPackedTypesJSON {
 }
 
 export class TestPackedTypes {
-  packedInt32: number = [];
-  packedInt64: pjs.Long = [];
-  packedUint32: number = [];
-  packedUint64: pjs.Long = [];
-  packedSint32: number = [];
-  packedSint64: pjs.Long = [];
-  packedFixed32: number = [];
-  packedFixed64: pjs.Long = [];
-  packedSfixed32: number = [];
-  packedSfixed64: pjs.Long = [];
-  packedFloat: number = [];
-  packedDouble: number = [];
-  packedBool: boolean = [];
-  packedEnum: number = [];
+  packedInt32: number = 0;
+  packedInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  packedUint32: number = 0;
+  packedUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  packedSint32: number = 0;
+  packedSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  packedFixed32: number = 0;
+  packedFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  packedSfixed32: number = 0;
+  packedSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  packedFloat: number = 0;
+  packedDouble: number = 0;
+  packedBool: boolean = false;
+  packedEnum: number = ForeignEnum.FOREIGN_ZERO;
 
   public static fields = [
     "packedInt32",
@@ -1456,87 +1357,87 @@ export class TestPackedTypes {
 
   public static encode(m: TestPackedTypes, w: pjs.Writer): pjs.Writer {
     // int32 packed_int32 = 90
-    if (m.packedInt32 !== []) {
+    if (m.packedInt32 !== 0) {
       w.uint32(720);
       w.int32(m.packedInt32);
     }
 
     // int64 packed_int64 = 91
-    if (m.packedInt64 !== []) {
+    if (m.packedInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(728);
       w.int64(m.packedInt64);
     }
 
     // uint32 packed_uint32 = 92
-    if (m.packedUint32 !== []) {
+    if (m.packedUint32 !== 0) {
       w.uint32(736);
       w.uint32(m.packedUint32);
     }
 
     // uint64 packed_uint64 = 93
-    if (m.packedUint64 !== []) {
+    if (m.packedUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(744);
       w.uint64(m.packedUint64);
     }
 
     // sint32 packed_sint32 = 94
-    if (m.packedSint32 !== []) {
+    if (m.packedSint32 !== 0) {
       w.uint32(752);
       w.sint32(m.packedSint32);
     }
 
     // sint64 packed_sint64 = 95
-    if (m.packedSint64 !== []) {
+    if (m.packedSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(760);
       w.sint64(m.packedSint64);
     }
 
     // fixed32 packed_fixed32 = 96
-    if (m.packedFixed32 !== []) {
+    if (m.packedFixed32 !== 0) {
       w.uint32(773);
       w.fixed32(m.packedFixed32);
     }
 
     // fixed64 packed_fixed64 = 97
-    if (m.packedFixed64 !== []) {
+    if (m.packedFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(777);
       w.fixed64(m.packedFixed64);
     }
 
     // sfixed32 packed_sfixed32 = 98
-    if (m.packedSfixed32 !== []) {
+    if (m.packedSfixed32 !== 0) {
       w.uint32(789);
       w.sfixed32(m.packedSfixed32);
     }
 
     // sfixed64 packed_sfixed64 = 99
-    if (m.packedSfixed64 !== []) {
+    if (m.packedSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(793);
       w.sfixed64(m.packedSfixed64);
     }
 
     // float packed_float = 100
-    if (m.packedFloat !== []) {
+    if (m.packedFloat !== 0) {
       w.uint32(805);
       w.float(m.packedFloat);
     }
 
     // double packed_double = 101
-    if (m.packedDouble !== []) {
+    if (m.packedDouble !== 0) {
       w.uint32(809);
       w.double(m.packedDouble);
     }
 
     // bool packed_bool = 102
-    if (m.packedBool !== []) {
+    if (m.packedBool !== false) {
       w.uint32(816);
       w.bool(m.packedBool);
     }
 
     // ForeignEnum packed_enum = 103
-    if (m.packedEnum !== []) {
+    if (m.packedEnum !== ForeignEnum.FOREIGN_ZERO) {
       w.uint32(824);
-      w.uint32(m.packedEnum);
+      w.int32(m.packedEnum);
     }
 
     return w;
@@ -1545,140 +1446,89 @@ export class TestPackedTypes {
   public static decode(
     m: TestPackedTypes,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestPackedTypes {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
-        // repeated int32 packed_int32 = 90
+        // int32 packed_int32 = 90
         case 720:
-          {
-            const value = r.int32();
-
-            m.packedInt32.push(value);
-          }
+          m.packedInt32 = r.int32();
           continue;
 
-        // repeated int64 packed_int64 = 91
+        // int64 packed_int64 = 91
         case 728:
-          {
-            const value = r.int64();
-
-            m.packedInt64.push(value);
-          }
+          m.packedInt64 = r.int64();
           continue;
 
-        // repeated uint32 packed_uint32 = 92
+        // uint32 packed_uint32 = 92
         case 736:
-          {
-            const value = r.uint32();
-
-            m.packedUint32.push(value);
-          }
+          m.packedUint32 = r.uint32();
           continue;
 
-        // repeated uint64 packed_uint64 = 93
+        // uint64 packed_uint64 = 93
         case 744:
-          {
-            const value = r.uint64();
-
-            m.packedUint64.push(value);
-          }
+          m.packedUint64 = r.uint64();
           continue;
 
-        // repeated sint32 packed_sint32 = 94
+        // sint32 packed_sint32 = 94
         case 752:
-          {
-            const value = r.sint32();
-
-            m.packedSint32.push(value);
-          }
+          m.packedSint32 = r.sint32();
           continue;
 
-        // repeated sint64 packed_sint64 = 95
+        // sint64 packed_sint64 = 95
         case 760:
-          {
-            const value = r.sint64();
-
-            m.packedSint64.push(value);
-          }
+          m.packedSint64 = r.sint64();
           continue;
 
-        // repeated fixed32 packed_fixed32 = 96
+        // fixed32 packed_fixed32 = 96
         case 773:
-          {
-            const value = r.fixed32();
-
-            m.packedFixed32.push(value);
-          }
+          m.packedFixed32 = r.fixed32();
           continue;
 
-        // repeated fixed64 packed_fixed64 = 97
+        // fixed64 packed_fixed64 = 97
         case 777:
-          {
-            const value = r.fixed64();
-
-            m.packedFixed64.push(value);
-          }
+          m.packedFixed64 = r.fixed64();
           continue;
 
-        // repeated sfixed32 packed_sfixed32 = 98
+        // sfixed32 packed_sfixed32 = 98
         case 789:
-          {
-            const value = r.sfixed32();
-
-            m.packedSfixed32.push(value);
-          }
+          m.packedSfixed32 = r.sfixed32();
           continue;
 
-        // repeated sfixed64 packed_sfixed64 = 99
+        // sfixed64 packed_sfixed64 = 99
         case 793:
-          {
-            const value = r.sfixed64();
-
-            m.packedSfixed64.push(value);
-          }
+          m.packedSfixed64 = r.sfixed64();
           continue;
 
-        // repeated float packed_float = 100
+        // float packed_float = 100
         case 805:
-          {
-            const value = r.float();
-
-            m.packedFloat.push(value);
-          }
+          m.packedFloat = r.float();
           continue;
 
-        // repeated double packed_double = 101
+        // double packed_double = 101
         case 809:
-          {
-            const value = r.double();
-
-            m.packedDouble.push(value);
-          }
+          m.packedDouble = r.double();
           continue;
 
-        // repeated bool packed_bool = 102
+        // bool packed_bool = 102
         case 816:
-          {
-            const value = r.bool();
-
-            m.packedBool.push(value);
-          }
+          m.packedBool = r.bool();
           continue;
 
-        // repeated ForeignEnum packed_enum = 103
+        // ForeignEnum packed_enum = 103
         case 824:
-          {
-            const value = r.uint32();
-
-            m.packedEnum.push(value);
-          }
+          m.packedEnum = r.int32();
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestPackedTypes): TestPackedTypesJSON {
@@ -1727,10 +1577,9 @@ export class TestPackedTypes {
     return TestPackedTypes.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestPackedTypes {
-    const r = new pjs.Reader(b);
-    TestPackedTypes.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestPackedTypes {
+    const r = new pjs.Reader(buffer);
+    return TestPackedTypes.decode(this, r, r.len);
   }
 
   toJSON(): TestPackedTypesJSON {
@@ -1771,20 +1620,20 @@ export interface TestUnpackedTypesJSON {
 }
 
 export class TestUnpackedTypes {
-  repeatedInt32: number = [];
-  repeatedInt64: pjs.Long = [];
-  repeatedUint32: number = [];
-  repeatedUint64: pjs.Long = [];
-  repeatedSint32: number = [];
-  repeatedSint64: pjs.Long = [];
-  repeatedFixed32: number = [];
-  repeatedFixed64: pjs.Long = [];
-  repeatedSfixed32: number = [];
-  repeatedSfixed64: pjs.Long = [];
-  repeatedFloat: number = [];
-  repeatedDouble: number = [];
-  repeatedBool: boolean = [];
-  repeatedNestedEnum: number = [];
+  repeatedInt32: number = 0;
+  repeatedInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedUint32: number = 0;
+  repeatedUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  repeatedSint32: number = 0;
+  repeatedSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedFixed32: number = 0;
+  repeatedFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  repeatedSfixed32: number = 0;
+  repeatedSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedFloat: number = 0;
+  repeatedDouble: number = 0;
+  repeatedBool: boolean = false;
+  repeatedNestedEnum: number = TestAllTypes.NestedEnum.ZERO;
 
   public static fields = [
     "repeatedInt32",
@@ -1856,87 +1705,87 @@ export class TestUnpackedTypes {
 
   public static encode(m: TestUnpackedTypes, w: pjs.Writer): pjs.Writer {
     // int32 repeated_int32 = 1
-    if (m.repeatedInt32 !== []) {
+    if (m.repeatedInt32 !== 0) {
       w.uint32(8);
       w.int32(m.repeatedInt32);
     }
 
     // int64 repeated_int64 = 2
-    if (m.repeatedInt64 !== []) {
+    if (m.repeatedInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(16);
       w.int64(m.repeatedInt64);
     }
 
     // uint32 repeated_uint32 = 3
-    if (m.repeatedUint32 !== []) {
+    if (m.repeatedUint32 !== 0) {
       w.uint32(24);
       w.uint32(m.repeatedUint32);
     }
 
     // uint64 repeated_uint64 = 4
-    if (m.repeatedUint64 !== []) {
+    if (m.repeatedUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(32);
       w.uint64(m.repeatedUint64);
     }
 
     // sint32 repeated_sint32 = 5
-    if (m.repeatedSint32 !== []) {
+    if (m.repeatedSint32 !== 0) {
       w.uint32(40);
       w.sint32(m.repeatedSint32);
     }
 
     // sint64 repeated_sint64 = 6
-    if (m.repeatedSint64 !== []) {
+    if (m.repeatedSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(48);
       w.sint64(m.repeatedSint64);
     }
 
     // fixed32 repeated_fixed32 = 7
-    if (m.repeatedFixed32 !== []) {
+    if (m.repeatedFixed32 !== 0) {
       w.uint32(61);
       w.fixed32(m.repeatedFixed32);
     }
 
     // fixed64 repeated_fixed64 = 8
-    if (m.repeatedFixed64 !== []) {
+    if (m.repeatedFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(65);
       w.fixed64(m.repeatedFixed64);
     }
 
     // sfixed32 repeated_sfixed32 = 9
-    if (m.repeatedSfixed32 !== []) {
+    if (m.repeatedSfixed32 !== 0) {
       w.uint32(77);
       w.sfixed32(m.repeatedSfixed32);
     }
 
     // sfixed64 repeated_sfixed64 = 10
-    if (m.repeatedSfixed64 !== []) {
+    if (m.repeatedSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(81);
       w.sfixed64(m.repeatedSfixed64);
     }
 
     // float repeated_float = 11
-    if (m.repeatedFloat !== []) {
+    if (m.repeatedFloat !== 0) {
       w.uint32(93);
       w.float(m.repeatedFloat);
     }
 
     // double repeated_double = 12
-    if (m.repeatedDouble !== []) {
+    if (m.repeatedDouble !== 0) {
       w.uint32(97);
       w.double(m.repeatedDouble);
     }
 
     // bool repeated_bool = 13
-    if (m.repeatedBool !== []) {
+    if (m.repeatedBool !== false) {
       w.uint32(104);
       w.bool(m.repeatedBool);
     }
 
     // TestAllTypes.NestedEnum repeated_nested_enum = 14
-    if (m.repeatedNestedEnum !== []) {
+    if (m.repeatedNestedEnum !== TestAllTypes.NestedEnum.ZERO) {
       w.uint32(112);
-      w.uint32(m.repeatedNestedEnum);
+      w.int32(m.repeatedNestedEnum);
     }
 
     return w;
@@ -1945,140 +1794,89 @@ export class TestUnpackedTypes {
   public static decode(
     m: TestUnpackedTypes,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestUnpackedTypes {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
-        // repeated int32 repeated_int32 = 1
+        // int32 repeated_int32 = 1
         case 8:
-          {
-            const value = r.int32();
-
-            m.repeatedInt32.push(value);
-          }
+          m.repeatedInt32 = r.int32();
           continue;
 
-        // repeated int64 repeated_int64 = 2
+        // int64 repeated_int64 = 2
         case 16:
-          {
-            const value = r.int64();
-
-            m.repeatedInt64.push(value);
-          }
+          m.repeatedInt64 = r.int64();
           continue;
 
-        // repeated uint32 repeated_uint32 = 3
+        // uint32 repeated_uint32 = 3
         case 24:
-          {
-            const value = r.uint32();
-
-            m.repeatedUint32.push(value);
-          }
+          m.repeatedUint32 = r.uint32();
           continue;
 
-        // repeated uint64 repeated_uint64 = 4
+        // uint64 repeated_uint64 = 4
         case 32:
-          {
-            const value = r.uint64();
-
-            m.repeatedUint64.push(value);
-          }
+          m.repeatedUint64 = r.uint64();
           continue;
 
-        // repeated sint32 repeated_sint32 = 5
+        // sint32 repeated_sint32 = 5
         case 40:
-          {
-            const value = r.sint32();
-
-            m.repeatedSint32.push(value);
-          }
+          m.repeatedSint32 = r.sint32();
           continue;
 
-        // repeated sint64 repeated_sint64 = 6
+        // sint64 repeated_sint64 = 6
         case 48:
-          {
-            const value = r.sint64();
-
-            m.repeatedSint64.push(value);
-          }
+          m.repeatedSint64 = r.sint64();
           continue;
 
-        // repeated fixed32 repeated_fixed32 = 7
+        // fixed32 repeated_fixed32 = 7
         case 61:
-          {
-            const value = r.fixed32();
-
-            m.repeatedFixed32.push(value);
-          }
+          m.repeatedFixed32 = r.fixed32();
           continue;
 
-        // repeated fixed64 repeated_fixed64 = 8
+        // fixed64 repeated_fixed64 = 8
         case 65:
-          {
-            const value = r.fixed64();
-
-            m.repeatedFixed64.push(value);
-          }
+          m.repeatedFixed64 = r.fixed64();
           continue;
 
-        // repeated sfixed32 repeated_sfixed32 = 9
+        // sfixed32 repeated_sfixed32 = 9
         case 77:
-          {
-            const value = r.sfixed32();
-
-            m.repeatedSfixed32.push(value);
-          }
+          m.repeatedSfixed32 = r.sfixed32();
           continue;
 
-        // repeated sfixed64 repeated_sfixed64 = 10
+        // sfixed64 repeated_sfixed64 = 10
         case 81:
-          {
-            const value = r.sfixed64();
-
-            m.repeatedSfixed64.push(value);
-          }
+          m.repeatedSfixed64 = r.sfixed64();
           continue;
 
-        // repeated float repeated_float = 11
+        // float repeated_float = 11
         case 93:
-          {
-            const value = r.float();
-
-            m.repeatedFloat.push(value);
-          }
+          m.repeatedFloat = r.float();
           continue;
 
-        // repeated double repeated_double = 12
+        // double repeated_double = 12
         case 97:
-          {
-            const value = r.double();
-
-            m.repeatedDouble.push(value);
-          }
+          m.repeatedDouble = r.double();
           continue;
 
-        // repeated bool repeated_bool = 13
+        // bool repeated_bool = 13
         case 104:
-          {
-            const value = r.bool();
-
-            m.repeatedBool.push(value);
-          }
+          m.repeatedBool = r.bool();
           continue;
 
-        // repeated TestAllTypes.NestedEnum repeated_nested_enum = 14
+        // TestAllTypes.NestedEnum repeated_nested_enum = 14
         case 112:
-          {
-            const value = r.uint32();
-
-            m.repeatedNestedEnum.push(value);
-          }
+          m.repeatedNestedEnum = r.int32();
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestUnpackedTypes): TestUnpackedTypesJSON {
@@ -2127,10 +1925,9 @@ export class TestUnpackedTypes {
     return TestUnpackedTypes.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestUnpackedTypes {
-    const r = new pjs.Reader(b);
-    TestUnpackedTypes.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestUnpackedTypes {
+    const r = new pjs.Reader(buffer);
+    return TestUnpackedTypes.decode(this, r, r.len);
   }
 
   toJSON(): TestUnpackedTypesJSON {
@@ -2183,13 +1980,13 @@ export class NestedTestAllTypes {
     // NestedTestAllTypes child = 1
     if (m.child !== new NestedTestAllTypes()) {
       w.uint32(10);
-      NestedTestAllTypes.encode(m.child, w);
+      NestedTestAllTypes.encode(m.child, w.fork()).ldelim();
     }
 
     // TestAllTypes payload = 2
     if (m.payload !== new TestAllTypes()) {
       w.uint32(18);
-      TestAllTypes.encode(m.payload, w);
+      TestAllTypes.encode(m.payload, w.fork()).ldelim();
     }
 
     return w;
@@ -2198,24 +1995,29 @@ export class NestedTestAllTypes {
   public static decode(
     m: NestedTestAllTypes,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): NestedTestAllTypes {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // NestedTestAllTypes child = 1
         case 10:
-          m.child = NestedTestAllTypes.decode(r, r.uint32());
+          m.child = NestedTestAllTypes.decode(undefined, r, r.uint32());
           continue;
 
         // TestAllTypes payload = 2
         case 18:
-          m.payload = TestAllTypes.decode(r, r.uint32());
+          m.payload = TestAllTypes.decode(undefined, r, r.uint32());
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: NestedTestAllTypes): NestedTestAllTypesJSON {
@@ -2240,10 +2042,9 @@ export class NestedTestAllTypes {
     return NestedTestAllTypes.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): NestedTestAllTypes {
-    const r = new pjs.Reader(b);
-    NestedTestAllTypes.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): NestedTestAllTypes {
+    const r = new pjs.Reader(buffer);
+    return NestedTestAllTypes.decode(this, r, r.len);
   }
 
   toJSON(): NestedTestAllTypesJSON {
@@ -2300,8 +2101,9 @@ export class ForeignMessage {
   public static decode(
     m: ForeignMessage,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): ForeignMessage {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -2310,9 +2112,13 @@ export class ForeignMessage {
           m.c = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: ForeignMessage): ForeignMessageJSON {
@@ -2335,10 +2141,9 @@ export class ForeignMessage {
     return ForeignMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): ForeignMessage {
-    const r = new pjs.Reader(b);
-    ForeignMessage.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): ForeignMessage {
+    const r = new pjs.Reader(buffer);
+    return ForeignMessage.decode(this, r, r.len);
   }
 
   toJSON(): ForeignMessageJSON {
@@ -2381,15 +2186,20 @@ export class TestEmptyMessage {
   public static decode(
     m: TestEmptyMessage,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestEmptyMessage {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestEmptyMessage): TestEmptyMessageJSON {
@@ -2408,10 +2218,9 @@ export class TestEmptyMessage {
     return TestEmptyMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestEmptyMessage {
-    const r = new pjs.Reader(b);
-    TestEmptyMessage.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestEmptyMessage {
+    const r = new pjs.Reader(buffer);
+    return TestEmptyMessage.decode(this, r, r.len);
   }
 
   toJSON(): TestEmptyMessageJSON {
@@ -2468,8 +2277,9 @@ export class TestMessageWithDummy {
   public static decode(
     m: TestMessageWithDummy,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestMessageWithDummy {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -2478,9 +2288,13 @@ export class TestMessageWithDummy {
           m.dummy = r.bool();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestMessageWithDummy): TestMessageWithDummyJSON {
@@ -2503,10 +2317,9 @@ export class TestMessageWithDummy {
     return TestMessageWithDummy.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestMessageWithDummy {
-    const r = new pjs.Reader(b);
-    TestMessageWithDummy.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestMessageWithDummy {
+    const r = new pjs.Reader(buffer);
+    return TestMessageWithDummy.decode(this, r, r.len);
   }
 
   toJSON(): TestMessageWithDummyJSON {
@@ -2530,13 +2343,13 @@ export enum ForeignEnum {
 }
 
 export interface TestOneof2JSON {
-  fooEnum?: string;
+  // NOT IMPLEMENTED
 }
 
 export class TestOneof2 {
-  fooEnum?: number = TestOneof2.NestedEnum.UNKNOWN;
+  // NOT IMPLEMENTED
 
-  public static fields = ["fooEnum"];
+  public static fields = ["foo"];
 
   public get fields() {
     return TestOneof2.fields;
@@ -2545,39 +2358,48 @@ export class TestOneof2 {
   constructor(obj?: TestOneof2) {
     if (!obj) return;
 
-    if (obj.fooEnum !== undefined) {
-      this.fooEnum = obj.fooEnum;
+    if (obj.foo !== undefined) {
+      // NOT IMPLEMENTED
     }
   }
 
   public static encode(m: TestOneof2, w: pjs.Writer): pjs.Writer {
-    // oneof TestOneof2.NestedEnum foo_enum = 6
+    // NOT IMPLEMENTED
 
     return w;
   }
 
-  public static decode(m: TestOneof2, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: TestOneof2,
+    r: pjs.Reader,
+    length: number
+  ): TestOneof2 {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
-      switch (tag) {
-        // TestOneof2.NestedEnum foo_enum = 6
-        case 48:
-          m.fooEnum = r.uint32();
-          continue;
+      switch (
+        tag
+
+        // NOT IMPLEMENTED
+      ) {
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestOneof2): TestOneof2JSON {
     return {
-      fooEnum: TestOneof2.NestedEnum[m.fooEnum],
+      // NOT IMPLEMENTED
     };
   }
 
   public static fromJSON(m: TestOneof2, obj: TestOneof2JSON): TestOneof2 {
-    m.fooEnum = TestOneof2.NestedEnum[obj.fooEnum];
+    // NOT IMPLEMENTED
 
     return m;
   }
@@ -2587,10 +2409,9 @@ export class TestOneof2 {
     return TestOneof2.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestOneof2 {
-    const r = new pjs.Reader(b);
-    TestOneof2.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestOneof2 {
+    const r = new pjs.Reader(buffer);
+    return TestOneof2.decode(this, r, r.len);
   }
 
   toJSON(): TestOneof2JSON {

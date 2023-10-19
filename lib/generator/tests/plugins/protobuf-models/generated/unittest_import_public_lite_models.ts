@@ -44,8 +44,9 @@ export class PublicImportMessageLite {
   public static decode(
     m: PublicImportMessageLite,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): PublicImportMessageLite {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -54,9 +55,13 @@ export class PublicImportMessageLite {
           m.e = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(
@@ -81,10 +86,9 @@ export class PublicImportMessageLite {
     return PublicImportMessageLite.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): PublicImportMessageLite {
-    const r = new pjs.Reader(b);
-    PublicImportMessageLite.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): PublicImportMessageLite {
+    const r = new pjs.Reader(buffer);
+    return PublicImportMessageLite.decode(this, r, r.len);
   }
 
   toJSON(): PublicImportMessageLiteJSON {

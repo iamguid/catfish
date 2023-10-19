@@ -1,7 +1,7 @@
 import { MapField } from "protobufjs";
 import { CtxEnum, CtxEnumField, CtxFile, CtxMapField, CtxMessage, CtxMessageField, CtxOneof, CtxTypeInfo } from "./reflection";
 import { templates } from "./templates";
-import { getScalarDefaultValue } from "./utils";
+import { getScalarDefaultValue, getTag } from "./utils";
 
 export const modelsTemplate = (ctx: CtxFile): string => `
   ${templates.render('header', {
@@ -115,7 +115,7 @@ export const jsonIfaceTemplate = (ctx: { message: CtxMessage }) => `
       }
 
       if (field instanceof CtxOneof) {
-        return `NOT IMPLEMENTED`
+        return `// NOT IMPLEMENTED`
       }
 
       if (field instanceof CtxMessageField) {
@@ -157,7 +157,7 @@ export const modelClassCtorTemplate = (ctx: { message: CtxMessage }): string => 
             }
 
             if (field instanceof CtxOneof) {
-              return `NOT IMPLEMENTED`
+              return `// NOT IMPLEMENTED`
             }
 
             if (field instanceof CtxMessageField) {
@@ -177,7 +177,7 @@ export const modelClassFieldsTemplate = (ctx: { message: CtxMessage }): string =
     }
 
     if (field instanceof CtxOneof) {
-      return `NOT IMPLEMENTED`
+      return `// NOT IMPLEMENTED`
     }
 
     if (field instanceof CtxMessageField) {
@@ -199,7 +199,7 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
 
         if (field instanceof CtxOneof) {
           return `
-              NOT IMPLEMENTED
+              // NOT IMPLEMENTED
           `
         }
 
@@ -284,7 +284,7 @@ export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string =
     
             if (field instanceof CtxOneof) {
               return `
-                  NOT IMPLEMENTED
+                  // NOT IMPLEMENTED
               `
             }
     
@@ -319,7 +319,7 @@ export const modelClassToJSONTemplate = (ctx: { message: CtxMessage }): string =
           }
 
           if (field instanceof CtxOneof) {
-            return `NOT IMPLEMENTED`
+            return `// NOT IMPLEMENTED`
           }
 
           if (field instanceof CtxMessageField) {
@@ -348,11 +348,19 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
         }
 
         if (field instanceof CtxOneof) {
-          return `NOT IMPLEMENTED`
+          return `// NOT IMPLEMENTED`
         }
 
         if (field instanceof CtxMessageField) {
-          return `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+          if (field.typeInfo.typeMarker === "Bytes") {
+            return `{
+              const tmpBuffer = []
+              pjs.util.base64.decode(obj.${field.name}, tmpBuffer, 0);
+              m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo, variable: 'tmpBuffer' })}
+            }`
+          } else {
+            return `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+          }
         }
       }).join('\n')}
 

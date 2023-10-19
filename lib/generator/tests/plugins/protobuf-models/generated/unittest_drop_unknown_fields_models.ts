@@ -46,13 +46,14 @@ export class Foo {
     // Foo.NestedEnum enum_value = 2
     if (m.enumValue !== Foo.NestedEnum.FOO) {
       w.uint32(16);
-      w.uint32(m.enumValue);
+      w.int32(m.enumValue);
     }
 
     return w;
   }
 
-  public static decode(m: Foo, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(m: Foo, r: pjs.Reader, length: number): Foo {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -63,12 +64,16 @@ export class Foo {
 
         // Foo.NestedEnum enum_value = 2
         case 16:
-          m.enumValue = r.uint32();
+          m.enumValue = r.int32();
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: Foo): FooJSON {
@@ -90,10 +95,9 @@ export class Foo {
     return Foo.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): Foo {
-    const r = new pjs.Reader(b);
-    Foo.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): Foo {
+    const r = new pjs.Reader(buffer);
+    return Foo.decode(this, r, r.len);
   }
 
   toJSON(): FooJSON {
@@ -152,7 +156,7 @@ export class FooWithExtraFields {
     // FooWithExtraFields.NestedEnum enum_value = 2
     if (m.enumValue !== FooWithExtraFields.NestedEnum.FOO) {
       w.uint32(16);
-      w.uint32(m.enumValue);
+      w.int32(m.enumValue);
     }
 
     // int32 extra_int32_value = 3
@@ -167,8 +171,9 @@ export class FooWithExtraFields {
   public static decode(
     m: FooWithExtraFields,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): FooWithExtraFields {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -179,7 +184,7 @@ export class FooWithExtraFields {
 
         // FooWithExtraFields.NestedEnum enum_value = 2
         case 16:
-          m.enumValue = r.uint32();
+          m.enumValue = r.int32();
           continue;
 
         // int32 extra_int32_value = 3
@@ -187,9 +192,13 @@ export class FooWithExtraFields {
           m.extraInt32Value = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: FooWithExtraFields): FooWithExtraFieldsJSON {
@@ -216,10 +225,9 @@ export class FooWithExtraFields {
     return FooWithExtraFields.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): FooWithExtraFields {
-    const r = new pjs.Reader(b);
-    FooWithExtraFields.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): FooWithExtraFields {
+    const r = new pjs.Reader(buffer);
+    return FooWithExtraFields.decode(this, r, r.len);
   }
 
   toJSON(): FooWithExtraFieldsJSON {

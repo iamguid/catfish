@@ -21,6 +21,86 @@ export class TestProto3BytesMap {
 
   public static fields = ["mapBytes", "mapString"];
 
+  // map<int32, bytes> map_bytes = 1
+  public static encodeMapBytes(
+    m: Map<number, Uint8Array | Buffer>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(10);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.int32(key);
+      w.uint32(18);
+      w2.bytes(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<int32, string> map_string = 2
+  public static encodeMapString(
+    m: Map<number, string>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(18);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.int32(key);
+      w.uint32(18);
+      w2.string(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<int32, bytes> map_bytes = 1
+  public static decodeMapBytes(
+    r: pjs.Reader,
+    length: number
+  ): [number, Uint8Array | Buffer] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.int32();
+          continue;
+        case 18:
+          v = r.bytes();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<int32, string> map_string = 2
+  public static decodeMapString(
+    r: pjs.Reader,
+    length: number
+  ): [number, string] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.int32();
+          continue;
+        case 18:
+          v = r.string();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
   public get fields() {
     return TestProto3BytesMap.fields;
   }
@@ -42,16 +122,10 @@ export class TestProto3BytesMap {
 
   public static encode(m: TestProto3BytesMap, w: pjs.Writer): pjs.Writer {
     // map<int32, bytes> map_bytes = 1
-    for (const [key, val] of m.mapBytes) {
-      w.int32(key);
-      w.bytes(val);
-    }
+    TestProto3BytesMap.encodeMapBytes(m.mapBytes, w);
 
     // map<int32, string> map_string = 2
-    for (const [key, val] of m.mapString) {
-      w.int32(key);
-      w.string(val);
-    }
+    TestProto3BytesMap.encodeMapString(m.mapString, w);
 
     return w;
   }
@@ -59,40 +133,35 @@ export class TestProto3BytesMap {
   public static decode(
     m: TestProto3BytesMap,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestProto3BytesMap {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // map<int32, bytes> map_bytes = 1
         case 10:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.int32();
-            const valueTag = r.uint32();
-            const value = r.bytes();
-
-            m.mapBytes.set(key, value);
+            const [k, v] = TestProto3BytesMap.decodeMapBytes(r, r.uint32());
+            m.mapBytes.set(k, v);
           }
           continue;
 
         // map<int32, string> map_string = 2
         case 18:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.int32();
-            const valueTag = r.uint32();
-            const value = r.string();
-
-            m.mapString.set(key, value);
+            const [k, v] = TestProto3BytesMap.decodeMapString(r, r.uint32());
+            m.mapString.set(k, v);
           }
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestProto3BytesMap): TestProto3BytesMapJSON {
@@ -123,10 +192,9 @@ export class TestProto3BytesMap {
     return TestProto3BytesMap.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestProto3BytesMap {
-    const r = new pjs.Reader(b);
-    TestProto3BytesMap.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestProto3BytesMap {
+    const r = new pjs.Reader(buffer);
+    return TestProto3BytesMap.decode(this, r, r.len);
   }
 
   toJSON(): TestProto3BytesMapJSON {

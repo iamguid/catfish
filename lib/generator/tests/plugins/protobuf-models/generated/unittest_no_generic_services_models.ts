@@ -45,7 +45,12 @@ export class TestMessage {
     return w;
   }
 
-  public static decode(m: TestMessage, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: TestMessage,
+    r: pjs.Reader,
+    length: number
+  ): TestMessage {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -54,9 +59,13 @@ export class TestMessage {
           m.a = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestMessage): TestMessageJSON {
@@ -76,10 +85,9 @@ export class TestMessage {
     return TestMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestMessage {
-    const r = new pjs.Reader(b);
-    TestMessage.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestMessage {
+    const r = new pjs.Reader(buffer);
+    return TestMessage.decode(this, r, r.len);
   }
 
   toJSON(): TestMessageJSON {

@@ -23,7 +23,8 @@ export class TestAny {
   int32Value: number = 0;
   anyValue: google_protobuf_any_models.google.protobuf.Any =
     new google_protobuf_any_models.google.protobuf.Any();
-  repeatedAnyValue: google_protobuf_any_models.google.protobuf.Any = [];
+  repeatedAnyValue: google_protobuf_any_models.google.protobuf.Any =
+    new google_protobuf_any_models.google.protobuf.Any();
   text: string = "";
 
   public static fields = ["int32Value", "anyValue", "repeatedAnyValue", "text"];
@@ -59,16 +60,22 @@ export class TestAny {
     // google.protobuf.Any any_value = 2
     if (m.anyValue !== new google_protobuf_any_models.google.protobuf.Any()) {
       w.uint32(18);
-      google_protobuf_any_models.google.protobuf.Any.encode(m.anyValue, w);
+      google_protobuf_any_models.google.protobuf.Any.encode(
+        m.anyValue,
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Any repeated_any_value = 3
-    if (m.repeatedAnyValue !== []) {
+    if (
+      m.repeatedAnyValue !==
+      new google_protobuf_any_models.google.protobuf.Any()
+    ) {
       w.uint32(26);
       google_protobuf_any_models.google.protobuf.Any.encode(
         m.repeatedAnyValue,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // string text = 4
@@ -80,7 +87,8 @@ export class TestAny {
     return w;
   }
 
-  public static decode(m: TestAny, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(m: TestAny, r: pjs.Reader, length: number): TestAny {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -92,21 +100,20 @@ export class TestAny {
         // google.protobuf.Any any_value = 2
         case 18:
           m.anyValue = google_protobuf_any_models.google.protobuf.Any.decode(
+            undefined,
             r,
             r.uint32()
           );
           continue;
 
-        // repeated google.protobuf.Any repeated_any_value = 3
+        // google.protobuf.Any repeated_any_value = 3
         case 26:
-          {
-            const value = google_protobuf_any_models.google.protobuf.Any.decode(
+          m.repeatedAnyValue =
+            google_protobuf_any_models.google.protobuf.Any.decode(
+              undefined,
               r,
               r.uint32()
             );
-
-            m.repeatedAnyValue.push(value);
-          }
           continue;
 
         // string text = 4
@@ -114,9 +121,13 @@ export class TestAny {
           m.text = r.string();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestAny): TestAnyJSON {
@@ -147,10 +158,9 @@ export class TestAny {
     return TestAny.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestAny {
-    const r = new pjs.Reader(b);
-    TestAny.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestAny {
+    const r = new pjs.Reader(buffer);
+    return TestAny.decode(this, r, r.len);
   }
 
   toJSON(): TestAnyJSON {

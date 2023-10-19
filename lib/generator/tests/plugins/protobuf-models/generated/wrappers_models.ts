@@ -41,7 +41,12 @@ export class DoubleValue {
     return w;
   }
 
-  public static decode(m: DoubleValue, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: DoubleValue,
+    r: pjs.Reader,
+    length: number
+  ): DoubleValue {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -50,9 +55,13 @@ export class DoubleValue {
           m.value = r.double();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: DoubleValue): DoubleValueJSON {
@@ -72,10 +81,9 @@ export class DoubleValue {
     return DoubleValue.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): DoubleValue {
-    const r = new pjs.Reader(b);
-    DoubleValue.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): DoubleValue {
+    const r = new pjs.Reader(buffer);
+    return DoubleValue.decode(this, r, r.len);
   }
 
   toJSON(): DoubleValueJSON {
@@ -122,7 +130,12 @@ export class FloatValue {
     return w;
   }
 
-  public static decode(m: FloatValue, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: FloatValue,
+    r: pjs.Reader,
+    length: number
+  ): FloatValue {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -131,9 +144,13 @@ export class FloatValue {
           m.value = r.float();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: FloatValue): FloatValueJSON {
@@ -153,10 +170,9 @@ export class FloatValue {
     return FloatValue.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): FloatValue {
-    const r = new pjs.Reader(b);
-    FloatValue.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): FloatValue {
+    const r = new pjs.Reader(buffer);
+    return FloatValue.decode(this, r, r.len);
   }
 
   toJSON(): FloatValueJSON {
@@ -203,7 +219,12 @@ export class Int64Value {
     return w;
   }
 
-  public static decode(m: Int64Value, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: Int64Value,
+    r: pjs.Reader,
+    length: number
+  ): Int64Value {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -212,9 +233,13 @@ export class Int64Value {
           m.value = r.int64();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: Int64Value): Int64ValueJSON {
@@ -234,10 +259,9 @@ export class Int64Value {
     return Int64Value.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): Int64Value {
-    const r = new pjs.Reader(b);
-    Int64Value.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): Int64Value {
+    const r = new pjs.Reader(buffer);
+    return Int64Value.decode(this, r, r.len);
   }
 
   toJSON(): Int64ValueJSON {
@@ -284,7 +308,12 @@ export class UInt64Value {
     return w;
   }
 
-  public static decode(m: UInt64Value, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: UInt64Value,
+    r: pjs.Reader,
+    length: number
+  ): UInt64Value {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -293,9 +322,13 @@ export class UInt64Value {
           m.value = r.uint64();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: UInt64Value): UInt64ValueJSON {
@@ -315,10 +348,9 @@ export class UInt64Value {
     return UInt64Value.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): UInt64Value {
-    const r = new pjs.Reader(b);
-    UInt64Value.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): UInt64Value {
+    const r = new pjs.Reader(buffer);
+    return UInt64Value.decode(this, r, r.len);
   }
 
   toJSON(): UInt64ValueJSON {
@@ -365,7 +397,12 @@ export class Int32Value {
     return w;
   }
 
-  public static decode(m: Int32Value, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: Int32Value,
+    r: pjs.Reader,
+    length: number
+  ): Int32Value {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -374,9 +411,13 @@ export class Int32Value {
           m.value = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: Int32Value): Int32ValueJSON {
@@ -396,10 +437,9 @@ export class Int32Value {
     return Int32Value.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): Int32Value {
-    const r = new pjs.Reader(b);
-    Int32Value.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): Int32Value {
+    const r = new pjs.Reader(buffer);
+    return Int32Value.decode(this, r, r.len);
   }
 
   toJSON(): Int32ValueJSON {
@@ -446,7 +486,12 @@ export class UInt32Value {
     return w;
   }
 
-  public static decode(m: UInt32Value, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: UInt32Value,
+    r: pjs.Reader,
+    length: number
+  ): UInt32Value {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -455,9 +500,13 @@ export class UInt32Value {
           m.value = r.uint32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: UInt32Value): UInt32ValueJSON {
@@ -477,10 +526,9 @@ export class UInt32Value {
     return UInt32Value.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): UInt32Value {
-    const r = new pjs.Reader(b);
-    UInt32Value.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): UInt32Value {
+    const r = new pjs.Reader(buffer);
+    return UInt32Value.decode(this, r, r.len);
   }
 
   toJSON(): UInt32ValueJSON {
@@ -527,7 +575,8 @@ export class BoolValue {
     return w;
   }
 
-  public static decode(m: BoolValue, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(m: BoolValue, r: pjs.Reader, length: number): BoolValue {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -536,9 +585,13 @@ export class BoolValue {
           m.value = r.bool();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: BoolValue): BoolValueJSON {
@@ -558,10 +611,9 @@ export class BoolValue {
     return BoolValue.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): BoolValue {
-    const r = new pjs.Reader(b);
-    BoolValue.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): BoolValue {
+    const r = new pjs.Reader(buffer);
+    return BoolValue.decode(this, r, r.len);
   }
 
   toJSON(): BoolValueJSON {
@@ -608,7 +660,12 @@ export class StringValue {
     return w;
   }
 
-  public static decode(m: StringValue, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: StringValue,
+    r: pjs.Reader,
+    length: number
+  ): StringValue {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -617,9 +674,13 @@ export class StringValue {
           m.value = r.string();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: StringValue): StringValueJSON {
@@ -639,10 +700,9 @@ export class StringValue {
     return StringValue.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): StringValue {
-    const r = new pjs.Reader(b);
-    StringValue.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): StringValue {
+    const r = new pjs.Reader(buffer);
+    return StringValue.decode(this, r, r.len);
   }
 
   toJSON(): StringValueJSON {
@@ -689,7 +749,12 @@ export class BytesValue {
     return w;
   }
 
-  public static decode(m: BytesValue, r: pjs.Reader, l: number): pjs.Reader {
+  public static decode(
+    m: BytesValue,
+    r: pjs.Reader,
+    length: number
+  ): BytesValue {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -698,9 +763,13 @@ export class BytesValue {
           m.value = r.bytes();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: BytesValue): BytesValueJSON {
@@ -724,10 +793,9 @@ export class BytesValue {
     return BytesValue.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): BytesValue {
-    const r = new pjs.Reader(b);
-    BytesValue.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): BytesValue {
+    const r = new pjs.Reader(buffer);
+    return BytesValue.decode(this, r, r.len);
   }
 
   toJSON(): BytesValueJSON {

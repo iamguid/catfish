@@ -22034,8 +22034,9 @@ export class TestEnormousDescriptor {
   public static decode(
     m: TestEnormousDescriptor,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestEnormousDescriptor {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -28039,9 +28040,13 @@ export class TestEnormousDescriptor {
             r.string();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestEnormousDescriptor): TestEnormousDescriptorJSON {
@@ -32062,10 +32067,9 @@ export class TestEnormousDescriptor {
     return TestEnormousDescriptor.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestEnormousDescriptor {
-    const r = new pjs.Reader(b);
-    TestEnormousDescriptor.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestEnormousDescriptor {
+    const r = new pjs.Reader(buffer);
+    return TestEnormousDescriptor.decode(this, r, r.len);
   }
 
   toJSON(): TestEnormousDescriptorJSON {

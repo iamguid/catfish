@@ -52,8 +52,9 @@ export class ImportMessageLite {
   public static decode(
     m: ImportMessageLite,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): ImportMessageLite {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -62,9 +63,13 @@ export class ImportMessageLite {
           m.d = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: ImportMessageLite): ImportMessageLiteJSON {
@@ -87,10 +92,9 @@ export class ImportMessageLite {
     return ImportMessageLite.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): ImportMessageLite {
-    const r = new pjs.Reader(b);
-    ImportMessageLite.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): ImportMessageLite {
+    const r = new pjs.Reader(buffer);
+    return ImportMessageLite.decode(this, r, r.len);
   }
 
   toJSON(): ImportMessageLiteJSON {

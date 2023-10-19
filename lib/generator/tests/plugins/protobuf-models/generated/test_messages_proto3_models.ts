@@ -120,16 +120,7 @@ export interface TestAllTypesProto3JSON {
   mapStringForeignMessage: Record<string, ForeignMessageJSON>;
   mapStringNestedEnum: Record<string, string>;
   mapStringForeignEnum: Record<string, string>;
-  oneofUint32?: number;
-  oneofNestedMessage?: TestAllTypesProto3.NestedMessageJSON;
-  oneofString?: string;
-  oneofBytes?: string;
-  oneofBool?: boolean;
-  oneofUint64?: string;
-  oneofFloat?: number;
-  oneofDouble?: number;
-  oneofEnum?: string;
-  oneofNullValue?: string;
+  // NOT IMPLEMENTED
   optionalBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValueJSON;
   optionalInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32ValueJSON;
   optionalInt64Wrapper: google_protobuf_wrappers_models.google.protobuf.Int64ValueJSON;
@@ -169,17 +160,17 @@ export interface TestAllTypesProto3JSON {
   field0name5: number;
   field0Name6: number;
   fieldName7: number;
-  fieldName8: number;
+  FieldName8: number;
   fieldName9: number;
-  fieldName10: number;
-  fIELDNAME11: number;
-  fIELDName12: number;
+  FieldName10: number;
+  FIELDNAME11: number;
+  FIELDName12: number;
   _fieldName13: number;
   _FieldName14: number;
   field_name15: number;
   field_Name16: number;
   fieldName17_: number;
-  fieldName18_: number;
+  FieldName18_: number;
 }
 
 export class TestAllTypesProto3 {
@@ -207,55 +198,56 @@ export class TestAllTypesProto3 {
   optionalStringPiece: string = "";
   optionalCord: string = "";
   recursiveMessage: TestAllTypesProto3 = new TestAllTypesProto3();
-  repeatedInt32: number = [];
-  repeatedInt64: pjs.Long = [];
-  repeatedUint32: number = [];
-  repeatedUint64: pjs.Long = [];
-  repeatedSint32: number = [];
-  repeatedSint64: pjs.Long = [];
-  repeatedFixed32: number = [];
-  repeatedFixed64: pjs.Long = [];
-  repeatedSfixed32: number = [];
-  repeatedSfixed64: pjs.Long = [];
-  repeatedFloat: number = [];
-  repeatedDouble: number = [];
-  repeatedBool: boolean = [];
-  repeatedString: string = [];
-  repeatedBytes: Uint8Array | Buffer = [];
-  repeatedNestedMessage: TestAllTypesProto3.NestedMessage = [];
-  repeatedForeignMessage: ForeignMessage = [];
-  repeatedNestedEnum: number = [];
-  repeatedForeignEnum: number = [];
-  repeatedStringPiece: string = [];
-  repeatedCord: string = [];
-  packedInt32: number = [];
-  packedInt64: pjs.Long = [];
-  packedUint32: number = [];
-  packedUint64: pjs.Long = [];
-  packedSint32: number = [];
-  packedSint64: pjs.Long = [];
-  packedFixed32: number = [];
-  packedFixed64: pjs.Long = [];
-  packedSfixed32: number = [];
-  packedSfixed64: pjs.Long = [];
-  packedFloat: number = [];
-  packedDouble: number = [];
-  packedBool: boolean = [];
-  packedNestedEnum: number = [];
-  unpackedInt32: number = [];
-  unpackedInt64: pjs.Long = [];
-  unpackedUint32: number = [];
-  unpackedUint64: pjs.Long = [];
-  unpackedSint32: number = [];
-  unpackedSint64: pjs.Long = [];
-  unpackedFixed32: number = [];
-  unpackedFixed64: pjs.Long = [];
-  unpackedSfixed32: number = [];
-  unpackedSfixed64: pjs.Long = [];
-  unpackedFloat: number = [];
-  unpackedDouble: number = [];
-  unpackedBool: boolean = [];
-  unpackedNestedEnum: number = [];
+  repeatedInt32: number = 0;
+  repeatedInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedUint32: number = 0;
+  repeatedUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  repeatedSint32: number = 0;
+  repeatedSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedFixed32: number = 0;
+  repeatedFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  repeatedSfixed32: number = 0;
+  repeatedSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  repeatedFloat: number = 0;
+  repeatedDouble: number = 0;
+  repeatedBool: boolean = false;
+  repeatedString: string = "";
+  repeatedBytes: Uint8Array | Buffer = pjs.util.newBuffer(0);
+  repeatedNestedMessage: TestAllTypesProto3.NestedMessage =
+    new TestAllTypesProto3.NestedMessage();
+  repeatedForeignMessage: ForeignMessage = new ForeignMessage();
+  repeatedNestedEnum: number = TestAllTypesProto3.NestedEnum.FOO;
+  repeatedForeignEnum: number = ForeignEnum.FOREIGN_FOO;
+  repeatedStringPiece: string = "";
+  repeatedCord: string = "";
+  packedInt32: number = 0;
+  packedInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  packedUint32: number = 0;
+  packedUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  packedSint32: number = 0;
+  packedSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  packedFixed32: number = 0;
+  packedFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  packedSfixed32: number = 0;
+  packedSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  packedFloat: number = 0;
+  packedDouble: number = 0;
+  packedBool: boolean = false;
+  packedNestedEnum: number = TestAllTypesProto3.NestedEnum.FOO;
+  unpackedInt32: number = 0;
+  unpackedInt64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  unpackedUint32: number = 0;
+  unpackedUint64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  unpackedSint32: number = 0;
+  unpackedSint64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  unpackedFixed32: number = 0;
+  unpackedFixed64: pjs.Long = pjs.util.Long.fromValue(0, true);
+  unpackedSfixed32: number = 0;
+  unpackedSfixed64: pjs.Long = pjs.util.Long.fromValue(0, false);
+  unpackedFloat: number = 0;
+  unpackedDouble: number = 0;
+  unpackedBool: boolean = false;
+  unpackedNestedEnum: number = TestAllTypesProto3.NestedEnum.FOO;
   mapInt32Int32: Map<number, number> = new Map();
   mapInt64Int64: Map<pjs.Long, pjs.Long> = new Map();
   mapUint32Uint32: Map<number, number> = new Map();
@@ -276,18 +268,7 @@ export class TestAllTypesProto3 {
   mapStringForeignMessage: Map<string, ForeignMessage> = new Map();
   mapStringNestedEnum: Map<string, number> = new Map();
   mapStringForeignEnum: Map<string, number> = new Map();
-  oneofUint32?: number = 0;
-  oneofNestedMessage?: TestAllTypesProto3.NestedMessage =
-    new TestAllTypesProto3.NestedMessage();
-  oneofString?: string = "";
-  oneofBytes?: Uint8Array | Buffer = pjs.util.newBuffer(0);
-  oneofBool?: boolean = false;
-  oneofUint64?: pjs.Long = pjs.util.Long.fromValue(0, true);
-  oneofFloat?: number = 0;
-  oneofDouble?: number = 0;
-  oneofEnum?: number = TestAllTypesProto3.NestedEnum.FOO;
-  oneofNullValue?: number =
-    google_protobuf_struct_models.google.protobuf.NullValue.NULL_VALUE;
+  // NOT IMPLEMENTED
   optionalBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValue =
     new google_protobuf_wrappers_models.google.protobuf.BoolValue();
   optionalInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32Value =
@@ -307,23 +288,23 @@ export class TestAllTypesProto3 {
   optionalBytesWrapper: google_protobuf_wrappers_models.google.protobuf.BytesValue =
     new google_protobuf_wrappers_models.google.protobuf.BytesValue();
   repeatedBoolWrapper: google_protobuf_wrappers_models.google.protobuf.BoolValue =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.BoolValue();
   repeatedInt32Wrapper: google_protobuf_wrappers_models.google.protobuf.Int32Value =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.Int32Value();
   repeatedInt64Wrapper: google_protobuf_wrappers_models.google.protobuf.Int64Value =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.Int64Value();
   repeatedUint32Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt32Value =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.UInt32Value();
   repeatedUint64Wrapper: google_protobuf_wrappers_models.google.protobuf.UInt64Value =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.UInt64Value();
   repeatedFloatWrapper: google_protobuf_wrappers_models.google.protobuf.FloatValue =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.FloatValue();
   repeatedDoubleWrapper: google_protobuf_wrappers_models.google.protobuf.DoubleValue =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.DoubleValue();
   repeatedStringWrapper: google_protobuf_wrappers_models.google.protobuf.StringValue =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.StringValue();
   repeatedBytesWrapper: google_protobuf_wrappers_models.google.protobuf.BytesValue =
-    [];
+    new google_protobuf_wrappers_models.google.protobuf.BytesValue();
   optionalDuration: google_protobuf_duration_models.google.protobuf.Duration =
     new google_protobuf_duration_models.google.protobuf.Duration();
   optionalTimestamp: google_protobuf_timestamp_models.google.protobuf.Timestamp =
@@ -339,16 +320,19 @@ export class TestAllTypesProto3 {
   optionalNullValue: number =
     google_protobuf_struct_models.google.protobuf.NullValue.NULL_VALUE;
   repeatedDuration: google_protobuf_duration_models.google.protobuf.Duration =
-    [];
+    new google_protobuf_duration_models.google.protobuf.Duration();
   repeatedTimestamp: google_protobuf_timestamp_models.google.protobuf.Timestamp =
-    [];
+    new google_protobuf_timestamp_models.google.protobuf.Timestamp();
   repeatedFieldmask: google_protobuf_field_mask_models.google.protobuf.FieldMask =
-    [];
-  repeatedStruct: google_protobuf_struct_models.google.protobuf.Struct = [];
-  repeatedAny: google_protobuf_any_models.google.protobuf.Any = [];
-  repeatedValue: google_protobuf_struct_models.google.protobuf.Value = [];
+    new google_protobuf_field_mask_models.google.protobuf.FieldMask();
+  repeatedStruct: google_protobuf_struct_models.google.protobuf.Struct =
+    new google_protobuf_struct_models.google.protobuf.Struct();
+  repeatedAny: google_protobuf_any_models.google.protobuf.Any =
+    new google_protobuf_any_models.google.protobuf.Any();
+  repeatedValue: google_protobuf_struct_models.google.protobuf.Value =
+    new google_protobuf_struct_models.google.protobuf.Value();
   repeatedListValue: google_protobuf_struct_models.google.protobuf.ListValue =
-    [];
+    new google_protobuf_struct_models.google.protobuf.ListValue();
   fieldname1: number = 0;
   fieldName2: number = 0;
   FieldName3: number = 0;
@@ -356,17 +340,17 @@ export class TestAllTypesProto3 {
   field0name5: number = 0;
   field0Name6: number = 0;
   fieldName7: number = 0;
-  fieldName8: number = 0;
+  FieldName8: number = 0;
   fieldName9: number = 0;
-  fieldName10: number = 0;
-  fIELDNAME11: number = 0;
-  fIELDName12: number = 0;
+  FieldName10: number = 0;
+  FIELDNAME11: number = 0;
+  FIELDName12: number = 0;
   _fieldName13: number = 0;
   _FieldName14: number = 0;
   field_name15: number = 0;
   field_Name16: number = 0;
   fieldName17_: number = 0;
-  fieldName18_: number = 0;
+  FieldName18_: number = 0;
 
   public static fields = [
     "optionalInt32",
@@ -460,16 +444,7 @@ export class TestAllTypesProto3 {
     "mapStringForeignMessage",
     "mapStringNestedEnum",
     "mapStringForeignEnum",
-    "oneofUint32",
-    "oneofNestedMessage",
-    "oneofString",
-    "oneofBytes",
-    "oneofBool",
-    "oneofUint64",
-    "oneofFloat",
-    "oneofDouble",
-    "oneofEnum",
-    "oneofNullValue",
+    "oneof_field",
     "optionalBoolWrapper",
     "optionalInt32Wrapper",
     "optionalInt64Wrapper",
@@ -509,18 +484,782 @@ export class TestAllTypesProto3 {
     "field0name5",
     "field0Name6",
     "fieldName7",
-    "fieldName8",
+    "FieldName8",
     "fieldName9",
-    "fieldName10",
-    "fIELDNAME11",
-    "fIELDName12",
+    "FieldName10",
+    "FIELDNAME11",
+    "FIELDName12",
     "_fieldName13",
     "_FieldName14",
     "field_name15",
     "field_Name16",
     "fieldName17_",
-    "fieldName18_",
+    "FieldName18_",
   ];
+
+  // map<int32, int32> map_int32_int32 = 56
+  public static encodeMapInt32Int32(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(450);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.int32(key);
+      w.uint32(16);
+      w2.int32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<int64, int64> map_int64_int64 = 57
+  public static encodeMapInt64Int64(
+    m: Map<pjs.Long, pjs.Long>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(458);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.int64(key);
+      w.uint32(16);
+      w2.int64(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<uint32, uint32> map_uint32_uint32 = 58
+  public static encodeMapUint32Uint32(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(466);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.uint32(key);
+      w.uint32(16);
+      w2.uint32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<uint64, uint64> map_uint64_uint64 = 59
+  public static encodeMapUint64Uint64(
+    m: Map<pjs.Long, pjs.Long>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(474);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.uint64(key);
+      w.uint32(16);
+      w2.uint64(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<sint32, sint32> map_sint32_sint32 = 60
+  public static encodeMapSint32Sint32(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(482);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.sint32(key);
+      w.uint32(16);
+      w2.sint32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<sint64, sint64> map_sint64_sint64 = 61
+  public static encodeMapSint64Sint64(
+    m: Map<pjs.Long, pjs.Long>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(490);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.sint64(key);
+      w.uint32(16);
+      w2.sint64(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<fixed32, fixed32> map_fixed32_fixed32 = 62
+  public static encodeMapFixed32Fixed32(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(498);
+      const w2 = w.fork();
+      w.uint32(13);
+      w.fixed32(key);
+      w.uint32(21);
+      w2.fixed32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<fixed64, fixed64> map_fixed64_fixed64 = 63
+  public static encodeMapFixed64Fixed64(
+    m: Map<pjs.Long, pjs.Long>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(506);
+      const w2 = w.fork();
+      w.uint32(9);
+      w.fixed64(key);
+      w.uint32(17);
+      w2.fixed64(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64
+  public static encodeMapSfixed32Sfixed32(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(514);
+      const w2 = w.fork();
+      w.uint32(13);
+      w.sfixed32(key);
+      w.uint32(21);
+      w2.sfixed32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65
+  public static encodeMapSfixed64Sfixed64(
+    m: Map<pjs.Long, pjs.Long>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(522);
+      const w2 = w.fork();
+      w.uint32(9);
+      w.sfixed64(key);
+      w.uint32(17);
+      w2.sfixed64(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<int32, float> map_int32_float = 66
+  public static encodeMapInt32Float(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(530);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.int32(key);
+      w.uint32(21);
+      w2.float(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<int32, double> map_int32_double = 67
+  public static encodeMapInt32Double(
+    m: Map<number, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(538);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.int32(key);
+      w.uint32(17);
+      w2.double(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<bool, bool> map_bool_bool = 68
+  public static encodeMapBoolBool(
+    m: Map<boolean, boolean>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(546);
+      const w2 = w.fork();
+      w.uint32(8);
+      w.bool(key);
+      w.uint32(16);
+      w2.bool(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<string, string> map_string_string = 69
+  public static encodeMapStringString(
+    m: Map<string, string>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(554);
+      const w2 = w.fork();
+      w.uint32(10);
+      w.string(key);
+      w.uint32(18);
+      w2.string(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<string, bytes> map_string_bytes = 70
+  public static encodeMapStringBytes(
+    m: Map<string, Uint8Array | Buffer>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(562);
+      const w2 = w.fork();
+      w.uint32(10);
+      w.string(key);
+      w.uint32(18);
+      w2.bytes(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<string, TestAllTypesProto3.NestedMessage> map_string_nested_message = 71
+  public static encodeMapStringNestedMessage(
+    m: Map<string, TestAllTypesProto3.NestedMessage>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(570);
+      const w2 = w.fork();
+      w.uint32(10);
+      w.string(key);
+      w.uint32(18);
+      TestAllTypesProto3.NestedMessage.encode(val, w2.fork()).ldelim();
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<string, ForeignMessage> map_string_foreign_message = 72
+  public static encodeMapStringForeignMessage(
+    m: Map<string, ForeignMessage>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(578);
+      const w2 = w.fork();
+      w.uint32(10);
+      w.string(key);
+      w.uint32(18);
+      ForeignMessage.encode(val, w2.fork()).ldelim();
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<string, TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73
+  public static encodeMapStringNestedEnum(
+    m: Map<string, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(586);
+      const w2 = w.fork();
+      w.uint32(10);
+      w.string(key);
+      w.uint32(16);
+      w2.int32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<string, ForeignEnum> map_string_foreign_enum = 74
+  public static encodeMapStringForeignEnum(
+    m: Map<string, number>,
+    w: pjs.Writer
+  ): pjs.Writer {
+    for (const [key, val] of m) {
+      w.uint32(594);
+      const w2 = w.fork();
+      w.uint32(10);
+      w.string(key);
+      w.uint32(16);
+      w2.int32(val);
+      w2.ldelim();
+    }
+    return w;
+  }
+
+  // map<int32, int32> map_int32_int32 = 56
+  public static decodeMapInt32Int32(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.int32();
+          continue;
+        case 16:
+          v = r.int32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<int64, int64> map_int64_int64 = 57
+  public static decodeMapInt64Int64(
+    r: pjs.Reader,
+    length: number
+  ): [pjs.Long, pjs.Long] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.int64();
+          continue;
+        case 16:
+          v = r.int64();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<uint32, uint32> map_uint32_uint32 = 58
+  public static decodeMapUint32Uint32(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.uint32();
+          continue;
+        case 16:
+          v = r.uint32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<uint64, uint64> map_uint64_uint64 = 59
+  public static decodeMapUint64Uint64(
+    r: pjs.Reader,
+    length: number
+  ): [pjs.Long, pjs.Long] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.uint64();
+          continue;
+        case 16:
+          v = r.uint64();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<sint32, sint32> map_sint32_sint32 = 60
+  public static decodeMapSint32Sint32(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.sint32();
+          continue;
+        case 16:
+          v = r.sint32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<sint64, sint64> map_sint64_sint64 = 61
+  public static decodeMapSint64Sint64(
+    r: pjs.Reader,
+    length: number
+  ): [pjs.Long, pjs.Long] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.sint64();
+          continue;
+        case 16:
+          v = r.sint64();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<fixed32, fixed32> map_fixed32_fixed32 = 62
+  public static decodeMapFixed32Fixed32(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 13:
+          k = r.fixed32();
+          continue;
+        case 21:
+          v = r.fixed32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<fixed64, fixed64> map_fixed64_fixed64 = 63
+  public static decodeMapFixed64Fixed64(
+    r: pjs.Reader,
+    length: number
+  ): [pjs.Long, pjs.Long] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 9:
+          k = r.fixed64();
+          continue;
+        case 17:
+          v = r.fixed64();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64
+  public static decodeMapSfixed32Sfixed32(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 13:
+          k = r.sfixed32();
+          continue;
+        case 21:
+          v = r.sfixed32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65
+  public static decodeMapSfixed64Sfixed64(
+    r: pjs.Reader,
+    length: number
+  ): [pjs.Long, pjs.Long] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 9:
+          k = r.sfixed64();
+          continue;
+        case 17:
+          v = r.sfixed64();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<int32, float> map_int32_float = 66
+  public static decodeMapInt32Float(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.int32();
+          continue;
+        case 21:
+          v = r.float();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<int32, double> map_int32_double = 67
+  public static decodeMapInt32Double(
+    r: pjs.Reader,
+    length: number
+  ): [number, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.int32();
+          continue;
+        case 17:
+          v = r.double();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<bool, bool> map_bool_bool = 68
+  public static decodeMapBoolBool(
+    r: pjs.Reader,
+    length: number
+  ): [boolean, boolean] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 8:
+          k = r.bool();
+          continue;
+        case 16:
+          v = r.bool();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<string, string> map_string_string = 69
+  public static decodeMapStringString(
+    r: pjs.Reader,
+    length: number
+  ): [string, string] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 10:
+          k = r.string();
+          continue;
+        case 18:
+          v = r.string();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<string, bytes> map_string_bytes = 70
+  public static decodeMapStringBytes(
+    r: pjs.Reader,
+    length: number
+  ): [string, Uint8Array | Buffer] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 10:
+          k = r.string();
+          continue;
+        case 18:
+          v = r.bytes();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<string, TestAllTypesProto3.NestedMessage> map_string_nested_message = 71
+  public static decodeMapStringNestedMessage(
+    r: pjs.Reader,
+    length: number
+  ): [string, TestAllTypesProto3.NestedMessage] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 10:
+          k = r.string();
+          continue;
+        case 18:
+          v = TestAllTypesProto3.NestedMessage.decode(
+            new TestAllTypesProto3.NestedMessage(),
+            r,
+            r.uint32()
+          );
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<string, ForeignMessage> map_string_foreign_message = 72
+  public static decodeMapStringForeignMessage(
+    r: pjs.Reader,
+    length: number
+  ): [string, ForeignMessage] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 10:
+          k = r.string();
+          continue;
+        case 18:
+          v = ForeignMessage.decode(new ForeignMessage(), r, r.uint32());
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<string, TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73
+  public static decodeMapStringNestedEnum(
+    r: pjs.Reader,
+    length: number
+  ): [string, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 10:
+          k = r.string();
+          continue;
+        case 16:
+          v = r.int32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
+
+  // map<string, ForeignEnum> map_string_foreign_enum = 74
+  public static decodeMapStringForeignEnum(
+    r: pjs.Reader,
+    length: number
+  ): [string, number] {
+    const l = r.pos + length;
+    let k;
+    let v;
+    while (r.pos < l) {
+      const tag = r.uint32();
+      switch (tag) {
+        case 10:
+          k = r.string();
+          continue;
+        case 16:
+          v = r.int32();
+          continue;
+      }
+    }
+
+    return [k, v];
+  }
 
   public get fields() {
     return TestAllTypesProto3.fields;
@@ -840,35 +1579,8 @@ export class TestAllTypesProto3 {
       const copy = entries.map(([key, val]) => [key, val]);
       this.mapStringForeignEnum = new Map(copy);
     }
-    if (obj.oneofUint32 !== undefined) {
-      this.oneofUint32 = obj.oneofUint32;
-    }
-    if (obj.oneofNestedMessage !== undefined) {
-      this.oneofNestedMessage = obj.oneofNestedMessage;
-    }
-    if (obj.oneofString !== undefined) {
-      this.oneofString = obj.oneofString;
-    }
-    if (obj.oneofBytes !== undefined) {
-      this.oneofBytes = obj.oneofBytes;
-    }
-    if (obj.oneofBool !== undefined) {
-      this.oneofBool = obj.oneofBool;
-    }
-    if (obj.oneofUint64 !== undefined) {
-      this.oneofUint64 = obj.oneofUint64;
-    }
-    if (obj.oneofFloat !== undefined) {
-      this.oneofFloat = obj.oneofFloat;
-    }
-    if (obj.oneofDouble !== undefined) {
-      this.oneofDouble = obj.oneofDouble;
-    }
-    if (obj.oneofEnum !== undefined) {
-      this.oneofEnum = obj.oneofEnum;
-    }
-    if (obj.oneofNullValue !== undefined) {
-      this.oneofNullValue = obj.oneofNullValue;
+    if (obj.oneof_field !== undefined) {
+      // NOT IMPLEMENTED
     }
     if (obj.optionalBoolWrapper !== undefined) {
       this.optionalBoolWrapper = obj.optionalBoolWrapper;
@@ -987,20 +1699,20 @@ export class TestAllTypesProto3 {
     if (obj.fieldName7 !== undefined) {
       this.fieldName7 = obj.fieldName7;
     }
-    if (obj.fieldName8 !== undefined) {
-      this.fieldName8 = obj.fieldName8;
+    if (obj.FieldName8 !== undefined) {
+      this.FieldName8 = obj.FieldName8;
     }
     if (obj.fieldName9 !== undefined) {
       this.fieldName9 = obj.fieldName9;
     }
-    if (obj.fieldName10 !== undefined) {
-      this.fieldName10 = obj.fieldName10;
+    if (obj.FieldName10 !== undefined) {
+      this.FieldName10 = obj.FieldName10;
     }
-    if (obj.fIELDNAME11 !== undefined) {
-      this.fIELDNAME11 = obj.fIELDNAME11;
+    if (obj.FIELDNAME11 !== undefined) {
+      this.FIELDNAME11 = obj.FIELDNAME11;
     }
-    if (obj.fIELDName12 !== undefined) {
-      this.fIELDName12 = obj.fIELDName12;
+    if (obj.FIELDName12 !== undefined) {
+      this.FIELDName12 = obj.FIELDName12;
     }
     if (obj._fieldName13 !== undefined) {
       this._fieldName13 = obj._fieldName13;
@@ -1017,8 +1729,8 @@ export class TestAllTypesProto3 {
     if (obj.fieldName17_ !== undefined) {
       this.fieldName17_ = obj.fieldName17_;
     }
-    if (obj.fieldName18_ !== undefined) {
-      this.fieldName18_ = obj.fieldName18_;
+    if (obj.FieldName18_ !== undefined) {
+      this.FieldName18_ = obj.FieldName18_;
     }
   }
 
@@ -1116,31 +1828,34 @@ export class TestAllTypesProto3 {
     // TestAllTypesProto3.NestedMessage optional_nested_message = 18
     if (m.optionalNestedMessage !== new TestAllTypesProto3.NestedMessage()) {
       w.uint32(146);
-      TestAllTypesProto3.NestedMessage.encode(m.optionalNestedMessage, w);
+      TestAllTypesProto3.NestedMessage.encode(
+        m.optionalNestedMessage,
+        w.fork()
+      ).ldelim();
     }
 
     // ForeignMessage optional_foreign_message = 19
     if (m.optionalForeignMessage !== new ForeignMessage()) {
       w.uint32(154);
-      ForeignMessage.encode(m.optionalForeignMessage, w);
+      ForeignMessage.encode(m.optionalForeignMessage, w.fork()).ldelim();
     }
 
     // TestAllTypesProto3.NestedEnum optional_nested_enum = 21
     if (m.optionalNestedEnum !== TestAllTypesProto3.NestedEnum.FOO) {
       w.uint32(168);
-      w.uint32(m.optionalNestedEnum);
+      w.int32(m.optionalNestedEnum);
     }
 
     // ForeignEnum optional_foreign_enum = 22
     if (m.optionalForeignEnum !== ForeignEnum.FOREIGN_FOO) {
       w.uint32(176);
-      w.uint32(m.optionalForeignEnum);
+      w.int32(m.optionalForeignEnum);
     }
 
     // TestAllTypesProto3.AliasedEnum optional_aliased_enum = 23
     if (m.optionalAliasedEnum !== TestAllTypesProto3.AliasedEnum.ALIAS_FOO) {
       w.uint32(184);
-      w.uint32(m.optionalAliasedEnum);
+      w.int32(m.optionalAliasedEnum);
     }
 
     // string optional_string_piece = 24
@@ -1158,436 +1873,370 @@ export class TestAllTypesProto3 {
     // TestAllTypesProto3 recursive_message = 27
     if (m.recursiveMessage !== new TestAllTypesProto3()) {
       w.uint32(218);
-      TestAllTypesProto3.encode(m.recursiveMessage, w);
+      TestAllTypesProto3.encode(m.recursiveMessage, w.fork()).ldelim();
     }
 
     // int32 repeated_int32 = 31
-    if (m.repeatedInt32 !== []) {
+    if (m.repeatedInt32 !== 0) {
       w.uint32(248);
       w.int32(m.repeatedInt32);
     }
 
     // int64 repeated_int64 = 32
-    if (m.repeatedInt64 !== []) {
+    if (m.repeatedInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(256);
       w.int64(m.repeatedInt64);
     }
 
     // uint32 repeated_uint32 = 33
-    if (m.repeatedUint32 !== []) {
+    if (m.repeatedUint32 !== 0) {
       w.uint32(264);
       w.uint32(m.repeatedUint32);
     }
 
     // uint64 repeated_uint64 = 34
-    if (m.repeatedUint64 !== []) {
+    if (m.repeatedUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(272);
       w.uint64(m.repeatedUint64);
     }
 
     // sint32 repeated_sint32 = 35
-    if (m.repeatedSint32 !== []) {
+    if (m.repeatedSint32 !== 0) {
       w.uint32(280);
       w.sint32(m.repeatedSint32);
     }
 
     // sint64 repeated_sint64 = 36
-    if (m.repeatedSint64 !== []) {
+    if (m.repeatedSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(288);
       w.sint64(m.repeatedSint64);
     }
 
     // fixed32 repeated_fixed32 = 37
-    if (m.repeatedFixed32 !== []) {
+    if (m.repeatedFixed32 !== 0) {
       w.uint32(301);
       w.fixed32(m.repeatedFixed32);
     }
 
     // fixed64 repeated_fixed64 = 38
-    if (m.repeatedFixed64 !== []) {
+    if (m.repeatedFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(305);
       w.fixed64(m.repeatedFixed64);
     }
 
     // sfixed32 repeated_sfixed32 = 39
-    if (m.repeatedSfixed32 !== []) {
+    if (m.repeatedSfixed32 !== 0) {
       w.uint32(317);
       w.sfixed32(m.repeatedSfixed32);
     }
 
     // sfixed64 repeated_sfixed64 = 40
-    if (m.repeatedSfixed64 !== []) {
+    if (m.repeatedSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(321);
       w.sfixed64(m.repeatedSfixed64);
     }
 
     // float repeated_float = 41
-    if (m.repeatedFloat !== []) {
+    if (m.repeatedFloat !== 0) {
       w.uint32(333);
       w.float(m.repeatedFloat);
     }
 
     // double repeated_double = 42
-    if (m.repeatedDouble !== []) {
+    if (m.repeatedDouble !== 0) {
       w.uint32(337);
       w.double(m.repeatedDouble);
     }
 
     // bool repeated_bool = 43
-    if (m.repeatedBool !== []) {
+    if (m.repeatedBool !== false) {
       w.uint32(344);
       w.bool(m.repeatedBool);
     }
 
     // string repeated_string = 44
-    if (m.repeatedString !== []) {
+    if (m.repeatedString !== "") {
       w.uint32(354);
       w.string(m.repeatedString);
     }
 
     // bytes repeated_bytes = 45
-    if (m.repeatedBytes !== []) {
+    if (m.repeatedBytes !== pjs.util.newBuffer(0)) {
       w.uint32(362);
       w.bytes(m.repeatedBytes);
     }
 
     // TestAllTypesProto3.NestedMessage repeated_nested_message = 48
-    if (m.repeatedNestedMessage !== []) {
+    if (m.repeatedNestedMessage !== new TestAllTypesProto3.NestedMessage()) {
       w.uint32(386);
-      TestAllTypesProto3.NestedMessage.encode(m.repeatedNestedMessage, w);
+      TestAllTypesProto3.NestedMessage.encode(
+        m.repeatedNestedMessage,
+        w.fork()
+      ).ldelim();
     }
 
     // ForeignMessage repeated_foreign_message = 49
-    if (m.repeatedForeignMessage !== []) {
+    if (m.repeatedForeignMessage !== new ForeignMessage()) {
       w.uint32(394);
-      ForeignMessage.encode(m.repeatedForeignMessage, w);
+      ForeignMessage.encode(m.repeatedForeignMessage, w.fork()).ldelim();
     }
 
     // TestAllTypesProto3.NestedEnum repeated_nested_enum = 51
-    if (m.repeatedNestedEnum !== []) {
+    if (m.repeatedNestedEnum !== TestAllTypesProto3.NestedEnum.FOO) {
       w.uint32(408);
-      w.uint32(m.repeatedNestedEnum);
+      w.int32(m.repeatedNestedEnum);
     }
 
     // ForeignEnum repeated_foreign_enum = 52
-    if (m.repeatedForeignEnum !== []) {
+    if (m.repeatedForeignEnum !== ForeignEnum.FOREIGN_FOO) {
       w.uint32(416);
-      w.uint32(m.repeatedForeignEnum);
+      w.int32(m.repeatedForeignEnum);
     }
 
     // string repeated_string_piece = 54
-    if (m.repeatedStringPiece !== []) {
+    if (m.repeatedStringPiece !== "") {
       w.uint32(434);
       w.string(m.repeatedStringPiece);
     }
 
     // string repeated_cord = 55
-    if (m.repeatedCord !== []) {
+    if (m.repeatedCord !== "") {
       w.uint32(442);
       w.string(m.repeatedCord);
     }
 
     // int32 packed_int32 = 75
-    if (m.packedInt32 !== []) {
+    if (m.packedInt32 !== 0) {
       w.uint32(600);
       w.int32(m.packedInt32);
     }
 
     // int64 packed_int64 = 76
-    if (m.packedInt64 !== []) {
+    if (m.packedInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(608);
       w.int64(m.packedInt64);
     }
 
     // uint32 packed_uint32 = 77
-    if (m.packedUint32 !== []) {
+    if (m.packedUint32 !== 0) {
       w.uint32(616);
       w.uint32(m.packedUint32);
     }
 
     // uint64 packed_uint64 = 78
-    if (m.packedUint64 !== []) {
+    if (m.packedUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(624);
       w.uint64(m.packedUint64);
     }
 
     // sint32 packed_sint32 = 79
-    if (m.packedSint32 !== []) {
+    if (m.packedSint32 !== 0) {
       w.uint32(632);
       w.sint32(m.packedSint32);
     }
 
     // sint64 packed_sint64 = 80
-    if (m.packedSint64 !== []) {
+    if (m.packedSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(640);
       w.sint64(m.packedSint64);
     }
 
     // fixed32 packed_fixed32 = 81
-    if (m.packedFixed32 !== []) {
+    if (m.packedFixed32 !== 0) {
       w.uint32(653);
       w.fixed32(m.packedFixed32);
     }
 
     // fixed64 packed_fixed64 = 82
-    if (m.packedFixed64 !== []) {
+    if (m.packedFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(657);
       w.fixed64(m.packedFixed64);
     }
 
     // sfixed32 packed_sfixed32 = 83
-    if (m.packedSfixed32 !== []) {
+    if (m.packedSfixed32 !== 0) {
       w.uint32(669);
       w.sfixed32(m.packedSfixed32);
     }
 
     // sfixed64 packed_sfixed64 = 84
-    if (m.packedSfixed64 !== []) {
+    if (m.packedSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(673);
       w.sfixed64(m.packedSfixed64);
     }
 
     // float packed_float = 85
-    if (m.packedFloat !== []) {
+    if (m.packedFloat !== 0) {
       w.uint32(685);
       w.float(m.packedFloat);
     }
 
     // double packed_double = 86
-    if (m.packedDouble !== []) {
+    if (m.packedDouble !== 0) {
       w.uint32(689);
       w.double(m.packedDouble);
     }
 
     // bool packed_bool = 87
-    if (m.packedBool !== []) {
+    if (m.packedBool !== false) {
       w.uint32(696);
       w.bool(m.packedBool);
     }
 
     // TestAllTypesProto3.NestedEnum packed_nested_enum = 88
-    if (m.packedNestedEnum !== []) {
+    if (m.packedNestedEnum !== TestAllTypesProto3.NestedEnum.FOO) {
       w.uint32(704);
-      w.uint32(m.packedNestedEnum);
+      w.int32(m.packedNestedEnum);
     }
 
     // int32 unpacked_int32 = 89
-    if (m.unpackedInt32 !== []) {
+    if (m.unpackedInt32 !== 0) {
       w.uint32(712);
       w.int32(m.unpackedInt32);
     }
 
     // int64 unpacked_int64 = 90
-    if (m.unpackedInt64 !== []) {
+    if (m.unpackedInt64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(720);
       w.int64(m.unpackedInt64);
     }
 
     // uint32 unpacked_uint32 = 91
-    if (m.unpackedUint32 !== []) {
+    if (m.unpackedUint32 !== 0) {
       w.uint32(728);
       w.uint32(m.unpackedUint32);
     }
 
     // uint64 unpacked_uint64 = 92
-    if (m.unpackedUint64 !== []) {
+    if (m.unpackedUint64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(736);
       w.uint64(m.unpackedUint64);
     }
 
     // sint32 unpacked_sint32 = 93
-    if (m.unpackedSint32 !== []) {
+    if (m.unpackedSint32 !== 0) {
       w.uint32(744);
       w.sint32(m.unpackedSint32);
     }
 
     // sint64 unpacked_sint64 = 94
-    if (m.unpackedSint64 !== []) {
+    if (m.unpackedSint64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(752);
       w.sint64(m.unpackedSint64);
     }
 
     // fixed32 unpacked_fixed32 = 95
-    if (m.unpackedFixed32 !== []) {
+    if (m.unpackedFixed32 !== 0) {
       w.uint32(765);
       w.fixed32(m.unpackedFixed32);
     }
 
     // fixed64 unpacked_fixed64 = 96
-    if (m.unpackedFixed64 !== []) {
+    if (m.unpackedFixed64 !== pjs.util.Long.fromValue(0, true)) {
       w.uint32(769);
       w.fixed64(m.unpackedFixed64);
     }
 
     // sfixed32 unpacked_sfixed32 = 97
-    if (m.unpackedSfixed32 !== []) {
+    if (m.unpackedSfixed32 !== 0) {
       w.uint32(781);
       w.sfixed32(m.unpackedSfixed32);
     }
 
     // sfixed64 unpacked_sfixed64 = 98
-    if (m.unpackedSfixed64 !== []) {
+    if (m.unpackedSfixed64 !== pjs.util.Long.fromValue(0, false)) {
       w.uint32(785);
       w.sfixed64(m.unpackedSfixed64);
     }
 
     // float unpacked_float = 99
-    if (m.unpackedFloat !== []) {
+    if (m.unpackedFloat !== 0) {
       w.uint32(797);
       w.float(m.unpackedFloat);
     }
 
     // double unpacked_double = 100
-    if (m.unpackedDouble !== []) {
+    if (m.unpackedDouble !== 0) {
       w.uint32(801);
       w.double(m.unpackedDouble);
     }
 
     // bool unpacked_bool = 101
-    if (m.unpackedBool !== []) {
+    if (m.unpackedBool !== false) {
       w.uint32(808);
       w.bool(m.unpackedBool);
     }
 
     // TestAllTypesProto3.NestedEnum unpacked_nested_enum = 102
-    if (m.unpackedNestedEnum !== []) {
+    if (m.unpackedNestedEnum !== TestAllTypesProto3.NestedEnum.FOO) {
       w.uint32(816);
-      w.uint32(m.unpackedNestedEnum);
+      w.int32(m.unpackedNestedEnum);
     }
 
     // map<int32, int32> map_int32_int32 = 56
-    for (const [key, val] of m.mapInt32Int32) {
-      w.int32(key);
-      w.int32(val);
-    }
+    TestAllTypesProto3.encodeMapInt32Int32(m.mapInt32Int32, w);
 
     // map<int64, int64> map_int64_int64 = 57
-    for (const [key, val] of m.mapInt64Int64) {
-      w.int64(key);
-      w.int64(val);
-    }
+    TestAllTypesProto3.encodeMapInt64Int64(m.mapInt64Int64, w);
 
     // map<uint32, uint32> map_uint32_uint32 = 58
-    for (const [key, val] of m.mapUint32Uint32) {
-      w.uint32(key);
-      w.uint32(val);
-    }
+    TestAllTypesProto3.encodeMapUint32Uint32(m.mapUint32Uint32, w);
 
     // map<uint64, uint64> map_uint64_uint64 = 59
-    for (const [key, val] of m.mapUint64Uint64) {
-      w.uint64(key);
-      w.uint64(val);
-    }
+    TestAllTypesProto3.encodeMapUint64Uint64(m.mapUint64Uint64, w);
 
     // map<sint32, sint32> map_sint32_sint32 = 60
-    for (const [key, val] of m.mapSint32Sint32) {
-      w.sint32(key);
-      w.sint32(val);
-    }
+    TestAllTypesProto3.encodeMapSint32Sint32(m.mapSint32Sint32, w);
 
     // map<sint64, sint64> map_sint64_sint64 = 61
-    for (const [key, val] of m.mapSint64Sint64) {
-      w.sint64(key);
-      w.sint64(val);
-    }
+    TestAllTypesProto3.encodeMapSint64Sint64(m.mapSint64Sint64, w);
 
     // map<fixed32, fixed32> map_fixed32_fixed32 = 62
-    for (const [key, val] of m.mapFixed32Fixed32) {
-      w.fixed32(key);
-      w.fixed32(val);
-    }
+    TestAllTypesProto3.encodeMapFixed32Fixed32(m.mapFixed32Fixed32, w);
 
     // map<fixed64, fixed64> map_fixed64_fixed64 = 63
-    for (const [key, val] of m.mapFixed64Fixed64) {
-      w.fixed64(key);
-      w.fixed64(val);
-    }
+    TestAllTypesProto3.encodeMapFixed64Fixed64(m.mapFixed64Fixed64, w);
 
     // map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64
-    for (const [key, val] of m.mapSfixed32Sfixed32) {
-      w.sfixed32(key);
-      w.sfixed32(val);
-    }
+    TestAllTypesProto3.encodeMapSfixed32Sfixed32(m.mapSfixed32Sfixed32, w);
 
     // map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65
-    for (const [key, val] of m.mapSfixed64Sfixed64) {
-      w.sfixed64(key);
-      w.sfixed64(val);
-    }
+    TestAllTypesProto3.encodeMapSfixed64Sfixed64(m.mapSfixed64Sfixed64, w);
 
     // map<int32, float> map_int32_float = 66
-    for (const [key, val] of m.mapInt32Float) {
-      w.int32(key);
-      w.float(val);
-    }
+    TestAllTypesProto3.encodeMapInt32Float(m.mapInt32Float, w);
 
     // map<int32, double> map_int32_double = 67
-    for (const [key, val] of m.mapInt32Double) {
-      w.int32(key);
-      w.double(val);
-    }
+    TestAllTypesProto3.encodeMapInt32Double(m.mapInt32Double, w);
 
     // map<bool, bool> map_bool_bool = 68
-    for (const [key, val] of m.mapBoolBool) {
-      w.bool(key);
-      w.bool(val);
-    }
+    TestAllTypesProto3.encodeMapBoolBool(m.mapBoolBool, w);
 
     // map<string, string> map_string_string = 69
-    for (const [key, val] of m.mapStringString) {
-      w.string(key);
-      w.string(val);
-    }
+    TestAllTypesProto3.encodeMapStringString(m.mapStringString, w);
 
     // map<string, bytes> map_string_bytes = 70
-    for (const [key, val] of m.mapStringBytes) {
-      w.string(key);
-      w.bytes(val);
-    }
+    TestAllTypesProto3.encodeMapStringBytes(m.mapStringBytes, w);
 
     // map<string, TestAllTypesProto3.NestedMessage> map_string_nested_message = 71
-    for (const [key, val] of m.mapStringNestedMessage) {
-      w.string(key);
-      TestAllTypesProto3.NestedMessage.encode(val, w);
-    }
+    TestAllTypesProto3.encodeMapStringNestedMessage(
+      m.mapStringNestedMessage,
+      w
+    );
 
     // map<string, ForeignMessage> map_string_foreign_message = 72
-    for (const [key, val] of m.mapStringForeignMessage) {
-      w.string(key);
-      ForeignMessage.encode(val, w);
-    }
+    TestAllTypesProto3.encodeMapStringForeignMessage(
+      m.mapStringForeignMessage,
+      w
+    );
 
     // map<string, TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73
-    for (const [key, val] of m.mapStringNestedEnum) {
-      w.string(key);
-      w.uint32(val);
-    }
+    TestAllTypesProto3.encodeMapStringNestedEnum(m.mapStringNestedEnum, w);
 
     // map<string, ForeignEnum> map_string_foreign_enum = 74
-    for (const [key, val] of m.mapStringForeignEnum) {
-      w.string(key);
-      w.uint32(val);
-    }
+    TestAllTypesProto3.encodeMapStringForeignEnum(m.mapStringForeignEnum, w);
 
-    // oneof uint32 oneof_uint32 = 111
-
-    // oneof TestAllTypesProto3.NestedMessage oneof_nested_message = 112
-
-    // oneof string oneof_string = 113
-
-    // oneof bytes oneof_bytes = 114
-
-    // oneof bool oneof_bool = 115
-
-    // oneof uint64 oneof_uint64 = 116
-
-    // oneof float oneof_float = 117
-
-    // oneof double oneof_double = 118
-
-    // oneof TestAllTypesProto3.NestedEnum oneof_enum = 119
-
-    // oneof google.protobuf.NullValue oneof_null_value = 120
+    // NOT IMPLEMENTED
 
     // google.protobuf.BoolValue optional_bool_wrapper = 201
     if (
@@ -1597,8 +2246,8 @@ export class TestAllTypesProto3 {
       w.uint32(1610);
       google_protobuf_wrappers_models.google.protobuf.BoolValue.encode(
         m.optionalBoolWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Int32Value optional_int32_wrapper = 202
@@ -1609,8 +2258,8 @@ export class TestAllTypesProto3 {
       w.uint32(1618);
       google_protobuf_wrappers_models.google.protobuf.Int32Value.encode(
         m.optionalInt32Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Int64Value optional_int64_wrapper = 203
@@ -1621,8 +2270,8 @@ export class TestAllTypesProto3 {
       w.uint32(1626);
       google_protobuf_wrappers_models.google.protobuf.Int64Value.encode(
         m.optionalInt64Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.UInt32Value optional_uint32_wrapper = 204
@@ -1633,8 +2282,8 @@ export class TestAllTypesProto3 {
       w.uint32(1634);
       google_protobuf_wrappers_models.google.protobuf.UInt32Value.encode(
         m.optionalUint32Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.UInt64Value optional_uint64_wrapper = 205
@@ -1645,8 +2294,8 @@ export class TestAllTypesProto3 {
       w.uint32(1642);
       google_protobuf_wrappers_models.google.protobuf.UInt64Value.encode(
         m.optionalUint64Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.FloatValue optional_float_wrapper = 206
@@ -1657,8 +2306,8 @@ export class TestAllTypesProto3 {
       w.uint32(1650);
       google_protobuf_wrappers_models.google.protobuf.FloatValue.encode(
         m.optionalFloatWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.DoubleValue optional_double_wrapper = 207
@@ -1669,8 +2318,8 @@ export class TestAllTypesProto3 {
       w.uint32(1658);
       google_protobuf_wrappers_models.google.protobuf.DoubleValue.encode(
         m.optionalDoubleWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.StringValue optional_string_wrapper = 208
@@ -1681,8 +2330,8 @@ export class TestAllTypesProto3 {
       w.uint32(1666);
       google_protobuf_wrappers_models.google.protobuf.StringValue.encode(
         m.optionalStringWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.BytesValue optional_bytes_wrapper = 209
@@ -1693,89 +2342,116 @@ export class TestAllTypesProto3 {
       w.uint32(1674);
       google_protobuf_wrappers_models.google.protobuf.BytesValue.encode(
         m.optionalBytesWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.BoolValue repeated_bool_wrapper = 211
-    if (m.repeatedBoolWrapper !== []) {
+    if (
+      m.repeatedBoolWrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.BoolValue()
+    ) {
       w.uint32(1690);
       google_protobuf_wrappers_models.google.protobuf.BoolValue.encode(
         m.repeatedBoolWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Int32Value repeated_int32_wrapper = 212
-    if (m.repeatedInt32Wrapper !== []) {
+    if (
+      m.repeatedInt32Wrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.Int32Value()
+    ) {
       w.uint32(1698);
       google_protobuf_wrappers_models.google.protobuf.Int32Value.encode(
         m.repeatedInt32Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Int64Value repeated_int64_wrapper = 213
-    if (m.repeatedInt64Wrapper !== []) {
+    if (
+      m.repeatedInt64Wrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.Int64Value()
+    ) {
       w.uint32(1706);
       google_protobuf_wrappers_models.google.protobuf.Int64Value.encode(
         m.repeatedInt64Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.UInt32Value repeated_uint32_wrapper = 214
-    if (m.repeatedUint32Wrapper !== []) {
+    if (
+      m.repeatedUint32Wrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.UInt32Value()
+    ) {
       w.uint32(1714);
       google_protobuf_wrappers_models.google.protobuf.UInt32Value.encode(
         m.repeatedUint32Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.UInt64Value repeated_uint64_wrapper = 215
-    if (m.repeatedUint64Wrapper !== []) {
+    if (
+      m.repeatedUint64Wrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.UInt64Value()
+    ) {
       w.uint32(1722);
       google_protobuf_wrappers_models.google.protobuf.UInt64Value.encode(
         m.repeatedUint64Wrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.FloatValue repeated_float_wrapper = 216
-    if (m.repeatedFloatWrapper !== []) {
+    if (
+      m.repeatedFloatWrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.FloatValue()
+    ) {
       w.uint32(1730);
       google_protobuf_wrappers_models.google.protobuf.FloatValue.encode(
         m.repeatedFloatWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.DoubleValue repeated_double_wrapper = 217
-    if (m.repeatedDoubleWrapper !== []) {
+    if (
+      m.repeatedDoubleWrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.DoubleValue()
+    ) {
       w.uint32(1738);
       google_protobuf_wrappers_models.google.protobuf.DoubleValue.encode(
         m.repeatedDoubleWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.StringValue repeated_string_wrapper = 218
-    if (m.repeatedStringWrapper !== []) {
+    if (
+      m.repeatedStringWrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.StringValue()
+    ) {
       w.uint32(1746);
       google_protobuf_wrappers_models.google.protobuf.StringValue.encode(
         m.repeatedStringWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.BytesValue repeated_bytes_wrapper = 219
-    if (m.repeatedBytesWrapper !== []) {
+    if (
+      m.repeatedBytesWrapper !==
+      new google_protobuf_wrappers_models.google.protobuf.BytesValue()
+    ) {
       w.uint32(1754);
       google_protobuf_wrappers_models.google.protobuf.BytesValue.encode(
         m.repeatedBytesWrapper,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Duration optional_duration = 301
@@ -1786,8 +2462,8 @@ export class TestAllTypesProto3 {
       w.uint32(2410);
       google_protobuf_duration_models.google.protobuf.Duration.encode(
         m.optionalDuration,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Timestamp optional_timestamp = 302
@@ -1798,8 +2474,8 @@ export class TestAllTypesProto3 {
       w.uint32(2418);
       google_protobuf_timestamp_models.google.protobuf.Timestamp.encode(
         m.optionalTimestamp,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.FieldMask optional_field_mask = 303
@@ -1810,8 +2486,8 @@ export class TestAllTypesProto3 {
       w.uint32(2426);
       google_protobuf_field_mask_models.google.protobuf.FieldMask.encode(
         m.optionalFieldMask,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Struct optional_struct = 304
@@ -1822,8 +2498,8 @@ export class TestAllTypesProto3 {
       w.uint32(2434);
       google_protobuf_struct_models.google.protobuf.Struct.encode(
         m.optionalStruct,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Any optional_any = 305
@@ -1831,7 +2507,10 @@ export class TestAllTypesProto3 {
       m.optionalAny !== new google_protobuf_any_models.google.protobuf.Any()
     ) {
       w.uint32(2442);
-      google_protobuf_any_models.google.protobuf.Any.encode(m.optionalAny, w);
+      google_protobuf_any_models.google.protobuf.Any.encode(
+        m.optionalAny,
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Value optional_value = 306
@@ -1842,8 +2521,8 @@ export class TestAllTypesProto3 {
       w.uint32(2450);
       google_protobuf_struct_models.google.protobuf.Value.encode(
         m.optionalValue,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.NullValue optional_null_value = 307
@@ -1852,67 +2531,90 @@ export class TestAllTypesProto3 {
       google_protobuf_struct_models.google.protobuf.NullValue.NULL_VALUE
     ) {
       w.uint32(2456);
-      w.uint32(m.optionalNullValue);
+      w.int32(m.optionalNullValue);
     }
 
     // google.protobuf.Duration repeated_duration = 311
-    if (m.repeatedDuration !== []) {
+    if (
+      m.repeatedDuration !==
+      new google_protobuf_duration_models.google.protobuf.Duration()
+    ) {
       w.uint32(2490);
       google_protobuf_duration_models.google.protobuf.Duration.encode(
         m.repeatedDuration,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Timestamp repeated_timestamp = 312
-    if (m.repeatedTimestamp !== []) {
+    if (
+      m.repeatedTimestamp !==
+      new google_protobuf_timestamp_models.google.protobuf.Timestamp()
+    ) {
       w.uint32(2498);
       google_protobuf_timestamp_models.google.protobuf.Timestamp.encode(
         m.repeatedTimestamp,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.FieldMask repeated_fieldmask = 313
-    if (m.repeatedFieldmask !== []) {
+    if (
+      m.repeatedFieldmask !==
+      new google_protobuf_field_mask_models.google.protobuf.FieldMask()
+    ) {
       w.uint32(2506);
       google_protobuf_field_mask_models.google.protobuf.FieldMask.encode(
         m.repeatedFieldmask,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Struct repeated_struct = 324
-    if (m.repeatedStruct !== []) {
+    if (
+      m.repeatedStruct !==
+      new google_protobuf_struct_models.google.protobuf.Struct()
+    ) {
       w.uint32(2594);
       google_protobuf_struct_models.google.protobuf.Struct.encode(
         m.repeatedStruct,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Any repeated_any = 315
-    if (m.repeatedAny !== []) {
+    if (
+      m.repeatedAny !== new google_protobuf_any_models.google.protobuf.Any()
+    ) {
       w.uint32(2522);
-      google_protobuf_any_models.google.protobuf.Any.encode(m.repeatedAny, w);
+      google_protobuf_any_models.google.protobuf.Any.encode(
+        m.repeatedAny,
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.Value repeated_value = 316
-    if (m.repeatedValue !== []) {
+    if (
+      m.repeatedValue !==
+      new google_protobuf_struct_models.google.protobuf.Value()
+    ) {
       w.uint32(2530);
       google_protobuf_struct_models.google.protobuf.Value.encode(
         m.repeatedValue,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // google.protobuf.ListValue repeated_list_value = 317
-    if (m.repeatedListValue !== []) {
+    if (
+      m.repeatedListValue !==
+      new google_protobuf_struct_models.google.protobuf.ListValue()
+    ) {
       w.uint32(2538);
       google_protobuf_struct_models.google.protobuf.ListValue.encode(
         m.repeatedListValue,
-        w
-      );
+        w.fork()
+      ).ldelim();
     }
 
     // int32 fieldname1 = 401
@@ -1958,9 +2660,9 @@ export class TestAllTypesProto3 {
     }
 
     // int32 FieldName8 = 408
-    if (m.fieldName8 !== 0) {
+    if (m.FieldName8 !== 0) {
       w.uint32(3264);
-      w.int32(m.fieldName8);
+      w.int32(m.FieldName8);
     }
 
     // int32 field_Name9 = 409
@@ -1970,21 +2672,21 @@ export class TestAllTypesProto3 {
     }
 
     // int32 Field_Name10 = 410
-    if (m.fieldName10 !== 0) {
+    if (m.FieldName10 !== 0) {
       w.uint32(3280);
-      w.int32(m.fieldName10);
+      w.int32(m.FieldName10);
     }
 
     // int32 FIELD_NAME11 = 411
-    if (m.fIELDNAME11 !== 0) {
+    if (m.FIELDNAME11 !== 0) {
       w.uint32(3288);
-      w.int32(m.fIELDNAME11);
+      w.int32(m.FIELDNAME11);
     }
 
     // int32 FIELD_name12 = 412
-    if (m.fIELDName12 !== 0) {
+    if (m.FIELDName12 !== 0) {
       w.uint32(3296);
-      w.int32(m.fIELDName12);
+      w.int32(m.FIELDName12);
     }
 
     // int32 __field_name13 = 413
@@ -2018,9 +2720,9 @@ export class TestAllTypesProto3 {
     }
 
     // int32 Field_name18__ = 418
-    if (m.fieldName18_ !== 0) {
+    if (m.FieldName18_ !== 0) {
       w.uint32(3344);
-      w.int32(m.fieldName18_);
+      w.int32(m.FieldName18_);
     }
 
     return w;
@@ -2029,8 +2731,9 @@ export class TestAllTypesProto3 {
   public static decode(
     m: TestAllTypesProto3,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): TestAllTypesProto3 {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -2112,6 +2815,7 @@ export class TestAllTypesProto3 {
         // TestAllTypesProto3.NestedMessage optional_nested_message = 18
         case 146:
           m.optionalNestedMessage = TestAllTypesProto3.NestedMessage.decode(
+            undefined,
             r,
             r.uint32()
           );
@@ -2119,22 +2823,26 @@ export class TestAllTypesProto3 {
 
         // ForeignMessage optional_foreign_message = 19
         case 154:
-          m.optionalForeignMessage = ForeignMessage.decode(r, r.uint32());
+          m.optionalForeignMessage = ForeignMessage.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
           continue;
 
         // TestAllTypesProto3.NestedEnum optional_nested_enum = 21
         case 168:
-          m.optionalNestedEnum = r.uint32();
+          m.optionalNestedEnum = r.int32();
           continue;
 
         // ForeignEnum optional_foreign_enum = 22
         case 176:
-          m.optionalForeignEnum = r.uint32();
+          m.optionalForeignEnum = r.int32();
           continue;
 
         // TestAllTypesProto3.AliasedEnum optional_aliased_enum = 23
         case 184:
-          m.optionalAliasedEnum = r.uint32();
+          m.optionalAliasedEnum = r.int32();
           continue;
 
         // string optional_string_piece = 24
@@ -2149,760 +2857,479 @@ export class TestAllTypesProto3 {
 
         // TestAllTypesProto3 recursive_message = 27
         case 218:
-          m.recursiveMessage = TestAllTypesProto3.decode(r, r.uint32());
+          m.recursiveMessage = TestAllTypesProto3.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
           continue;
 
-        // repeated int32 repeated_int32 = 31
+        // int32 repeated_int32 = 31
         case 248:
-          {
-            const value = r.int32();
-
-            m.repeatedInt32.push(value);
-          }
+          m.repeatedInt32 = r.int32();
           continue;
 
-        // repeated int64 repeated_int64 = 32
+        // int64 repeated_int64 = 32
         case 256:
-          {
-            const value = r.int64();
-
-            m.repeatedInt64.push(value);
-          }
+          m.repeatedInt64 = r.int64();
           continue;
 
-        // repeated uint32 repeated_uint32 = 33
+        // uint32 repeated_uint32 = 33
         case 264:
-          {
-            const value = r.uint32();
-
-            m.repeatedUint32.push(value);
-          }
+          m.repeatedUint32 = r.uint32();
           continue;
 
-        // repeated uint64 repeated_uint64 = 34
+        // uint64 repeated_uint64 = 34
         case 272:
-          {
-            const value = r.uint64();
-
-            m.repeatedUint64.push(value);
-          }
+          m.repeatedUint64 = r.uint64();
           continue;
 
-        // repeated sint32 repeated_sint32 = 35
+        // sint32 repeated_sint32 = 35
         case 280:
-          {
-            const value = r.sint32();
-
-            m.repeatedSint32.push(value);
-          }
+          m.repeatedSint32 = r.sint32();
           continue;
 
-        // repeated sint64 repeated_sint64 = 36
+        // sint64 repeated_sint64 = 36
         case 288:
-          {
-            const value = r.sint64();
-
-            m.repeatedSint64.push(value);
-          }
+          m.repeatedSint64 = r.sint64();
           continue;
 
-        // repeated fixed32 repeated_fixed32 = 37
+        // fixed32 repeated_fixed32 = 37
         case 301:
-          {
-            const value = r.fixed32();
-
-            m.repeatedFixed32.push(value);
-          }
+          m.repeatedFixed32 = r.fixed32();
           continue;
 
-        // repeated fixed64 repeated_fixed64 = 38
+        // fixed64 repeated_fixed64 = 38
         case 305:
-          {
-            const value = r.fixed64();
-
-            m.repeatedFixed64.push(value);
-          }
+          m.repeatedFixed64 = r.fixed64();
           continue;
 
-        // repeated sfixed32 repeated_sfixed32 = 39
+        // sfixed32 repeated_sfixed32 = 39
         case 317:
-          {
-            const value = r.sfixed32();
-
-            m.repeatedSfixed32.push(value);
-          }
+          m.repeatedSfixed32 = r.sfixed32();
           continue;
 
-        // repeated sfixed64 repeated_sfixed64 = 40
+        // sfixed64 repeated_sfixed64 = 40
         case 321:
-          {
-            const value = r.sfixed64();
-
-            m.repeatedSfixed64.push(value);
-          }
+          m.repeatedSfixed64 = r.sfixed64();
           continue;
 
-        // repeated float repeated_float = 41
+        // float repeated_float = 41
         case 333:
-          {
-            const value = r.float();
-
-            m.repeatedFloat.push(value);
-          }
+          m.repeatedFloat = r.float();
           continue;
 
-        // repeated double repeated_double = 42
+        // double repeated_double = 42
         case 337:
-          {
-            const value = r.double();
-
-            m.repeatedDouble.push(value);
-          }
+          m.repeatedDouble = r.double();
           continue;
 
-        // repeated bool repeated_bool = 43
+        // bool repeated_bool = 43
         case 344:
-          {
-            const value = r.bool();
-
-            m.repeatedBool.push(value);
-          }
+          m.repeatedBool = r.bool();
           continue;
 
-        // repeated string repeated_string = 44
+        // string repeated_string = 44
         case 354:
-          {
-            const value = r.string();
-
-            m.repeatedString.push(value);
-          }
+          m.repeatedString = r.string();
           continue;
 
-        // repeated bytes repeated_bytes = 45
+        // bytes repeated_bytes = 45
         case 362:
-          {
-            const value = r.bytes();
-
-            m.repeatedBytes.push(value);
-          }
+          m.repeatedBytes = r.bytes();
           continue;
 
-        // repeated TestAllTypesProto3.NestedMessage repeated_nested_message = 48
+        // TestAllTypesProto3.NestedMessage repeated_nested_message = 48
         case 386:
-          {
-            const value = TestAllTypesProto3.NestedMessage.decode(
-              r,
-              r.uint32()
-            );
-
-            m.repeatedNestedMessage.push(value);
-          }
+          m.repeatedNestedMessage = TestAllTypesProto3.NestedMessage.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
           continue;
 
-        // repeated ForeignMessage repeated_foreign_message = 49
+        // ForeignMessage repeated_foreign_message = 49
         case 394:
-          {
-            const value = ForeignMessage.decode(r, r.uint32());
-
-            m.repeatedForeignMessage.push(value);
-          }
+          m.repeatedForeignMessage = ForeignMessage.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
           continue;
 
-        // repeated TestAllTypesProto3.NestedEnum repeated_nested_enum = 51
+        // TestAllTypesProto3.NestedEnum repeated_nested_enum = 51
         case 408:
-          {
-            const value = r.uint32();
-
-            m.repeatedNestedEnum.push(value);
-          }
+          m.repeatedNestedEnum = r.int32();
           continue;
 
-        // repeated ForeignEnum repeated_foreign_enum = 52
+        // ForeignEnum repeated_foreign_enum = 52
         case 416:
-          {
-            const value = r.uint32();
-
-            m.repeatedForeignEnum.push(value);
-          }
+          m.repeatedForeignEnum = r.int32();
           continue;
 
-        // repeated string repeated_string_piece = 54
+        // string repeated_string_piece = 54
         case 434:
-          {
-            const value = r.string();
-
-            m.repeatedStringPiece.push(value);
-          }
+          m.repeatedStringPiece = r.string();
           continue;
 
-        // repeated string repeated_cord = 55
+        // string repeated_cord = 55
         case 442:
-          {
-            const value = r.string();
-
-            m.repeatedCord.push(value);
-          }
+          m.repeatedCord = r.string();
           continue;
 
-        // repeated int32 packed_int32 = 75
+        // int32 packed_int32 = 75
         case 600:
-          {
-            const value = r.int32();
-
-            m.packedInt32.push(value);
-          }
+          m.packedInt32 = r.int32();
           continue;
 
-        // repeated int64 packed_int64 = 76
+        // int64 packed_int64 = 76
         case 608:
-          {
-            const value = r.int64();
-
-            m.packedInt64.push(value);
-          }
+          m.packedInt64 = r.int64();
           continue;
 
-        // repeated uint32 packed_uint32 = 77
+        // uint32 packed_uint32 = 77
         case 616:
-          {
-            const value = r.uint32();
-
-            m.packedUint32.push(value);
-          }
+          m.packedUint32 = r.uint32();
           continue;
 
-        // repeated uint64 packed_uint64 = 78
+        // uint64 packed_uint64 = 78
         case 624:
-          {
-            const value = r.uint64();
-
-            m.packedUint64.push(value);
-          }
+          m.packedUint64 = r.uint64();
           continue;
 
-        // repeated sint32 packed_sint32 = 79
+        // sint32 packed_sint32 = 79
         case 632:
-          {
-            const value = r.sint32();
-
-            m.packedSint32.push(value);
-          }
+          m.packedSint32 = r.sint32();
           continue;
 
-        // repeated sint64 packed_sint64 = 80
+        // sint64 packed_sint64 = 80
         case 640:
-          {
-            const value = r.sint64();
-
-            m.packedSint64.push(value);
-          }
+          m.packedSint64 = r.sint64();
           continue;
 
-        // repeated fixed32 packed_fixed32 = 81
+        // fixed32 packed_fixed32 = 81
         case 653:
-          {
-            const value = r.fixed32();
-
-            m.packedFixed32.push(value);
-          }
+          m.packedFixed32 = r.fixed32();
           continue;
 
-        // repeated fixed64 packed_fixed64 = 82
+        // fixed64 packed_fixed64 = 82
         case 657:
-          {
-            const value = r.fixed64();
-
-            m.packedFixed64.push(value);
-          }
+          m.packedFixed64 = r.fixed64();
           continue;
 
-        // repeated sfixed32 packed_sfixed32 = 83
+        // sfixed32 packed_sfixed32 = 83
         case 669:
-          {
-            const value = r.sfixed32();
-
-            m.packedSfixed32.push(value);
-          }
+          m.packedSfixed32 = r.sfixed32();
           continue;
 
-        // repeated sfixed64 packed_sfixed64 = 84
+        // sfixed64 packed_sfixed64 = 84
         case 673:
-          {
-            const value = r.sfixed64();
-
-            m.packedSfixed64.push(value);
-          }
+          m.packedSfixed64 = r.sfixed64();
           continue;
 
-        // repeated float packed_float = 85
+        // float packed_float = 85
         case 685:
-          {
-            const value = r.float();
-
-            m.packedFloat.push(value);
-          }
+          m.packedFloat = r.float();
           continue;
 
-        // repeated double packed_double = 86
+        // double packed_double = 86
         case 689:
-          {
-            const value = r.double();
-
-            m.packedDouble.push(value);
-          }
+          m.packedDouble = r.double();
           continue;
 
-        // repeated bool packed_bool = 87
+        // bool packed_bool = 87
         case 696:
-          {
-            const value = r.bool();
-
-            m.packedBool.push(value);
-          }
+          m.packedBool = r.bool();
           continue;
 
-        // repeated TestAllTypesProto3.NestedEnum packed_nested_enum = 88
+        // TestAllTypesProto3.NestedEnum packed_nested_enum = 88
         case 704:
-          {
-            const value = r.uint32();
-
-            m.packedNestedEnum.push(value);
-          }
+          m.packedNestedEnum = r.int32();
           continue;
 
-        // repeated int32 unpacked_int32 = 89
+        // int32 unpacked_int32 = 89
         case 712:
-          {
-            const value = r.int32();
-
-            m.unpackedInt32.push(value);
-          }
+          m.unpackedInt32 = r.int32();
           continue;
 
-        // repeated int64 unpacked_int64 = 90
+        // int64 unpacked_int64 = 90
         case 720:
-          {
-            const value = r.int64();
-
-            m.unpackedInt64.push(value);
-          }
+          m.unpackedInt64 = r.int64();
           continue;
 
-        // repeated uint32 unpacked_uint32 = 91
+        // uint32 unpacked_uint32 = 91
         case 728:
-          {
-            const value = r.uint32();
-
-            m.unpackedUint32.push(value);
-          }
+          m.unpackedUint32 = r.uint32();
           continue;
 
-        // repeated uint64 unpacked_uint64 = 92
+        // uint64 unpacked_uint64 = 92
         case 736:
-          {
-            const value = r.uint64();
-
-            m.unpackedUint64.push(value);
-          }
+          m.unpackedUint64 = r.uint64();
           continue;
 
-        // repeated sint32 unpacked_sint32 = 93
+        // sint32 unpacked_sint32 = 93
         case 744:
-          {
-            const value = r.sint32();
-
-            m.unpackedSint32.push(value);
-          }
+          m.unpackedSint32 = r.sint32();
           continue;
 
-        // repeated sint64 unpacked_sint64 = 94
+        // sint64 unpacked_sint64 = 94
         case 752:
-          {
-            const value = r.sint64();
-
-            m.unpackedSint64.push(value);
-          }
+          m.unpackedSint64 = r.sint64();
           continue;
 
-        // repeated fixed32 unpacked_fixed32 = 95
+        // fixed32 unpacked_fixed32 = 95
         case 765:
-          {
-            const value = r.fixed32();
-
-            m.unpackedFixed32.push(value);
-          }
+          m.unpackedFixed32 = r.fixed32();
           continue;
 
-        // repeated fixed64 unpacked_fixed64 = 96
+        // fixed64 unpacked_fixed64 = 96
         case 769:
-          {
-            const value = r.fixed64();
-
-            m.unpackedFixed64.push(value);
-          }
+          m.unpackedFixed64 = r.fixed64();
           continue;
 
-        // repeated sfixed32 unpacked_sfixed32 = 97
+        // sfixed32 unpacked_sfixed32 = 97
         case 781:
-          {
-            const value = r.sfixed32();
-
-            m.unpackedSfixed32.push(value);
-          }
+          m.unpackedSfixed32 = r.sfixed32();
           continue;
 
-        // repeated sfixed64 unpacked_sfixed64 = 98
+        // sfixed64 unpacked_sfixed64 = 98
         case 785:
-          {
-            const value = r.sfixed64();
-
-            m.unpackedSfixed64.push(value);
-          }
+          m.unpackedSfixed64 = r.sfixed64();
           continue;
 
-        // repeated float unpacked_float = 99
+        // float unpacked_float = 99
         case 797:
-          {
-            const value = r.float();
-
-            m.unpackedFloat.push(value);
-          }
+          m.unpackedFloat = r.float();
           continue;
 
-        // repeated double unpacked_double = 100
+        // double unpacked_double = 100
         case 801:
-          {
-            const value = r.double();
-
-            m.unpackedDouble.push(value);
-          }
+          m.unpackedDouble = r.double();
           continue;
 
-        // repeated bool unpacked_bool = 101
+        // bool unpacked_bool = 101
         case 808:
-          {
-            const value = r.bool();
-
-            m.unpackedBool.push(value);
-          }
+          m.unpackedBool = r.bool();
           continue;
 
-        // repeated TestAllTypesProto3.NestedEnum unpacked_nested_enum = 102
+        // TestAllTypesProto3.NestedEnum unpacked_nested_enum = 102
         case 816:
-          {
-            const value = r.uint32();
-
-            m.unpackedNestedEnum.push(value);
-          }
+          m.unpackedNestedEnum = r.int32();
           continue;
 
         // map<int32, int32> map_int32_int32 = 56
         case 450:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.int32();
-            const valueTag = r.uint32();
-            const value = r.int32();
-
-            m.mapInt32Int32.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapInt32Int32(
+              r,
+              r.uint32()
+            );
+            m.mapInt32Int32.set(k, v);
           }
           continue;
 
         // map<int64, int64> map_int64_int64 = 57
         case 458:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.int64();
-            const valueTag = r.uint32();
-            const value = r.int64();
-
-            m.mapInt64Int64.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapInt64Int64(
+              r,
+              r.uint32()
+            );
+            m.mapInt64Int64.set(k, v);
           }
           continue;
 
         // map<uint32, uint32> map_uint32_uint32 = 58
         case 466:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.uint32();
-            const valueTag = r.uint32();
-            const value = r.uint32();
-
-            m.mapUint32Uint32.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapUint32Uint32(
+              r,
+              r.uint32()
+            );
+            m.mapUint32Uint32.set(k, v);
           }
           continue;
 
         // map<uint64, uint64> map_uint64_uint64 = 59
         case 474:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.uint64();
-            const valueTag = r.uint32();
-            const value = r.uint64();
-
-            m.mapUint64Uint64.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapUint64Uint64(
+              r,
+              r.uint32()
+            );
+            m.mapUint64Uint64.set(k, v);
           }
           continue;
 
         // map<sint32, sint32> map_sint32_sint32 = 60
         case 482:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.sint32();
-            const valueTag = r.uint32();
-            const value = r.sint32();
-
-            m.mapSint32Sint32.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapSint32Sint32(
+              r,
+              r.uint32()
+            );
+            m.mapSint32Sint32.set(k, v);
           }
           continue;
 
         // map<sint64, sint64> map_sint64_sint64 = 61
         case 490:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.sint64();
-            const valueTag = r.uint32();
-            const value = r.sint64();
-
-            m.mapSint64Sint64.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapSint64Sint64(
+              r,
+              r.uint32()
+            );
+            m.mapSint64Sint64.set(k, v);
           }
           continue;
 
         // map<fixed32, fixed32> map_fixed32_fixed32 = 62
         case 498:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.fixed32();
-            const valueTag = r.uint32();
-            const value = r.fixed32();
-
-            m.mapFixed32Fixed32.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapFixed32Fixed32(
+              r,
+              r.uint32()
+            );
+            m.mapFixed32Fixed32.set(k, v);
           }
           continue;
 
         // map<fixed64, fixed64> map_fixed64_fixed64 = 63
         case 506:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.fixed64();
-            const valueTag = r.uint32();
-            const value = r.fixed64();
-
-            m.mapFixed64Fixed64.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapFixed64Fixed64(
+              r,
+              r.uint32()
+            );
+            m.mapFixed64Fixed64.set(k, v);
           }
           continue;
 
         // map<sfixed32, sfixed32> map_sfixed32_sfixed32 = 64
         case 514:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.sfixed32();
-            const valueTag = r.uint32();
-            const value = r.sfixed32();
-
-            m.mapSfixed32Sfixed32.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapSfixed32Sfixed32(
+              r,
+              r.uint32()
+            );
+            m.mapSfixed32Sfixed32.set(k, v);
           }
           continue;
 
         // map<sfixed64, sfixed64> map_sfixed64_sfixed64 = 65
         case 522:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.sfixed64();
-            const valueTag = r.uint32();
-            const value = r.sfixed64();
-
-            m.mapSfixed64Sfixed64.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapSfixed64Sfixed64(
+              r,
+              r.uint32()
+            );
+            m.mapSfixed64Sfixed64.set(k, v);
           }
           continue;
 
         // map<int32, float> map_int32_float = 66
         case 530:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.int32();
-            const valueTag = r.uint32();
-            const value = r.float();
-
-            m.mapInt32Float.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapInt32Float(
+              r,
+              r.uint32()
+            );
+            m.mapInt32Float.set(k, v);
           }
           continue;
 
         // map<int32, double> map_int32_double = 67
         case 538:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.int32();
-            const valueTag = r.uint32();
-            const value = r.double();
-
-            m.mapInt32Double.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapInt32Double(
+              r,
+              r.uint32()
+            );
+            m.mapInt32Double.set(k, v);
           }
           continue;
 
         // map<bool, bool> map_bool_bool = 68
         case 546:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.bool();
-            const valueTag = r.uint32();
-            const value = r.bool();
-
-            m.mapBoolBool.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapBoolBool(r, r.uint32());
+            m.mapBoolBool.set(k, v);
           }
           continue;
 
         // map<string, string> map_string_string = 69
         case 554:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.string();
-            const valueTag = r.uint32();
-            const value = r.string();
-
-            m.mapStringString.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapStringString(
+              r,
+              r.uint32()
+            );
+            m.mapStringString.set(k, v);
           }
           continue;
 
         // map<string, bytes> map_string_bytes = 70
         case 562:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.string();
-            const valueTag = r.uint32();
-            const value = r.bytes();
-
-            m.mapStringBytes.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapStringBytes(
+              r,
+              r.uint32()
+            );
+            m.mapStringBytes.set(k, v);
           }
           continue;
 
         // map<string, TestAllTypesProto3.NestedMessage> map_string_nested_message = 71
         case 570:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.string();
-            const valueTag = r.uint32();
-            const value = TestAllTypesProto3.NestedMessage.decode(
+            const [k, v] = TestAllTypesProto3.decodeMapStringNestedMessage(
               r,
               r.uint32()
             );
-
-            m.mapStringNestedMessage.set(key, value);
+            m.mapStringNestedMessage.set(k, v);
           }
           continue;
 
         // map<string, ForeignMessage> map_string_foreign_message = 72
         case 578:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.string();
-            const valueTag = r.uint32();
-            const value = ForeignMessage.decode(r, r.uint32());
-
-            m.mapStringForeignMessage.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapStringForeignMessage(
+              r,
+              r.uint32()
+            );
+            m.mapStringForeignMessage.set(k, v);
           }
           continue;
 
         // map<string, TestAllTypesProto3.NestedEnum> map_string_nested_enum = 73
         case 586:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.string();
-            const valueTag = r.uint32();
-            const value = r.uint32();
-
-            m.mapStringNestedEnum.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapStringNestedEnum(
+              r,
+              r.uint32()
+            );
+            m.mapStringNestedEnum.set(k, v);
           }
           continue;
 
         // map<string, ForeignEnum> map_string_foreign_enum = 74
         case 594:
           {
-            const len = r.uint32();
-            const keyTag = r.uint32();
-            const key = r.string();
-            const valueTag = r.uint32();
-            const value = r.uint32();
-
-            m.mapStringForeignEnum.set(key, value);
+            const [k, v] = TestAllTypesProto3.decodeMapStringForeignEnum(
+              r,
+              r.uint32()
+            );
+            m.mapStringForeignEnum.set(k, v);
           }
           continue;
 
-        // uint32 oneof_uint32 = 111
-        case 888:
-          m.oneofUint32 = r.uint32();
-          continue;
-
-        // TestAllTypesProto3.NestedMessage oneof_nested_message = 112
-        case 898:
-          m.oneofNestedMessage = TestAllTypesProto3.NestedMessage.decode(
-            r,
-            r.uint32()
-          );
-          continue;
-
-        // string oneof_string = 113
-        case 906:
-          m.oneofString = r.string();
-          continue;
-
-        // bytes oneof_bytes = 114
-        case 914:
-          m.oneofBytes = r.bytes();
-          continue;
-
-        // bool oneof_bool = 115
-        case 920:
-          m.oneofBool = r.bool();
-          continue;
-
-        // uint64 oneof_uint64 = 116
-        case 928:
-          m.oneofUint64 = r.uint64();
-          continue;
-
-        // float oneof_float = 117
-        case 941:
-          m.oneofFloat = r.float();
-          continue;
-
-        // double oneof_double = 118
-        case 945:
-          m.oneofDouble = r.double();
-          continue;
-
-        // TestAllTypesProto3.NestedEnum oneof_enum = 119
-        case 952:
-          m.oneofEnum = r.uint32();
-          continue;
-
-        // google.protobuf.NullValue oneof_null_value = 120
-        case 960:
-          m.oneofNullValue = r.uint32();
-          continue;
+        // NOT IMPLEMENTED
 
         // google.protobuf.BoolValue optional_bool_wrapper = 201
         case 1610:
           m.optionalBoolWrapper =
             google_protobuf_wrappers_models.google.protobuf.BoolValue.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2912,6 +3339,7 @@ export class TestAllTypesProto3 {
         case 1618:
           m.optionalInt32Wrapper =
             google_protobuf_wrappers_models.google.protobuf.Int32Value.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2921,6 +3349,7 @@ export class TestAllTypesProto3 {
         case 1626:
           m.optionalInt64Wrapper =
             google_protobuf_wrappers_models.google.protobuf.Int64Value.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2930,6 +3359,7 @@ export class TestAllTypesProto3 {
         case 1634:
           m.optionalUint32Wrapper =
             google_protobuf_wrappers_models.google.protobuf.UInt32Value.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2939,6 +3369,7 @@ export class TestAllTypesProto3 {
         case 1642:
           m.optionalUint64Wrapper =
             google_protobuf_wrappers_models.google.protobuf.UInt64Value.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2948,6 +3379,7 @@ export class TestAllTypesProto3 {
         case 1650:
           m.optionalFloatWrapper =
             google_protobuf_wrappers_models.google.protobuf.FloatValue.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2957,6 +3389,7 @@ export class TestAllTypesProto3 {
         case 1658:
           m.optionalDoubleWrapper =
             google_protobuf_wrappers_models.google.protobuf.DoubleValue.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2966,6 +3399,7 @@ export class TestAllTypesProto3 {
         case 1666:
           m.optionalStringWrapper =
             google_protobuf_wrappers_models.google.protobuf.StringValue.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -2975,132 +3409,107 @@ export class TestAllTypesProto3 {
         case 1674:
           m.optionalBytesWrapper =
             google_protobuf_wrappers_models.google.protobuf.BytesValue.decode(
+              undefined,
               r,
               r.uint32()
             );
           continue;
 
-        // repeated google.protobuf.BoolValue repeated_bool_wrapper = 211
+        // google.protobuf.BoolValue repeated_bool_wrapper = 211
         case 1690:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.BoolValue.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedBoolWrapper.push(value);
-          }
+          m.repeatedBoolWrapper =
+            google_protobuf_wrappers_models.google.protobuf.BoolValue.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.Int32Value repeated_int32_wrapper = 212
+        // google.protobuf.Int32Value repeated_int32_wrapper = 212
         case 1698:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.Int32Value.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedInt32Wrapper.push(value);
-          }
+          m.repeatedInt32Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.Int32Value.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.Int64Value repeated_int64_wrapper = 213
+        // google.protobuf.Int64Value repeated_int64_wrapper = 213
         case 1706:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.Int64Value.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedInt64Wrapper.push(value);
-          }
+          m.repeatedInt64Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.Int64Value.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.UInt32Value repeated_uint32_wrapper = 214
+        // google.protobuf.UInt32Value repeated_uint32_wrapper = 214
         case 1714:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.UInt32Value.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedUint32Wrapper.push(value);
-          }
+          m.repeatedUint32Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.UInt32Value.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.UInt64Value repeated_uint64_wrapper = 215
+        // google.protobuf.UInt64Value repeated_uint64_wrapper = 215
         case 1722:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.UInt64Value.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedUint64Wrapper.push(value);
-          }
+          m.repeatedUint64Wrapper =
+            google_protobuf_wrappers_models.google.protobuf.UInt64Value.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.FloatValue repeated_float_wrapper = 216
+        // google.protobuf.FloatValue repeated_float_wrapper = 216
         case 1730:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.FloatValue.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedFloatWrapper.push(value);
-          }
+          m.repeatedFloatWrapper =
+            google_protobuf_wrappers_models.google.protobuf.FloatValue.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.DoubleValue repeated_double_wrapper = 217
+        // google.protobuf.DoubleValue repeated_double_wrapper = 217
         case 1738:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.DoubleValue.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedDoubleWrapper.push(value);
-          }
+          m.repeatedDoubleWrapper =
+            google_protobuf_wrappers_models.google.protobuf.DoubleValue.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.StringValue repeated_string_wrapper = 218
+        // google.protobuf.StringValue repeated_string_wrapper = 218
         case 1746:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.StringValue.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedStringWrapper.push(value);
-          }
+          m.repeatedStringWrapper =
+            google_protobuf_wrappers_models.google.protobuf.StringValue.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.BytesValue repeated_bytes_wrapper = 219
+        // google.protobuf.BytesValue repeated_bytes_wrapper = 219
         case 1754:
-          {
-            const value =
-              google_protobuf_wrappers_models.google.protobuf.BytesValue.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedBytesWrapper.push(value);
-          }
+          m.repeatedBytesWrapper =
+            google_protobuf_wrappers_models.google.protobuf.BytesValue.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
         // google.protobuf.Duration optional_duration = 301
         case 2410:
           m.optionalDuration =
             google_protobuf_duration_models.google.protobuf.Duration.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -3110,6 +3519,7 @@ export class TestAllTypesProto3 {
         case 2418:
           m.optionalTimestamp =
             google_protobuf_timestamp_models.google.protobuf.Timestamp.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -3119,6 +3529,7 @@ export class TestAllTypesProto3 {
         case 2426:
           m.optionalFieldMask =
             google_protobuf_field_mask_models.google.protobuf.FieldMask.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -3128,6 +3539,7 @@ export class TestAllTypesProto3 {
         case 2434:
           m.optionalStruct =
             google_protobuf_struct_models.google.protobuf.Struct.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -3136,6 +3548,7 @@ export class TestAllTypesProto3 {
         // google.protobuf.Any optional_any = 305
         case 2442:
           m.optionalAny = google_protobuf_any_models.google.protobuf.Any.decode(
+            undefined,
             r,
             r.uint32()
           );
@@ -3145,6 +3558,7 @@ export class TestAllTypesProto3 {
         case 2450:
           m.optionalValue =
             google_protobuf_struct_models.google.protobuf.Value.decode(
+              undefined,
               r,
               r.uint32()
             );
@@ -3152,97 +3566,76 @@ export class TestAllTypesProto3 {
 
         // google.protobuf.NullValue optional_null_value = 307
         case 2456:
-          m.optionalNullValue = r.uint32();
+          m.optionalNullValue = r.int32();
           continue;
 
-        // repeated google.protobuf.Duration repeated_duration = 311
+        // google.protobuf.Duration repeated_duration = 311
         case 2490:
-          {
-            const value =
-              google_protobuf_duration_models.google.protobuf.Duration.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedDuration.push(value);
-          }
-          continue;
-
-        // repeated google.protobuf.Timestamp repeated_timestamp = 312
-        case 2498:
-          {
-            const value =
-              google_protobuf_timestamp_models.google.protobuf.Timestamp.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedTimestamp.push(value);
-          }
-          continue;
-
-        // repeated google.protobuf.FieldMask repeated_fieldmask = 313
-        case 2506:
-          {
-            const value =
-              google_protobuf_field_mask_models.google.protobuf.FieldMask.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedFieldmask.push(value);
-          }
-          continue;
-
-        // repeated google.protobuf.Struct repeated_struct = 324
-        case 2594:
-          {
-            const value =
-              google_protobuf_struct_models.google.protobuf.Struct.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedStruct.push(value);
-          }
-          continue;
-
-        // repeated google.protobuf.Any repeated_any = 315
-        case 2522:
-          {
-            const value = google_protobuf_any_models.google.protobuf.Any.decode(
+          m.repeatedDuration =
+            google_protobuf_duration_models.google.protobuf.Duration.decode(
+              undefined,
               r,
               r.uint32()
             );
-
-            m.repeatedAny.push(value);
-          }
           continue;
 
-        // repeated google.protobuf.Value repeated_value = 316
+        // google.protobuf.Timestamp repeated_timestamp = 312
+        case 2498:
+          m.repeatedTimestamp =
+            google_protobuf_timestamp_models.google.protobuf.Timestamp.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
+          continue;
+
+        // google.protobuf.FieldMask repeated_fieldmask = 313
+        case 2506:
+          m.repeatedFieldmask =
+            google_protobuf_field_mask_models.google.protobuf.FieldMask.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
+          continue;
+
+        // google.protobuf.Struct repeated_struct = 324
+        case 2594:
+          m.repeatedStruct =
+            google_protobuf_struct_models.google.protobuf.Struct.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
+          continue;
+
+        // google.protobuf.Any repeated_any = 315
+        case 2522:
+          m.repeatedAny = google_protobuf_any_models.google.protobuf.Any.decode(
+            undefined,
+            r,
+            r.uint32()
+          );
+          continue;
+
+        // google.protobuf.Value repeated_value = 316
         case 2530:
-          {
-            const value =
-              google_protobuf_struct_models.google.protobuf.Value.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedValue.push(value);
-          }
+          m.repeatedValue =
+            google_protobuf_struct_models.google.protobuf.Value.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
-        // repeated google.protobuf.ListValue repeated_list_value = 317
+        // google.protobuf.ListValue repeated_list_value = 317
         case 2538:
-          {
-            const value =
-              google_protobuf_struct_models.google.protobuf.ListValue.decode(
-                r,
-                r.uint32()
-              );
-
-            m.repeatedListValue.push(value);
-          }
+          m.repeatedListValue =
+            google_protobuf_struct_models.google.protobuf.ListValue.decode(
+              undefined,
+              r,
+              r.uint32()
+            );
           continue;
 
         // int32 fieldname1 = 401
@@ -3282,7 +3675,7 @@ export class TestAllTypesProto3 {
 
         // int32 FieldName8 = 408
         case 3264:
-          m.fieldName8 = r.int32();
+          m.FieldName8 = r.int32();
           continue;
 
         // int32 field_Name9 = 409
@@ -3292,17 +3685,17 @@ export class TestAllTypesProto3 {
 
         // int32 Field_Name10 = 410
         case 3280:
-          m.fieldName10 = r.int32();
+          m.FieldName10 = r.int32();
           continue;
 
         // int32 FIELD_NAME11 = 411
         case 3288:
-          m.fIELDNAME11 = r.int32();
+          m.FIELDNAME11 = r.int32();
           continue;
 
         // int32 FIELD_name12 = 412
         case 3296:
-          m.fIELDName12 = r.int32();
+          m.FIELDName12 = r.int32();
           continue;
 
         // int32 __field_name13 = 413
@@ -3332,12 +3725,16 @@ export class TestAllTypesProto3 {
 
         // int32 Field_name18__ = 418
         case 3344:
-          m.fieldName18_ = r.int32();
+          m.FieldName18_ = r.int32();
           continue;
+      }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: TestAllTypesProto3): TestAllTypesProto3JSON {
@@ -3486,19 +3883,7 @@ export class TestAllTypesProto3 {
         m.mapStringForeignEnum,
         (val) => ForeignEnum[val]
       ),
-      oneofUint32: m.oneofUint32,
-      oneofNestedMessage: m.oneofNestedMessage.toJSON(),
-      oneofString: m.oneofString,
-      oneofBytes: pjs.util.base64.encode(m.oneofBytes, 0, m.oneofBytes.length),
-      oneofBool: m.oneofBool,
-      oneofUint64: m.oneofUint64.toString(),
-      oneofFloat: m.oneofFloat,
-      oneofDouble: m.oneofDouble,
-      oneofEnum: TestAllTypesProto3.NestedEnum[m.oneofEnum],
-      oneofNullValue:
-        google_protobuf_struct_models.google.protobuf.NullValue[
-          m.oneofNullValue
-        ],
+      // NOT IMPLEMENTED
       optionalBoolWrapper: m.optionalBoolWrapper.toJSON(),
       optionalInt32Wrapper: m.optionalInt32Wrapper.toJSON(),
       optionalInt64Wrapper: m.optionalInt64Wrapper.toJSON(),
@@ -3541,17 +3926,17 @@ export class TestAllTypesProto3 {
       field0name5: m.field0name5,
       field0Name6: m.field0Name6,
       fieldName7: m.fieldName7,
-      fieldName8: m.fieldName8,
+      FieldName8: m.FieldName8,
       fieldName9: m.fieldName9,
-      fieldName10: m.fieldName10,
-      fIELDNAME11: m.fIELDNAME11,
-      fIELDName12: m.fIELDName12,
+      FieldName10: m.FieldName10,
+      FIELDNAME11: m.FIELDNAME11,
+      FIELDName12: m.FIELDName12,
       _fieldName13: m._fieldName13,
       _FieldName14: m._FieldName14,
       field_name15: m.field_name15,
       field_Name16: m.field_Name16,
       fieldName17_: m.fieldName17_,
-      fieldName18_: m.fieldName18_,
+      FieldName18_: m.FieldName18_,
     };
   }
 
@@ -3724,25 +4109,7 @@ export class TestAllTypesProto3 {
       obj.mapStringForeignEnum,
       (val) => ForeignEnum[val]
     );
-    m.oneofUint32 = obj.oneofUint32;
-    m.oneofNestedMessage = new TestAllTypesProto3.NestedMessage().fromJSON(
-      obj.oneofNestedMessage
-    );
-    m.oneofString = obj.oneofString;
-    {
-      const tmpBuffer = [];
-      pjs.util.base64.decode(obj.oneofBytes, tmpBuffer, 0);
-      m.oneofBytes = new pjs.util.Buffer(tmpBuffer);
-    }
-    m.oneofBool = obj.oneofBool;
-    m.oneofUint64 = pjs.util.Long.fromValue(obj.oneofUint64, true);
-    m.oneofFloat = obj.oneofFloat;
-    m.oneofDouble = obj.oneofDouble;
-    m.oneofEnum = TestAllTypesProto3.NestedEnum[obj.oneofEnum];
-    m.oneofNullValue =
-      google_protobuf_struct_models.google.protobuf.NullValue[
-        obj.oneofNullValue
-      ];
+    // NOT IMPLEMENTED
     m.optionalBoolWrapper =
       new google_protobuf_wrappers_models.google.protobuf.BoolValue().fromJSON(
         obj.optionalBoolWrapper
@@ -3878,17 +4245,17 @@ export class TestAllTypesProto3 {
     m.field0name5 = obj.field0name5;
     m.field0Name6 = obj.field0Name6;
     m.fieldName7 = obj.fieldName7;
-    m.fieldName8 = obj.fieldName8;
+    m.FieldName8 = obj.FieldName8;
     m.fieldName9 = obj.fieldName9;
-    m.fieldName10 = obj.fieldName10;
-    m.fIELDNAME11 = obj.fIELDNAME11;
-    m.fIELDName12 = obj.fIELDName12;
+    m.FieldName10 = obj.FieldName10;
+    m.FIELDNAME11 = obj.FIELDNAME11;
+    m.FIELDName12 = obj.FIELDName12;
     m._fieldName13 = obj._fieldName13;
     m._FieldName14 = obj._FieldName14;
     m.field_name15 = obj.field_name15;
     m.field_Name16 = obj.field_Name16;
     m.fieldName17_ = obj.fieldName17_;
-    m.fieldName18_ = obj.fieldName18_;
+    m.FieldName18_ = obj.FieldName18_;
 
     return m;
   }
@@ -3898,10 +4265,9 @@ export class TestAllTypesProto3 {
     return TestAllTypesProto3.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): TestAllTypesProto3 {
-    const r = new pjs.Reader(b);
-    TestAllTypesProto3.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): TestAllTypesProto3 {
+    const r = new pjs.Reader(buffer);
+    return TestAllTypesProto3.decode(this, r, r.len);
   }
 
   toJSON(): TestAllTypesProto3JSON {
@@ -3970,7 +4336,7 @@ export namespace TestAllTypesProto3 {
       // TestAllTypesProto3 corecursive = 2
       if (m.corecursive !== new TestAllTypesProto3()) {
         w.uint32(18);
-        TestAllTypesProto3.encode(m.corecursive, w);
+        TestAllTypesProto3.encode(m.corecursive, w.fork()).ldelim();
       }
 
       return w;
@@ -3979,8 +4345,9 @@ export namespace TestAllTypesProto3 {
     public static decode(
       m: NestedMessage,
       r: pjs.Reader,
-      l: number
-    ): pjs.Reader {
+      length: number
+    ): NestedMessage {
+      const l = r.pos + length;
       while (r.pos < l) {
         const tag = r.uint32();
         switch (tag) {
@@ -3991,12 +4358,16 @@ export namespace TestAllTypesProto3 {
 
           // TestAllTypesProto3 corecursive = 2
           case 18:
-            m.corecursive = TestAllTypesProto3.decode(r, r.uint32());
+            m.corecursive = TestAllTypesProto3.decode(undefined, r, r.uint32());
             continue;
+        }
+
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
         }
       }
 
-      return r;
+      return m;
     }
 
     public static toJSON(m: NestedMessage): NestedMessageJSON {
@@ -4021,10 +4392,9 @@ export namespace TestAllTypesProto3 {
       return NestedMessage.encode(this, w).finish();
     }
 
-    deserialize(b: Uint8Array | Buffer): NestedMessage {
-      const r = new pjs.Reader(b);
-      NestedMessage.decode(this, r, r.len);
-      return this;
+    deserialize(buffer: Uint8Array | Buffer): NestedMessage {
+      const r = new pjs.Reader(buffer);
+      return NestedMessage.decode(this, r, r.len);
     }
 
     toJSON(): NestedMessageJSON {
@@ -4081,8 +4451,9 @@ export class ForeignMessage {
   public static decode(
     m: ForeignMessage,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): ForeignMessage {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
@@ -4091,9 +4462,13 @@ export class ForeignMessage {
           m.c = r.int32();
           continue;
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: ForeignMessage): ForeignMessageJSON {
@@ -4116,10 +4491,9 @@ export class ForeignMessage {
     return ForeignMessage.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): ForeignMessage {
-    const r = new pjs.Reader(b);
-    ForeignMessage.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): ForeignMessage {
+    const r = new pjs.Reader(buffer);
+    return ForeignMessage.decode(this, r, r.len);
   }
 
   toJSON(): ForeignMessageJSON {
@@ -4161,15 +4535,20 @@ export class NullHypothesisProto3 {
   public static decode(
     m: NullHypothesisProto3,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): NullHypothesisProto3 {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: NullHypothesisProto3): NullHypothesisProto3JSON {
@@ -4188,10 +4567,9 @@ export class NullHypothesisProto3 {
     return NullHypothesisProto3.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): NullHypothesisProto3 {
-    const r = new pjs.Reader(b);
-    NullHypothesisProto3.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): NullHypothesisProto3 {
+    const r = new pjs.Reader(buffer);
+    return NullHypothesisProto3.decode(this, r, r.len);
   }
 
   toJSON(): NullHypothesisProto3JSON {
@@ -4233,15 +4611,20 @@ export class EnumOnlyProto3 {
   public static decode(
     m: EnumOnlyProto3,
     r: pjs.Reader,
-    l: number
-  ): pjs.Reader {
+    length: number
+  ): EnumOnlyProto3 {
+    const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
       }
+
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: EnumOnlyProto3): EnumOnlyProto3JSON {
@@ -4260,10 +4643,9 @@ export class EnumOnlyProto3 {
     return EnumOnlyProto3.encode(this, w).finish();
   }
 
-  deserialize(b: Uint8Array | Buffer): EnumOnlyProto3 {
-    const r = new pjs.Reader(b);
-    EnumOnlyProto3.decode(this, r, r.len);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): EnumOnlyProto3 {
+    const r = new pjs.Reader(buffer);
+    return EnumOnlyProto3.decode(this, r, r.len);
   }
 
   toJSON(): EnumOnlyProto3JSON {

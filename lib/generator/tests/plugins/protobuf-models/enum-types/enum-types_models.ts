@@ -42,7 +42,7 @@ export class EnumMessage {
     // TestEnum f_enum = 1
     if (m.fEnum !== TestEnum.ZERO) {
       w.uint32(8);
-      w.uint32(m.fEnum);
+      w.int32(m.fEnum);
     }
 
     return w;
@@ -52,14 +52,14 @@ export class EnumMessage {
     m: EnumMessage,
     r: pjs.Reader,
     length: number
-  ): pjs.Reader {
+  ): EnumMessage {
     const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
         // TestEnum f_enum = 1
         case 8:
-          m.fEnum = r.uint32();
+          m.fEnum = r.int32();
           continue;
       }
 
@@ -68,7 +68,7 @@ export class EnumMessage {
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: EnumMessage): EnumMessageJSON {
@@ -88,14 +88,9 @@ export class EnumMessage {
     return EnumMessage.encode(this, w).finish();
   }
 
-  deserialize(
-    buffer: Uint8Array | Buffer | pjs.Reader,
-    length?: number
-  ): EnumMessage {
-    const r = buffer instanceof pjs.Reader ? buffer : new pjs.Reader(buffer);
-    const l = length ?? r.len;
-    EnumMessage.decode(this, r, l);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): EnumMessage {
+    const r = new pjs.Reader(buffer);
+    return EnumMessage.decode(this, r, r.len);
   }
 
   toJSON(): EnumMessageJSON {

@@ -215,7 +215,7 @@ export class ScalarTypes {
     m: ScalarTypes,
     r: pjs.Reader,
     length: number
-  ): pjs.Reader {
+  ): ScalarTypes {
     const l = r.pos + length;
     while (r.pos < l) {
       const tag = r.uint32();
@@ -301,7 +301,7 @@ export class ScalarTypes {
       }
     }
 
-    return r;
+    return m;
   }
 
   public static toJSON(m: ScalarTypes): ScalarTypesJSON {
@@ -339,7 +339,11 @@ export class ScalarTypes {
     m.fDouble = obj.fDouble;
     m.fBool = obj.fBool;
     m.fString = obj.fString;
-    m.fBytes = new pjs.util.Buffer(obj.fBytes);
+    {
+      const tmpBuffer = [];
+      pjs.util.base64.decode(obj.fBytes, tmpBuffer, 0);
+      m.fBytes = new pjs.util.Buffer(tmpBuffer);
+    }
 
     return m;
   }
@@ -349,14 +353,9 @@ export class ScalarTypes {
     return ScalarTypes.encode(this, w).finish();
   }
 
-  deserialize(
-    buffer: Uint8Array | Buffer | pjs.Reader,
-    length?: number
-  ): ScalarTypes {
-    const r = buffer instanceof pjs.Reader ? buffer : new pjs.Reader(buffer);
-    const l = length ?? r.len;
-    ScalarTypes.decode(this, r, l);
-    return this;
+  deserialize(buffer: Uint8Array | Buffer): ScalarTypes {
+    const r = new pjs.Reader(buffer);
+    return ScalarTypes.decode(this, r, r.len);
   }
 
   toJSON(): ScalarTypesJSON {
