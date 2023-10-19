@@ -158,7 +158,7 @@ export const getFullImportPath = (ctx: ProjectContext, file: FileDescriptor, des
     if (desc.fileDescriptor === file) {
         return desc.fullname
     } else {
-        return `${modelsFileImportName}.${desc.fullpath}`
+        return `${modelsFileImportName}.${desc.fullname}`
     }
 }
 
@@ -172,7 +172,7 @@ export const getImports = (ctx: ProjectContext, file: FileDescriptor): Import[] 
         const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
 
         imports.push({
-            path: modelsFilePath,
+            path: `./${modelsFilePath}`,
             name: modelsFileImportName
         })
     }

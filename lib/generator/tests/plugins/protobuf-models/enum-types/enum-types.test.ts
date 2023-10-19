@@ -15,10 +15,6 @@ describe("Enum value types", () => {
     const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'enum_types.EnumMessage', FILLED_MESSAGE_JSON);
     const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'enum_types.EnumMessage', EMPTY_MESSAGE_JSON);
 
-    beforeAll(() => {
-        generateModels(__dirname);
-    })
-
     it("constructor filled message", () => {
         const cfMessageA = new EnumMessage().fromJSON(FILLED_MESSAGE_JSON);
         const cfJsonB = new EnumMessage(cfMessageA).toJSON();

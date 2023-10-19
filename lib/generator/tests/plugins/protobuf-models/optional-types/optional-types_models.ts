@@ -247,7 +247,7 @@ export class OptionalMessage {
 
         // SimpleMessage o_message = 6
         case 50:
-          m.oMessage = SimpleMessage.decode(undefined, r, r.uint32());
+          m.oMessage = SimpleMessage.decode(new SimpleMessage(), r, r.uint32());
           continue;
       }
 
