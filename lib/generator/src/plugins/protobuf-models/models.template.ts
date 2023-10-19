@@ -27,6 +27,14 @@ export const recursiveTemplate = (ctx: { messages: CtxMessage[], enums: CtxEnum[
   ${ctx.messages.map((message) => `
     ${ctx.enums.map((enm) => templates.render('models.enum', { enm })).join('\n')}
 
+    ${(message.fields.filter(f => f instanceof CtxOneof) as CtxOneof[]).map(f => {
+      return `type ${f.tsTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`
+    })}
+
+    ${(message.fields.filter(f => f instanceof CtxOneof) as CtxOneof[]).map(f => {
+      return `type ${f.jsonTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`
+    })}
+
     ${templates.render('models.jsonIface', { message })}
 
     ${templates.render('models.modelClass', { message })}
@@ -116,7 +124,7 @@ export const jsonIfaceTemplate = (ctx: { message: CtxMessage }) => `
       }
 
       if (field instanceof CtxOneof) {
-        return `// NOT IMPLEMENTED`
+        return `${field.name}: ${field.jsonTypeName} = undefined;`
       }
 
       if (field instanceof CtxMessageField) {
@@ -143,30 +151,31 @@ export const modelClassCtorTemplate = (ctx: { message: CtxMessage }): string => 
             if (field instanceof CtxMapField) {
               return `
                 const entries = Array.from(obj.${field.name}.entries());
-                ${(() => {
-                  switch (field.valueTypeInfo.typeMarker) {
-                    case "Message":
-                      return `const copy = entries.map(([key, val]) => [key, val.clone()]);`
-                    case "Bytes":
-                      return `const copy = entries.map(([key, val]) => [key, new pjs.util.Buffer(val)]);`
-                    default:
-                      return `const copy = entries.map(([key, val]) => [key, val]);`
-                  }
-                })()}
+                const copy = entries.map(([key, val]) => [key, ${templates.render('models.cloneField', { typeInfo: field.valueTypeInfo, variable: 'val' })}]);
                 this.${field.name} = new Map(copy);
               `
             }
 
             if (field instanceof CtxOneof) {
-              return `// NOT IMPLEMENTED`
+              return `
+                switch (true) {
+                  ${field.fields.map(f => {
+                    return `
+                      case (obj.${field.name}.${f.name} !== undefined):
+                        this.${field.name} = { ${f.name}: ${templates.render('models.cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.name}.${f.name}` })} };
+                        break;
+                    `
+                  }).join('\n')}
+                }
+              `
             }
 
             if (field instanceof CtxMessageField) {
               if (field.repeated) {
-                return `this.${field.name} = obj.${field.name}.map(val => ${field.typeInfo.isMessage ? `new ${field.typeInfo.fullType}(val)` : 'val'});`
+                return `this.${field.name} =  obj.${field.name}.map(val => ${templates.render('models.cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
               }
 
-              return `this.${field.name} = obj.${field.name};`
+              return `this.${field.name} = ${templates.render('models.cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.name}` })};`
             }
           })()}
         }`
@@ -182,7 +191,7 @@ export const modelClassFieldsTemplate = (ctx: { message: CtxMessage }): string =
     }
 
     if (field instanceof CtxOneof) {
-      return `// NOT IMPLEMENTED`
+      return `${field.name}: ${field.tsTypeName} = undefined;`
     }
 
     if (field instanceof CtxMessageField) {
@@ -208,7 +217,17 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
 
         if (field instanceof CtxOneof) {
           return `
-              // NOT IMPLEMENTED
+            // oneof
+            switch (true) {
+              ${field.fields.map(f => {
+                return `
+                  case (m.${field.name}?.${f.name} !== undefined):
+                    w.uint32(${f.tag});
+                    ${templates.render('models.encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.name}.${f.name}` })}
+                    break;
+                `
+              }).join('\n')}
+            }
           `
         }
 
@@ -323,7 +342,15 @@ export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string =
     
             if (field instanceof CtxOneof) {
               return `
-                  // NOT IMPLEMENTED
+                // oneof ${field.name} begin
+                ${field.fields.map(f => {
+                  return `
+                    case ${f.tag}:
+                      m.${field.name} = { ${f.name}: ${templates.render('models.decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.fullType}()` })} };
+                      break;
+                  `
+                }).join('\n')}
+                // oneof ${field.name} end
               `
             }
     
@@ -385,7 +412,19 @@ export const modelClassToJSONTemplate = (ctx: { message: CtxMessage }): string =
           }
 
           if (field instanceof CtxOneof) {
-            return `// NOT IMPLEMENTED`
+            return `
+              // oneof ${field.name}
+              ${field.name}: (() => {
+                switch (true) {
+                  ${field.fields.map(f => {
+                    return `
+                      case (m.${field.name}?.${f.name} !== undefined):
+                        return { ${f.name}: ${templates.render('models.toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.name}.${f.name}` })} }
+                    `
+                  }).join('\n')}
+                }
+              })(),
+            `
           }
 
           if (field instanceof CtxMessageField) {
@@ -410,7 +449,19 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
         }
 
         if (field instanceof CtxOneof) {
-          return `// NOT IMPLEMENTED`
+          return `
+            // oneof ${field.name}
+            m.${field.name} = (() => {
+              switch (true) {
+                ${field.fields.map(f => {
+                  return `
+                    case (obj.${field.name}?.${f.name} !== undefined):
+                      return { ${f.name}: ${templates.render('models.fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.name}?.${f.name}` })} }
+                  `
+                }).join('\n')}
+              }
+            })();
+          `
         }
 
         if (field instanceof CtxMessageField) {
@@ -425,6 +476,21 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
       return m;
     }
   `
+}
+
+export const cloneFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: string }): string => {
+  switch (ctx.typeInfo.typeMarker) {
+    case "FixedSmall":
+    case "String":
+    case "Enum":
+      return ctx.variable
+    case "FixedBig":
+      return `pjs.util.Long.fromLong(${ctx.variable})`
+    case "Bytes":
+      return `new pjs.util.Buffer(${ctx.variable})`
+    case "Message":
+      return `new ${ctx.typeInfo.fullType}(${ctx.variable})`
+  }
 }
 
 export const fromJsonValueTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: string }): string => {

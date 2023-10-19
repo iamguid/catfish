@@ -1,7 +1,7 @@
 import { Templates } from "../../Templates";
 import { headerTemplate } from "../../templates/header.template";
 import { importsTemplate } from "../../templates/imports.template";
-import { decodeFieldTemplate, encodeFieldTemplate, enumTemplate, modelClassCtorTemplate, modelClassDecodeTemplate, modelClassEncodeTemplate, modelClassFieldsTemplate, modelClassFromJSONTemplate, modelClassTemplate, modelClassToJSONTemplate, modelsTemplate, jsonIfaceTemplate, recursiveTemplate, fromJsonValueTemplate, toJsonValueTemplate, modelClassDecodeMapTemplate, modelClassEncodeMapTemplate } from "./models.template";
+import { decodeFieldTemplate, encodeFieldTemplate, enumTemplate, modelClassCtorTemplate, modelClassDecodeTemplate, modelClassEncodeTemplate, modelClassFieldsTemplate, modelClassFromJSONTemplate, modelClassTemplate, modelClassToJSONTemplate, modelsTemplate, jsonIfaceTemplate, recursiveTemplate, fromJsonValueTemplate, toJsonValueTemplate, modelClassDecodeMapTemplate, modelClassEncodeMapTemplate, cloneFieldTemplate } from "./models.template";
 
 export const templates = new Templates()
     .register('header', headerTemplate)
@@ -22,4 +22,5 @@ export const templates = new Templates()
     .register('models.encodeField', encodeFieldTemplate)
     .register('models.fromJsonValue', fromJsonValueTemplate)
     .register('models.toJsonValue', toJsonValueTemplate)
+    .register('models.cloneField', cloneFieldTemplate)
     .register('models.enum', enumTemplate)

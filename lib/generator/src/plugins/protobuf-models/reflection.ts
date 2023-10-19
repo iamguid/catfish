@@ -1,7 +1,7 @@
 import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor } from "@catfish/parser";
 import { Context, Import } from "../../Context";
 import { getFullImportPath, getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getImports, getTag } from "./utils";
-import { snakeToCamel, upperCaseFirst } from "../../utils";
+import { filePathToPseudoNamespace, snakeToCamel, upperCaseFirst } from "../../utils";
 
 export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
 
@@ -143,14 +143,26 @@ export class CtxMapField {
 }
 
 export class CtxOneof {
+    public readonly fields: CtxMessageField[];
+
     constructor(
         private readonly ctx: Context,
         private readonly file: FileDescriptor,
         private readonly desc: OneofDescriptor,
-    ) {}
+    ) {
+        this.fields = desc.fields.map(f => new CtxMessageField(ctx, file, f))
+    }
 
     get name() {
-        return this.desc.name
+        return snakeToCamel(this.desc.name)
+    }
+
+    get tsTypeName() {
+        return `${snakeToCamel(filePathToPseudoNamespace(this.desc.fullname))}Type`
+    }
+
+    get jsonTypeName() {
+        return `${snakeToCamel(filePathToPseudoNamespace(this.desc.fullname))}JSONType`
     }
 }
 
@@ -241,10 +253,6 @@ export class CtxTypeInfo {
 
     get typeMarker() {
         return getTypeMarkerByTypeInfo(this.typeInfo)
-    }
-    
-    get isMessage() {
-        return this.desc instanceof MessageFieldDescriptor
     }
 }
 
