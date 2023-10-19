@@ -37,7 +37,7 @@ export class SimpleMessage {
 
   public static encode(m: SimpleMessage, w: pjs.Writer): pjs.Writer {
     // int32 a = 1
-    if (m.a !== 0) {
+    if (m.a !== undefined) {
       w.uint32(8);
       w.int32(m.a);
     }
@@ -443,7 +443,7 @@ export class MapTypes {
     }
     if (obj.mapInt32Message !== undefined) {
       const entries = Array.from(obj.mapInt32Message.entries());
-      const copy = entries.map(([key, val]) => [key, val.clone()]);
+      const copy = entries.map(([key, val]) => [key, new SimpleMessage(val)]);
       this.mapInt32Message = new Map(copy);
     }
     if (obj.mapInt32Enum !== undefined) {

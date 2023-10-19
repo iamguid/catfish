@@ -74,31 +74,31 @@ export class ScalarTypes {
       this.fInt32 = obj.fInt32;
     }
     if (obj.fInt64 !== undefined) {
-      this.fInt64 = obj.fInt64;
+      this.fInt64 = new pjs.util.Long(obj.fInt64);
     }
     if (obj.fUint32 !== undefined) {
       this.fUint32 = obj.fUint32;
     }
     if (obj.fUint64 !== undefined) {
-      this.fUint64 = obj.fUint64;
+      this.fUint64 = new pjs.util.Long(obj.fUint64);
     }
     if (obj.fSint32 !== undefined) {
       this.fSint32 = obj.fSint32;
     }
     if (obj.fSint64 !== undefined) {
-      this.fSint64 = obj.fSint64;
+      this.fSint64 = new pjs.util.Long(obj.fSint64);
     }
     if (obj.fFixed32 !== undefined) {
       this.fFixed32 = obj.fFixed32;
     }
     if (obj.fFixed64 !== undefined) {
-      this.fFixed64 = obj.fFixed64;
+      this.fFixed64 = new pjs.util.Long(obj.fFixed64);
     }
     if (obj.fSfixed32 !== undefined) {
       this.fSfixed32 = obj.fSfixed32;
     }
     if (obj.fSfixed64 !== undefined) {
-      this.fSfixed64 = obj.fSfixed64;
+      this.fSfixed64 = new pjs.util.Long(obj.fSfixed64);
     }
     if (obj.fFloat !== undefined) {
       this.fFloat = obj.fFloat;
@@ -113,97 +113,97 @@ export class ScalarTypes {
       this.fString = obj.fString;
     }
     if (obj.fBytes !== undefined) {
-      this.fBytes = obj.fBytes;
+      this.fBytes = new pjs.util.Buffer(obj.fBytes);
     }
   }
 
   public static encode(m: ScalarTypes, w: pjs.Writer): pjs.Writer {
     // int32 f_int32 = 1
-    if (m.fInt32 !== 0) {
+    if (m.fInt32 !== undefined) {
       w.uint32(8);
       w.int32(m.fInt32);
     }
 
     // int64 f_int64 = 2
-    if (m.fInt64 !== pjs.util.Long.fromValue(0, false)) {
+    if (m.fInt64 !== undefined) {
       w.uint32(16);
       w.int64(m.fInt64);
     }
 
     // uint32 f_uint32 = 3
-    if (m.fUint32 !== 0) {
+    if (m.fUint32 !== undefined) {
       w.uint32(24);
       w.uint32(m.fUint32);
     }
 
     // uint64 f_uint64 = 4
-    if (m.fUint64 !== pjs.util.Long.fromValue(0, true)) {
+    if (m.fUint64 !== undefined) {
       w.uint32(32);
       w.uint64(m.fUint64);
     }
 
     // sint32 f_sint32 = 5
-    if (m.fSint32 !== 0) {
+    if (m.fSint32 !== undefined) {
       w.uint32(40);
       w.sint32(m.fSint32);
     }
 
     // sint64 f_sint64 = 6
-    if (m.fSint64 !== pjs.util.Long.fromValue(0, false)) {
+    if (m.fSint64 !== undefined) {
       w.uint32(48);
       w.sint64(m.fSint64);
     }
 
     // fixed32 f_fixed32 = 7
-    if (m.fFixed32 !== 0) {
+    if (m.fFixed32 !== undefined) {
       w.uint32(61);
       w.fixed32(m.fFixed32);
     }
 
     // fixed64 f_fixed64 = 8
-    if (m.fFixed64 !== pjs.util.Long.fromValue(0, true)) {
+    if (m.fFixed64 !== undefined) {
       w.uint32(65);
       w.fixed64(m.fFixed64);
     }
 
     // sfixed32 f_sfixed32 = 9
-    if (m.fSfixed32 !== 0) {
+    if (m.fSfixed32 !== undefined) {
       w.uint32(77);
       w.sfixed32(m.fSfixed32);
     }
 
     // sfixed64 f_sfixed64 = 10
-    if (m.fSfixed64 !== pjs.util.Long.fromValue(0, false)) {
+    if (m.fSfixed64 !== undefined) {
       w.uint32(81);
       w.sfixed64(m.fSfixed64);
     }
 
     // float f_float = 11
-    if (m.fFloat !== 0) {
+    if (m.fFloat !== undefined) {
       w.uint32(93);
       w.float(m.fFloat);
     }
 
     // double f_double = 12
-    if (m.fDouble !== 0) {
+    if (m.fDouble !== undefined) {
       w.uint32(97);
       w.double(m.fDouble);
     }
 
     // bool f_bool = 13
-    if (m.fBool !== false) {
+    if (m.fBool !== undefined) {
       w.uint32(104);
       w.bool(m.fBool);
     }
 
     // string f_string = 14
-    if (m.fString !== "") {
+    if (m.fString !== undefined) {
       w.uint32(114);
       w.string(m.fString);
     }
 
     // bytes f_bytes = 15
-    if (m.fBytes !== pjs.util.newBuffer(0)) {
+    if (m.fBytes !== undefined) {
       w.uint32(122);
       w.bytes(m.fBytes);
     }

@@ -40,7 +40,7 @@ export class SimpleMessage {
 
   public static encode(m: SimpleMessage, w: pjs.Writer): pjs.Writer {
     // int32 a = 1
-    if (m.a !== 0) {
+    if (m.a !== undefined) {
       w.uint32(8);
       w.int32(m.a);
     }
@@ -156,7 +156,9 @@ export class RepeatedTypes {
       this.repeatedInt32 = obj.repeatedInt32.map((val) => val);
     }
     if (obj.repeatedBytes !== undefined) {
-      this.repeatedBytes = obj.repeatedBytes.map((val) => val);
+      this.repeatedBytes = obj.repeatedBytes.map(
+        (val) => new pjs.util.Buffer(val)
+      );
     }
     if (obj.repeatedString !== undefined) {
       this.repeatedString = obj.repeatedString.map((val) => val);
@@ -165,13 +167,17 @@ export class RepeatedTypes {
       this.repeatedBool = obj.repeatedBool.map((val) => val);
     }
     if (obj.repeatedUint64 !== undefined) {
-      this.repeatedUint64 = obj.repeatedUint64.map((val) => val);
+      this.repeatedUint64 = obj.repeatedUint64.map(
+        (val) => new pjs.util.Long(val)
+      );
     }
     if (obj.repeatedEnum !== undefined) {
       this.repeatedEnum = obj.repeatedEnum.map((val) => val);
     }
     if (obj.repeatedMessage !== undefined) {
-      this.repeatedMessage = obj.repeatedMessage.map((val) => val);
+      this.repeatedMessage = obj.repeatedMessage.map(
+        (val) => new SimpleMessage(val)
+      );
     }
   }
 

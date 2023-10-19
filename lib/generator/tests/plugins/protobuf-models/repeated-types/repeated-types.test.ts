@@ -1,12 +1,9 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
-import Long from "long";
 import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
 import { RepeatedTypes, RepeatedTypesJSON, SimpleEnum } from "./repeated-types_models";
 
-pjs.util.Long = Long
-
-const EXPECTED_MESSAGE_OBJ: RepeatedTypesJSON = {
+const FILLED_MESSAGE_JSON: RepeatedTypesJSON = {
     repeatedInt32: [1, 2, 3],
     repeatedBytes: [
         pjs.util.base64.encode(Buffer.from([4, 5, 6]), 0, 3),
@@ -28,7 +25,7 @@ const EXPECTED_MESSAGE_OBJ: RepeatedTypesJSON = {
     ],
 }
 
-const INITIAL_MESSAGE_OBJ: RepeatedTypesJSON = {
+const EMPTY_MESSAGE_JSON: RepeatedTypesJSON = {
     repeatedInt32: [],
     repeatedBytes: [],
     repeatedString: [],
@@ -40,35 +37,62 @@ const INITIAL_MESSAGE_OBJ: RepeatedTypesJSON = {
 
 describe("Repeated value types", () => {
     const protoFilePath = path.join(__dirname, 'repeated-types.proto');
-    const pjsScalarTypes = loadProtoFileByProtobufjs(protoFilePath, 'repeated_types.RepeatedTypes', EXPECTED_MESSAGE_OBJ);
+    const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'repeated_types.RepeatedTypes', FILLED_MESSAGE_JSON);
+    const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'repeated_types.RepeatedTypes', EMPTY_MESSAGE_JSON);
 
     beforeAll(() => {
         generateModels(__dirname);
     })
 
-    it("initial", () => {
-        const cfJson = new RepeatedTypes().toJSON();
-        expect(INITIAL_MESSAGE_OBJ).toStrictEqual(cfJson);
-    })
-
-    it("constructor", () => {
-        const cfMessageA = new RepeatedTypes().fromJSON(EXPECTED_MESSAGE_OBJ);
+    it("constructor filled message", () => {
+        const cfMessageA = new RepeatedTypes().fromJSON(FILLED_MESSAGE_JSON);
         const cfJsonB = new RepeatedTypes(cfMessageA).toJSON();
-        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJsonB);
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJsonB)
     })
 
-    it("encode", () => {
-        const cfBuffer = new RepeatedTypes().fromJSON(EXPECTED_MESSAGE_OBJ).serialize();
-        expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer);
+    it("serialize filled message", () => {
+        const cfBuffer = new RepeatedTypes().fromJSON(FILLED_MESSAGE_JSON).serialize();
+        expect(pjsFilled.buffer).toStrictEqual(cfBuffer)
     })
 
-    it("decode", () => {
-        const cfJson = new RepeatedTypes().deserialize(pjsScalarTypes.buffer).toJSON();
-        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJson);
+    it("deserialize filled message", () => {
+        const cfJson = new RepeatedTypes().deserialize(pjsFilled.buffer).toJSON();
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJson);
     })
     
-    it("fromJSON/toJSON", () => {
-        const cfJson = new RepeatedTypes().fromJSON(EXPECTED_MESSAGE_OBJ).toJSON();
-        expect(pjsScalarTypes.json).toStrictEqual(cfJson);
+    it("fromJSON/toJSON filled message", () => {
+        const cfJson = new RepeatedTypes().fromJSON(FILLED_MESSAGE_JSON).toJSON();
+        expect(pjsFilled.json).toStrictEqual(cfJson);
+    })
+
+    it("clone filled message", () => {
+        const cfJson = new RepeatedTypes().fromJSON(FILLED_MESSAGE_JSON).clone().toJSON();
+        expect(FILLED_MESSAGE_JSON).not.toBe(cfJson);
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("constructor empty message", () => {
+        const cfJson = new RepeatedTypes().toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson)
+    })
+
+    it("serialize empty message", () => {
+        const cfBuffer = new RepeatedTypes().serialize();
+        expect(pjsEmpty.buffer).toStrictEqual(cfBuffer)
+    })
+
+    it("deserialize empty message", () => {
+        const cfJson = new RepeatedTypes().deserialize(pjsEmpty.buffer).toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("toJSON/fromJSON empty message", () => {
+        const cfJson = new RepeatedTypes().fromJSON(EMPTY_MESSAGE_JSON).toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("clone empty message", () => {
+        const cfJson = new RepeatedTypes().clone().toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson);
     })
 });

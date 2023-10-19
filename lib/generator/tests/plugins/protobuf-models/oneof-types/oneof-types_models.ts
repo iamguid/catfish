@@ -40,7 +40,7 @@ export class SimpleMessage {
 
   public static encode(m: SimpleMessage, w: pjs.Writer): pjs.Writer {
     // int32 a = 1
-    if (m.a !== 0) {
+    if (m.a !== undefined) {
       w.uint32(8);
       w.int32(m.a);
     }
@@ -136,12 +136,12 @@ type OneofTypesTestOneofJSONType =
 
 export interface OneofTypesJSON {
   fInt32: number;
-  testOneof: OneofTypesTestOneofJSONType = undefined;
+  testOneof?: OneofTypesTestOneofJSONType = undefined;
 }
 
 export class OneofTypes {
   fInt32: number = 0;
-  testOneof: OneofTypesTestOneofType = undefined;
+  testOneof?: OneofTypesTestOneofType = undefined;
 
   public static fields = ["fInt32", "testOneof"];
 
@@ -190,7 +190,7 @@ export class OneofTypes {
 
   public static encode(m: OneofTypes, w: pjs.Writer): pjs.Writer {
     // int32 f_int32 = 1
-    if (m.fInt32 !== 0) {
+    if (m.fInt32 !== undefined) {
       w.uint32(8);
       w.int32(m.fInt32);
     }

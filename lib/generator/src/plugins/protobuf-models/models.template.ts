@@ -1,8 +1,5 @@
-import { MapField } from "protobufjs";
-import { CtxEnum, CtxEnumField, CtxFile, CtxMapField, CtxMessage, CtxMessageField, CtxOneof, CtxTypeInfo } from "./reflection";
+import { CtxEnum, CtxFile, CtxMapField, CtxMessage, CtxMessageField, CtxOneof, CtxTypeInfo } from "./reflection";
 import { templates } from "./templates";
-import { getScalarDefaultValue, getTag } from "./utils";
-import { MessageFieldDescriptor } from "@catfish/parser";
 
 export const modelsTemplate = (ctx: CtxFile): string => `
   ${templates.render('header', {
@@ -124,9 +121,9 @@ export const jsonIfaceTemplate = (ctx: { message: CtxMessage }) => `
       }
 
       if (field instanceof CtxOneof) {
-        return `${field.name}: ${field.jsonTypeName} = undefined;`
+        return `${field.name}?: ${field.jsonTypeName} = undefined;`
       }
-
+ 
       if (field instanceof CtxMessageField) {
         return `${field.name}: ${field.typeInfo.jsonType}${field.repeated ? '[]' : ''}${field.optional ? ' | undefined' : ''};`
       }
@@ -191,7 +188,7 @@ export const modelClassFieldsTemplate = (ctx: { message: CtxMessage }): string =
     }
 
     if (field instanceof CtxOneof) {
-      return `${field.name}: ${field.tsTypeName} = undefined;`
+      return `${field.name}?: ${field.tsTypeName} = undefined;`
     }
 
     if (field instanceof CtxMessageField) {
@@ -264,7 +261,7 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
 
           return `
             // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-            if (m.${field.name} !== ${field.typeInfo.defaultValue}) {
+            if (m.${field.name} !== undefined) {
               w.uint32(${field.tag});
               ${templates.render('models.encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
             }
@@ -485,7 +482,7 @@ export const cloneFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: strin
     case "Enum":
       return ctx.variable
     case "FixedBig":
-      return `pjs.util.Long.fromLong(${ctx.variable})`
+      return `new pjs.util.Long(${ctx.variable})`
     case "Bytes":
       return `new pjs.util.Buffer(${ctx.variable})`
     case "Message":

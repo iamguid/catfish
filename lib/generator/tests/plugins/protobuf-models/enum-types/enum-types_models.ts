@@ -40,7 +40,7 @@ export class EnumMessage {
 
   public static encode(m: EnumMessage, w: pjs.Writer): pjs.Writer {
     // TestEnum f_enum = 1
-    if (m.fEnum !== TestEnum.ZERO) {
+    if (m.fEnum !== undefined) {
       w.uint32(8);
       w.int32(m.fEnum);
     }

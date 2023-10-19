@@ -2,52 +2,84 @@ import path from "node:path";
 import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
 import { OneofTypes, OneofTypesJSON } from "./oneof-types_models";
 
-const EXPECTED_MESSAGE_OBJ: OneofTypesJSON = {
+const FILLED_MESSAGE_JSON: OneofTypesJSON = {
     fInt32: 42,
     testOneof: { oneofString: "test" },
 }
 
-const EXPECTED_MESSAGE_OBJ_PJS: any = {
+const FILLED_MESSAGE_PJS_JSON: any = {
     fInt32: 42,
     oneofString: "test",
 }
 
-const INITIAL_MESSAGE_OBJ: OneofTypesJSON = {
+const EMPTY_MESSAGE_JSON: OneofTypesJSON = {
+    fInt32: 0,
+    testOneof: undefined,
+}
+
+const EMPTY_MESSAGE_PJS_JSON: any = {
     fInt32: 0,
     testOneof: undefined,
 }
 
 describe("Oneof value types", () => {
     const protoFilePath = path.join(__dirname, 'oneof-types.proto');
-    const pjsScalarTypes = loadProtoFileByProtobufjs(protoFilePath, 'oneof_types.OneofTypes', EXPECTED_MESSAGE_OBJ_PJS);
+    const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'oneof_types.OneofTypes', FILLED_MESSAGE_PJS_JSON);
+    const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'oneof_types.OneofTypes', EMPTY_MESSAGE_PJS_JSON);
 
     beforeAll(() => {
         generateModels(__dirname);
     })
 
-    it("initial", () => {
-        const cfJson = new OneofTypes().toJSON();
-        expect(INITIAL_MESSAGE_OBJ).toStrictEqual(cfJson);
-    })
-
-    it("constructor", () => {
-        const cfMessageA = new OneofTypes().fromJSON(EXPECTED_MESSAGE_OBJ);
+    it("constructor filled message", () => {
+        const cfMessageA = new OneofTypes().fromJSON(FILLED_MESSAGE_JSON);
         const cfJsonB = new OneofTypes(cfMessageA).toJSON();
-        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJsonB)
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJsonB)
     })
 
-    it("encode", () => {
-        const cfBuffer = new OneofTypes().fromJSON(EXPECTED_MESSAGE_OBJ).serialize();
-        expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer)
+    it("serialize filled message", () => {
+        const cfBuffer = new OneofTypes().fromJSON(FILLED_MESSAGE_JSON).serialize();
+        expect(pjsFilled.buffer).toStrictEqual(cfBuffer)
     })
 
-    it("decode", () => {
-        const cfJson = new OneofTypes().deserialize(pjsScalarTypes.buffer).toJSON();
-        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJson);
+    it("deserialize filled message", () => {
+        const cfJson = new OneofTypes().deserialize(pjsFilled.buffer).toJSON();
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJson);
     })
     
-    it("fromJSON/toJSON", () => {
-        const cfJson = new OneofTypes().fromJSON(EXPECTED_MESSAGE_OBJ).toJSON();
-        expect(EXPECTED_MESSAGE_OBJ).toStrictEqual(cfJson);
+    it("fromJSON/toJSON filled message", () => {
+        const cfJson = new OneofTypes().fromJSON(FILLED_MESSAGE_JSON).toJSON();
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("clone filled message", () => {
+        const cfJson = new OneofTypes().fromJSON(FILLED_MESSAGE_JSON).clone().toJSON();
+        expect(FILLED_MESSAGE_JSON).not.toBe(cfJson);
+        expect(FILLED_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("constructor empty message", () => {
+        const cfJson = new OneofTypes().toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson)
+    })
+
+    it("serialize empty message", () => {
+        const cfBuffer = new OneofTypes().serialize();
+        expect(pjsEmpty.buffer).toStrictEqual(cfBuffer)
+    })
+
+    it("deserialize empty message", () => {
+        const cfJson = new OneofTypes().deserialize(pjsEmpty.buffer).toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("toJSON/fromJSON empty message", () => {
+        const cfJson = new OneofTypes().fromJSON(EMPTY_MESSAGE_JSON).toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson);
+    })
+
+    it("clone empty message", () => {
+        const cfJson = new OneofTypes().clone().toJSON();
+        expect(EMPTY_MESSAGE_JSON).toStrictEqual(cfJson);
     })
 });
