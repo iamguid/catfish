@@ -110,21 +110,22 @@ export const getJsonTypeByTypeInfo = (typeInfo: TypeInfo) => {
 export const getTypeMarkerByTypeInfo = (typeInfo: TypeInfo): TypeMarker => {
   switch (typeInfo.protoType) {
     case "float":
-    case "int32":
     case 'double':
+    case "bool":
+    case "int32":
     case "uint32":
     case "sint32":
     case "fixed32":
     case "sfixed32":
-    case "bool":
-    case "string":
-      return 'Primitive';
+      return 'FixedSmall';
     case "int64":
     case "uint64":
     case "sint64":
     case "fixed64":
     case "sfixed64":
-      return 'BigInt';
+      return 'FixedBig';
+    case "string":
+      return "String";
     case "bytes":
       return 'Bytes';
     default:

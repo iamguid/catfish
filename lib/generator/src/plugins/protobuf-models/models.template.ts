@@ -2,6 +2,7 @@ import { MapField } from "protobufjs";
 import { CtxEnum, CtxEnumField, CtxFile, CtxMapField, CtxMessage, CtxMessageField, CtxOneof, CtxTypeInfo } from "./reflection";
 import { templates } from "./templates";
 import { getScalarDefaultValue, getTag } from "./utils";
+import { MessageFieldDescriptor } from "@catfish/parser";
 
 export const modelsTemplate = (ctx: CtxFile): string => `
   ${templates.render('header', {
@@ -119,7 +120,7 @@ export const jsonIfaceTemplate = (ctx: { message: CtxMessage }) => `
       }
 
       if (field instanceof CtxMessageField) {
-          return `${field.name}: ${field.typeInfo.jsonType}${field.optional ? ' | undefined' : ''};`
+        return `${field.name}: ${field.typeInfo.jsonType}${field.repeated ? '[]' : ''}${field.optional ? ' | undefined' : ''};`
       }
     }).join('\n')}
   }
@@ -161,7 +162,11 @@ export const modelClassCtorTemplate = (ctx: { message: CtxMessage }): string => 
             }
 
             if (field instanceof CtxMessageField) {
-                return `this.${field.name} = obj.${field.name};`
+              if (field.repeated) {
+                return `this.${field.name} = obj.${field.name}.map(val => ${field.typeInfo.isMessage ? `new ${field.typeInfo.fullType}(val)` : 'val'});`
+              }
+
+              return `this.${field.name} = obj.${field.name};`
             }
           })()}
         }`
@@ -181,6 +186,10 @@ export const modelClassFieldsTemplate = (ctx: { message: CtxMessage }): string =
     }
 
     if (field instanceof CtxMessageField) {
+        if (field.repeated) {
+          return `${field.name}: (${field.typeInfo.tsType})[]${field.optional ? ' | undefined' : ''} = ${field.optional ? 'undefined' : '[]'};`
+        }
+
         return `${field.name}: ${field.typeInfo.tsType}${field.optional ? ' | undefined' : ''} = ${field.optional ? 'undefined' : field.typeInfo.defaultValue};`
     }
   }).join('\n')
@@ -204,13 +213,43 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
         }
 
         if (field instanceof CtxMessageField) {
-            return `
-              // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-              if (m.${field.name} !== ${field.typeInfo.defaultValue}) {
-                w.uint32(${field.tag});
-                ${templates.render('models.encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
-              }
-            `
+          if (field.repeated) {
+            switch (field.typeInfo.typeMarker) {
+              case "FixedSmall":
+              case "FixedBig":
+              case "Enum":
+                return `
+                  // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
+                  if (m.${field.name}.length > 0) {
+                    w.uint32(${field.tag});
+                    w.uint32(m.${field.name}.length);
+                    for (let item of m.${field.name}) {
+                      ${templates.render('models.encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
+                    }
+                  }
+                `
+              case "String":
+              case "Bytes":
+              case "Message":
+                return `
+                  // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
+                  if (m.${field.name}.length > 0) {
+                    for (let item of m.${field.name}) {
+                      w.uint32(${field.tag});
+                      ${templates.render('models.encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
+                    }
+                  }
+                `
+            }
+          }
+
+          return `
+            // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
+            if (m.${field.name} !== ${field.typeInfo.defaultValue}) {
+              w.uint32(${field.tag});
+              ${templates.render('models.encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
+            }
+          `
         }
       }).join('\n')}
       
@@ -289,6 +328,33 @@ export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string =
             }
     
             if (field instanceof CtxMessageField) {
+              if (field.repeated) {
+                switch (field.typeInfo.typeMarker) {
+                  case "FixedSmall":
+                  case "FixedBig":
+                  case "Enum":
+                    return `
+                      // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
+                      case ${field.tag}: {
+                        const l = r.uint32();
+                        for (let i = 0; i < l; i++) {
+                          m.${field.name}.push(${templates.render('models.decodeField', { typeInfo: field.typeInfo })})
+                        }
+                        continue;
+                      }
+                    `
+                  case "String":
+                  case "Bytes":
+                  case "Message":
+                    return `
+                      // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
+                      case ${field.tag}:
+                        m.${field.name}.push(${templates.render('models.decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.fullType}()` })})
+                        continue;
+                    `
+                }
+              }
+
               return `
                 // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
                 case ${field.tag}:
@@ -323,6 +389,10 @@ export const modelClassToJSONTemplate = (ctx: { message: CtxMessage }): string =
           }
 
           if (field instanceof CtxMessageField) {
+            if (field.repeated) {
+              return `${field.name}: m.${field.name}.map(val => ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo, variable: `val` })}),`
+            }
+
             return `${field.name}: ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.name}` })},`
           }
         }).join('\n')}
@@ -336,15 +406,7 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
     public static fromJSON(m: ${ctx.message.className}, obj: ${ctx.message.jsonIfaceName}): ${ctx.message.className} {
       ${ctx.message.fields.map((field) => {
         if (field instanceof CtxMapField) {
-          if (field.valueTypeInfo.typeMarker === "Bytes") {
-            return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => {
-              const tmpBuffer = []
-              pjs.util.base64.decode(val, tmpBuffer, 0);
-              return ${templates.render('models.fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'tmpBuffer' })};
-            });`
-          } else {
-            return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${templates.render('models.fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
-          }
+          return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${templates.render('models.fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
         }
 
         if (field instanceof CtxOneof) {
@@ -352,15 +414,11 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
         }
 
         if (field instanceof CtxMessageField) {
-          if (field.typeInfo.typeMarker === "Bytes") {
-            return `{
-              const tmpBuffer = []
-              pjs.util.base64.decode(obj.${field.name}, tmpBuffer, 0);
-              m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo, variable: 'tmpBuffer' })}
-            }`
-          } else {
-            return `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+          if (field.repeated) {
+            return `m.${field.name} = obj.${field.name}.map((val) => ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
           }
+
+          return `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
         }
       }).join('\n')}
 
@@ -371,12 +429,13 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
 
 export const fromJsonValueTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: string }): string => {
   switch (ctx.typeInfo.typeMarker) {
-    case "Primitive":
+    case "FixedSmall":
+    case "String":
       return ctx.variable
-    case "BigInt":
+    case "FixedBig":
       return `pjs.util.Long.fromValue(${ctx.variable}, ${ctx.typeInfo.protoType === "uint64" || ctx.typeInfo.protoType === "fixed64" ? 'true' : 'false'})`
     case "Bytes":
-      return `new pjs.util.Buffer(${ctx.variable})`
+      return `runtime.convertBase64ToBytes(${ctx.variable})`
     case "Enum":
       return `${ctx.typeInfo.fullType}[${ctx.variable}]`
     case "Message":
@@ -386,12 +445,13 @@ export const fromJsonValueTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: st
 
 export const toJsonValueTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: string }): string => {
   switch (ctx.typeInfo.typeMarker) {
-    case "Primitive":
-      return `${ctx.variable}`
-    case "BigInt":
+    case "String":
+    case "FixedSmall":
+      return ctx.variable
+    case "FixedBig":
       return `${ctx.variable}.toString()`
     case "Bytes":
-      return `pjs.util.base64.encode(${ctx.variable}, 0, ${ctx.variable}.length)`
+      return `runtime.convertBytesToBase64(${ctx.variable})`
     case "Enum":
       return `${ctx.typeInfo.fullType}[${ctx.variable}]`
     case "Message":
@@ -401,10 +461,11 @@ export const toJsonValueTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: stri
 
 export const decodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, variable?: string }): string => {
   switch (ctx.typeInfo.typeMarker) {
+    case "FixedSmall":
+    case "FixedBig":
     case "Enum":
-    case "BigInt":
-    case "Primitive":
     case "Bytes":
+    case "String":
       return `r.${ctx.typeInfo.pjsFn}()`
     case "Message":
       return `${ctx.typeInfo.tsType}.decode(${ctx.variable}, r, r.uint32())`
@@ -413,10 +474,11 @@ export const decodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, variable?: str
 
 export const encodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, writer: string, variable: string }): string => {
   switch (ctx.typeInfo.typeMarker) {
+    case "FixedSmall":
+    case "FixedBig":
     case "Enum":
     case "Bytes":
-    case "BigInt":
-    case "Primitive":
+    case "String":
       return `${ctx.writer}.${ctx.typeInfo.pjsFn}(${ctx.variable});`
     case "Message":
       return `${ctx.typeInfo.tsType}.encode(${ctx.variable}, ${ctx.writer}.fork()).ldelim();`

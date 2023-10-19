@@ -3,7 +3,7 @@ import { Context, Import } from "../../Context";
 import { getFullImportPath, getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getImports, getTag } from "./utils";
 import { snakeToCamel, upperCaseFirst } from "../../utils";
 
-export type TypeMarker = "BigInt" | "Primitive" | "Bytes" | "Message" | "Enum";
+export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
 
 export class CtxFile {
     public readonly imports: Import[];
@@ -84,7 +84,7 @@ export class CtxMessageField {
     }
 
     get tag() {
-        return getTag(this.desc.fieldNumber, getWireTypeByTypeInfo(this.typeInfo));
+        return getTag(this.desc.fieldNumber, this.repeated ? 2 : getWireTypeByTypeInfo(this.typeInfo));
     }
 
     get repeated() {
@@ -241,6 +241,10 @@ export class CtxTypeInfo {
 
     get typeMarker() {
         return getTypeMarkerByTypeInfo(this.typeInfo)
+    }
+    
+    get isMessage() {
+        return this.desc instanceof MessageFieldDescriptor
     }
 }
 

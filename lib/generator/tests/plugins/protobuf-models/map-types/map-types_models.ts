@@ -565,7 +565,7 @@ export class MapTypes {
         (val) => val
       ),
       mapInt32Bytes: runtime.convertMapToRecord(m.mapInt32Bytes, (val) =>
-        pjs.util.base64.encode(val, 0, val.length)
+        runtime.convertBytesToBase64(val)
       ),
       mapInt32Bool: runtime.convertMapToRecord(m.mapInt32Bool, (val) => val),
       mapInt32Message: runtime.convertMapToRecord(m.mapInt32Message, (val) =>
@@ -591,11 +591,9 @@ export class MapTypes {
       obj.mapInt32String,
       (val) => val
     );
-    m.mapInt32Bytes = runtime.convertRecordToMap(obj.mapInt32Bytes, (val) => {
-      const tmpBuffer = [];
-      pjs.util.base64.decode(val, tmpBuffer, 0);
-      return new pjs.util.Buffer(tmpBuffer);
-    });
+    m.mapInt32Bytes = runtime.convertRecordToMap(obj.mapInt32Bytes, (val) =>
+      runtime.convertBase64ToBytes(val)
+    );
     m.mapInt32Bool = runtime.convertRecordToMap(obj.mapInt32Bool, (val) => val);
     m.mapInt32Message = runtime.convertRecordToMap(obj.mapInt32Message, (val) =>
       new SimpleMessage().fromJSON(val)

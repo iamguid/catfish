@@ -1,0 +1,25 @@
+
+syntax = "proto3";
+
+package repeated_types;
+
+message SimpleMessage {
+    int32 a = 1;
+}
+
+enum SimpleEnum {
+    UNSPECIFIED = 0;
+    FOO = 1;
+    BAR = 2;
+    BAZ = 3;
+}
+
+message RepeatedTypes {
+    repeated int32 repeated_int32 = 1;
+    repeated bytes repeated_bytes = 2;
+    repeated string repeated_string = 3;
+    repeated bool repeated_bool = 4;
+    repeated uint64 repeated_uint64 = 5;
+    repeated SimpleEnum repeated_enum = 6;
+    repeated SimpleMessage repeated_message = 7;
+}

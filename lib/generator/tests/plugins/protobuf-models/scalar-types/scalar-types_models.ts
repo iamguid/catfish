@@ -320,7 +320,7 @@ export class ScalarTypes {
       fDouble: m.fDouble,
       fBool: m.fBool,
       fString: m.fString,
-      fBytes: pjs.util.base64.encode(m.fBytes, 0, m.fBytes.length),
+      fBytes: runtime.convertBytesToBase64(m.fBytes),
     };
   }
 
@@ -339,11 +339,7 @@ export class ScalarTypes {
     m.fDouble = obj.fDouble;
     m.fBool = obj.fBool;
     m.fString = obj.fString;
-    {
-      const tmpBuffer = [];
-      pjs.util.base64.decode(obj.fBytes, tmpBuffer, 0);
-      m.fBytes = new pjs.util.Buffer(tmpBuffer);
-    }
+    m.fBytes = runtime.convertBase64ToBytes(obj.fBytes);
 
     return m;
   }
