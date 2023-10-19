@@ -1,5 +1,5 @@
 import path from "node:path";
-import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
+import { generateModels, loadProtoFileByProtobufjs } from "../utils";
 import { OneofTypes, OneofTypesJSON } from "./oneof-types_models";
 
 const FILLED_MESSAGE_JSON: OneofTypesJSON = {
@@ -26,10 +26,6 @@ describe("Oneof value types", () => {
     const protoFilePath = path.join(__dirname, 'oneof-types.proto');
     const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'oneof_types.OneofTypes', FILLED_MESSAGE_PJS_JSON);
     const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'oneof_types.OneofTypes', EMPTY_MESSAGE_PJS_JSON);
-
-    beforeAll(() => {
-        generateModels(__dirname);
-    })
 
     it("constructor filled message", () => {
         const cfMessageA = new OneofTypes().fromJSON(FILLED_MESSAGE_JSON);

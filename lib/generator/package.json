@@ -8,7 +8,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "yarn jest"
+    "test": "yarn test:generate && yarn jest",
+    "test:generate": "ts-node ./generate.ts"
   },
   "dependencies": {
     "@catfish/parser": "*",
@@ -16,7 +17,8 @@
     "prettier": "2.8.8"
   },
   "devDependencies": {
-    "protobufjs": "7.2.5",
-    "long": "5.2.3"
+    "glob": "^10.3.10",
+    "long": "5.2.3",
+    "protobufjs": "7.2.5"
   }
 }

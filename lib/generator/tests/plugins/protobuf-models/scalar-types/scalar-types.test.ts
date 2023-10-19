@@ -1,7 +1,7 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
 import { ScalarTypes, ScalarTypesJSON } from "./scalar-types_models";
-import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
+import { generateModels, loadProtoFileByProtobufjs } from "../utils";
 
 const FILLED_MESSAGE_JSON: ScalarTypesJSON = {
     fInt32: 1,
@@ -43,10 +43,6 @@ describe("Scalar value types", () => {
     const protoFilePath = path.join(__dirname, 'scalar-types.proto');
     const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'scalar_types.ScalarTypes', FILLED_MESSAGE_JSON);
     const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'scalar_types.ScalarTypes', EMPTY_MESSAGE_JSON);
-
-    beforeAll(() => {
-        generateModels(__dirname);
-    })
 
     it("constructor filled message", () => {
         const cfMessageA = new ScalarTypes().fromJSON(FILLED_MESSAGE_JSON);

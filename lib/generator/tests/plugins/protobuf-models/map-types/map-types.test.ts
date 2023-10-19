@@ -1,6 +1,6 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
-import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
+import { generateModels, loadProtoFileByProtobufjs } from "../utils";
 import { MapTypes, MapTypesJSON, SimpleEnum } from "./map-types_models";
 
 const FILLED_MESSAGE_JSON: MapTypesJSON = {
@@ -27,10 +27,6 @@ describe("Map value types", () => {
     const protoFilePath = path.join(__dirname, 'map-types.proto');
     const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'map_types.MapTypes', FILLED_MESSAGE_JSON);
     const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'map_types.MapTypes', EMPTY_MESSAGE_JSON);
-
-    beforeAll(() => {
-        generateModels(__dirname);
-    })
 
     it("constructor filled message", () => {
         const cfMessageA = new MapTypes().fromJSON(FILLED_MESSAGE_JSON);

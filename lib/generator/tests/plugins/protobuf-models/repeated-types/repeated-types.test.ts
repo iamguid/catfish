@@ -1,6 +1,6 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
-import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
+import { generateModels, loadProtoFileByProtobufjs } from "../utils";
 import { RepeatedTypes, RepeatedTypesJSON, SimpleEnum } from "./repeated-types_models";
 
 const FILLED_MESSAGE_JSON: RepeatedTypesJSON = {
@@ -39,10 +39,6 @@ describe("Repeated value types", () => {
     const protoFilePath = path.join(__dirname, 'repeated-types.proto');
     const pjsFilled = loadProtoFileByProtobufjs(protoFilePath, 'repeated_types.RepeatedTypes', FILLED_MESSAGE_JSON);
     const pjsEmpty = loadProtoFileByProtobufjs(protoFilePath, 'repeated_types.RepeatedTypes', EMPTY_MESSAGE_JSON);
-
-    beforeAll(() => {
-        generateModels(__dirname);
-    })
 
     it("constructor filled message", () => {
         const cfMessageA = new RepeatedTypes().fromJSON(FILLED_MESSAGE_JSON);

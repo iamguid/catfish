@@ -1,6 +1,6 @@
 import path from "node:path";
 import { EnumMessage, TestEnum, EnumMessageJSON } from "./enum-types_models";
-import { generateModels, loadProtoFileByProtobufjs } from "../../../utils";
+import { generateModels, loadProtoFileByProtobufjs } from "../utils";
 
 const FILLED_MESSAGE_JSON: EnumMessageJSON = {
     fEnum: TestEnum[TestEnum.BAR]
