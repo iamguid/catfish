@@ -14,12 +14,10 @@ const FILLED_MESSAGE_PJS_JSON: any = {
 
 const EMPTY_MESSAGE_JSON: OneofTypesJSON = {
     fInt32: 0,
-    testOneof: undefined,
 }
 
 const EMPTY_MESSAGE_PJS_JSON: any = {
     fInt32: 0,
-    testOneof: undefined,
 }
 
 describe("Oneof value types", () => {

@@ -72,9 +72,11 @@ export class EnumMessage {
   }
 
   public static toJSON(m: EnumMessage): EnumMessageJSON {
-    return {
-      fEnum: TestEnum[m.fEnum],
-    };
+    const obj = {};
+
+    obj["fEnum"] = TestEnum[m.fEnum];
+
+    return obj;
   }
 
   public static fromJSON(m: EnumMessage, obj: EnumMessageJSON): EnumMessage {

@@ -69,9 +69,11 @@ export class SimpleMessage {
   }
 
   public static toJSON(m: SimpleMessage): SimpleMessageJSON {
-    return {
-      a: m.a,
-    };
+    const obj = {};
+
+    obj["a"] = m.a;
+
+    return obj;
   }
 
   public static fromJSON(
@@ -559,31 +561,37 @@ export class MapTypes {
   }
 
   public static toJSON(m: MapTypes): MapTypesJSON {
-    return {
-      mapInt32String: runtime.convertMapToRecord(
-        m.mapInt32String,
-        (val) => val
-      ),
-      mapInt32Bytes: runtime.convertMapToRecord(m.mapInt32Bytes, (val) =>
-        runtime.convertBytesToBase64(val)
-      ),
-      mapInt32Bool: runtime.convertMapToRecord(m.mapInt32Bool, (val) => val),
-      mapInt32Message: runtime.convertMapToRecord(m.mapInt32Message, (val) =>
-        val.toJSON()
-      ),
-      mapInt32Enum: runtime.convertMapToRecord(
-        m.mapInt32Enum,
-        (val) => SimpleEnum[val]
-      ),
-      mapStringString: runtime.convertMapToRecord(
-        m.mapStringString,
-        (val) => val
-      ),
-      mapUint64Int32: runtime.convertMapToRecord(
-        m.mapUint64Int32,
-        (val) => val
-      ),
-    };
+    const obj = {};
+
+    obj["mapInt32String"] = runtime.convertMapToRecord(
+      m.mapInt32String,
+      (val) => val
+    );
+    obj["mapInt32Bytes"] = runtime.convertMapToRecord(m.mapInt32Bytes, (val) =>
+      runtime.convertBytesToBase64(val)
+    );
+    obj["mapInt32Bool"] = runtime.convertMapToRecord(
+      m.mapInt32Bool,
+      (val) => val
+    );
+    obj["mapInt32Message"] = runtime.convertMapToRecord(
+      m.mapInt32Message,
+      (val) => val.toJSON()
+    );
+    obj["mapInt32Enum"] = runtime.convertMapToRecord(
+      m.mapInt32Enum,
+      (val) => SimpleEnum[val]
+    );
+    obj["mapStringString"] = runtime.convertMapToRecord(
+      m.mapStringString,
+      (val) => val
+    );
+    obj["mapUint64Int32"] = runtime.convertMapToRecord(
+      m.mapUint64Int32,
+      (val) => val
+    );
+
+    return obj;
   }
 
   public static fromJSON(m: MapTypes, obj: MapTypesJSON): MapTypes {

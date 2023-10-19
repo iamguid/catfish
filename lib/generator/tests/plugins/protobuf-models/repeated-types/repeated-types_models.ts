@@ -72,9 +72,11 @@ export class SimpleMessage {
   }
 
   public static toJSON(m: SimpleMessage): SimpleMessageJSON {
-    return {
-      a: m.a,
-    };
+    const obj = {};
+
+    obj["a"] = m.a;
+
+    return obj;
   }
 
   public static fromJSON(
@@ -317,17 +319,19 @@ export class RepeatedTypes {
   }
 
   public static toJSON(m: RepeatedTypes): RepeatedTypesJSON {
-    return {
-      repeatedInt32: m.repeatedInt32.map((val) => val),
-      repeatedBytes: m.repeatedBytes.map((val) =>
-        runtime.convertBytesToBase64(val)
-      ),
-      repeatedString: m.repeatedString.map((val) => val),
-      repeatedBool: m.repeatedBool.map((val) => val),
-      repeatedUint64: m.repeatedUint64.map((val) => val.toString()),
-      repeatedEnum: m.repeatedEnum.map((val) => SimpleEnum[val]),
-      repeatedMessage: m.repeatedMessage.map((val) => val.toJSON()),
-    };
+    const obj = {};
+
+    obj["repeatedInt32"] = m.repeatedInt32.map((val) => val);
+    obj["repeatedBytes"] = m.repeatedBytes.map((val) =>
+      runtime.convertBytesToBase64(val)
+    );
+    obj["repeatedString"] = m.repeatedString.map((val) => val);
+    obj["repeatedBool"] = m.repeatedBool.map((val) => val);
+    obj["repeatedUint64"] = m.repeatedUint64.map((val) => val.toString());
+    obj["repeatedEnum"] = m.repeatedEnum.map((val) => SimpleEnum[val]);
+    obj["repeatedMessage"] = m.repeatedMessage.map((val) => val.toJSON());
+
+    return obj;
   }
 
   public static fromJSON(

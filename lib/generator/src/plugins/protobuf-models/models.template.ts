@@ -125,7 +125,7 @@ export const jsonIfaceTemplate = (ctx: { message: CtxMessage }) => `
       }
  
       if (field instanceof CtxMessageField) {
-        return `${field.name}: ${field.typeInfo.jsonType}${field.repeated ? '[]' : ''}${field.optional ? ' | undefined' : ''};`
+        return `${field.name}${field.optional ? '?' : ''}: ${field.typeInfo.jsonType}${field.repeated ? '[]' : ''}${field.optional ? ' | undefined' : ''};`
       }
     }).join('\n')}
   }
@@ -402,37 +402,49 @@ export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string =
 export const modelClassToJSONTemplate = (ctx: { message: CtxMessage }): string => {
   return `
     public static toJSON(m: ${ctx.message.className}): ${ctx.message.jsonIfaceName} {
-      return {
-        ${ctx.message.fields.map((field) => {
-          if (field instanceof CtxMapField) {
-            return `${field.name}: runtime.convertMapToRecord(m.${field.name}, (val) => ${templates.render('models.toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })}),`
-          }
+      const obj = {};
 
-          if (field instanceof CtxOneof) {
-            return `
-              // oneof ${field.name}
-              ${field.name}: (() => {
-                switch (true) {
-                  ${field.fields.map(f => {
-                    return `
-                      case (m.${field.name}?.${f.name} !== undefined):
-                        return { ${f.name}: ${templates.render('models.toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.name}.${f.name}` })} }
-                    `
-                  }).join('\n')}
-                }
-              })(),
-            `
-          }
+      ${ctx.message.fields.map((field) => {
+        if (field instanceof CtxMapField) {
+          return `obj['${field.name}'] = runtime.convertMapToRecord(m.${field.name}, (val) => ${templates.render('models.toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+        }
 
-          if (field instanceof CtxMessageField) {
-            if (field.repeated) {
-              return `${field.name}: m.${field.name}.map(val => ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo, variable: `val` })}),`
+        if (field instanceof CtxOneof) {
+          return `
+            // oneof ${field.name}
+            switch (true) {
+              ${field.fields.map(f => {
+                return `
+                  case (m.${field.name}?.${f.name} !== undefined):
+                    obj['${field.name}'] = { ${f.name}: ${templates.render('models.toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.name}.${f.name}` })} };
+                    break;
+                `
+              }).join('\n')}
             }
+          `
+        }
 
-            return `${field.name}: ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.name}` })},`
+        if (field instanceof CtxMessageField) {
+          if (field.repeated) {
+            return `obj['${field.name}'] = m.${field.name}.map(val => ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
           }
-        }).join('\n')}
-      }
+
+          let result = ''
+          if (field.optional) {
+            result += `if (m.${field.name} !== undefined) {`
+          }
+
+          result += `obj['${field.name}'] = ${templates.render('models.toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.name}` })};`
+
+          if (field.optional) {
+            result += `}`
+          }
+
+          return result
+        }
+      }).join('\n')}
+
+      return obj;
     }
   `
 }
@@ -466,7 +478,18 @@ export const modelClassFromJSONTemplate = (ctx: { message: CtxMessage }): string
             return `m.${field.name} = obj.${field.name}.map((val) => ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
           }
 
-          return `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+          let result = ''
+          if (field.optional) {
+            result += `if (obj.${field.name} !== undefined) {`
+          }
+
+          result += `m.${field.name} = ${templates.render('models.fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+
+          if (field.optional) {
+            result += `}`
+          }
+
+          return result
         }
       }).join('\n')}
 

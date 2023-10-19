@@ -72,9 +72,11 @@ export class SimpleMessage {
   }
 
   public static toJSON(m: SimpleMessage): SimpleMessageJSON {
-    return {
-      a: m.a,
-    };
+    const obj = {};
+
+    obj["a"] = m.a;
+
+    return obj;
   }
 
   public static fromJSON(
@@ -289,34 +291,40 @@ export class OneofTypes {
   }
 
   public static toJSON(m: OneofTypes): OneofTypesJSON {
-    return {
-      fInt32: m.fInt32,
+    const obj = {};
 
-      // oneof testOneof
-      testOneof: (() => {
-        switch (true) {
-          case m.testOneof?.oneofInt32 !== undefined:
-            return { oneofInt32: m.testOneof.oneofInt32 };
+    obj["fInt32"] = m.fInt32;
 
-          case m.testOneof?.oneofUint64 !== undefined:
-            return { oneofUint64: m.testOneof.oneofUint64 };
+    // oneof testOneof
+    switch (true) {
+      case m.testOneof?.oneofInt32 !== undefined:
+        obj["testOneof"] = { oneofInt32: m.testOneof.oneofInt32 };
+        break;
 
-          case m.testOneof?.oneofString !== undefined:
-            return { oneofString: m.testOneof.oneofString };
+      case m.testOneof?.oneofUint64 !== undefined:
+        obj["testOneof"] = { oneofUint64: m.testOneof.oneofUint64 };
+        break;
 
-          case m.testOneof?.oneofBytes !== undefined:
-            return {
-              oneofBytes: runtime.convertBytesToBase64(m.testOneof.oneofBytes),
-            };
+      case m.testOneof?.oneofString !== undefined:
+        obj["testOneof"] = { oneofString: m.testOneof.oneofString };
+        break;
 
-          case m.testOneof?.oneofEnum !== undefined:
-            return { oneofEnum: SimpleEnum[m.testOneof.oneofEnum] };
+      case m.testOneof?.oneofBytes !== undefined:
+        obj["testOneof"] = {
+          oneofBytes: runtime.convertBytesToBase64(m.testOneof.oneofBytes),
+        };
+        break;
 
-          case m.testOneof?.oneofMessage !== undefined:
-            return { oneofMessage: m.testOneof.oneofMessage.toJSON() };
-        }
-      })(),
-    };
+      case m.testOneof?.oneofEnum !== undefined:
+        obj["testOneof"] = { oneofEnum: SimpleEnum[m.testOneof.oneofEnum] };
+        break;
+
+      case m.testOneof?.oneofMessage !== undefined:
+        obj["testOneof"] = { oneofMessage: m.testOneof.oneofMessage.toJSON() };
+        break;
+    }
+
+    return obj;
   }
 
   public static fromJSON(m: OneofTypes, obj: OneofTypesJSON): OneofTypes {

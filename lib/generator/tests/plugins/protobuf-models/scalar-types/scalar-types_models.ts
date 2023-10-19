@@ -305,23 +305,25 @@ export class ScalarTypes {
   }
 
   public static toJSON(m: ScalarTypes): ScalarTypesJSON {
-    return {
-      fInt32: m.fInt32,
-      fInt64: m.fInt64.toString(),
-      fUint32: m.fUint32,
-      fUint64: m.fUint64.toString(),
-      fSint32: m.fSint32,
-      fSint64: m.fSint64.toString(),
-      fFixed32: m.fFixed32,
-      fFixed64: m.fFixed64.toString(),
-      fSfixed32: m.fSfixed32,
-      fSfixed64: m.fSfixed64.toString(),
-      fFloat: m.fFloat,
-      fDouble: m.fDouble,
-      fBool: m.fBool,
-      fString: m.fString,
-      fBytes: runtime.convertBytesToBase64(m.fBytes),
-    };
+    const obj = {};
+
+    obj["fInt32"] = m.fInt32;
+    obj["fInt64"] = m.fInt64.toString();
+    obj["fUint32"] = m.fUint32;
+    obj["fUint64"] = m.fUint64.toString();
+    obj["fSint32"] = m.fSint32;
+    obj["fSint64"] = m.fSint64.toString();
+    obj["fFixed32"] = m.fFixed32;
+    obj["fFixed64"] = m.fFixed64.toString();
+    obj["fSfixed32"] = m.fSfixed32;
+    obj["fSfixed64"] = m.fSfixed64.toString();
+    obj["fFloat"] = m.fFloat;
+    obj["fDouble"] = m.fDouble;
+    obj["fBool"] = m.fBool;
+    obj["fString"] = m.fString;
+    obj["fBytes"] = runtime.convertBytesToBase64(m.fBytes);
+
+    return obj;
   }
 
   public static fromJSON(m: ScalarTypes, obj: ScalarTypesJSON): ScalarTypes {
