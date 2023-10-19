@@ -144,6 +144,10 @@ export const getPjsFnNameByTypeInfo = (typeInfo: TypeInfo) => {
   return typeInfo.protoType;
 }
 
+export const getTag = (fieldNUmber: number, wireType: number) => {
+  return ((fieldNUmber << 3) | wireType) >>> 0;
+}
+
 export const getFullImportPath = (ctx: Context, file: FileDescriptor, desc: BaseDescriptor) => {
     const filePath = ctx.getFilePathByDescriptor(desc.fileDescriptor);
     const modelsFilePath = replaceProtoSuffix(filePath, 'models');

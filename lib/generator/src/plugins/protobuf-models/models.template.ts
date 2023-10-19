@@ -1,3 +1,4 @@
+import { MapField } from "protobufjs";
 import { CtxEnum, CtxEnumField, CtxFile, CtxMapField, CtxMessage, CtxMessageField, CtxOneof, CtxTypeInfo } from "./reflection";
 import { templates } from "./templates";
 import { getScalarDefaultValue } from "./utils";
@@ -49,6 +50,14 @@ export const modelClassTemplate = (ctx: { message: CtxMessage }): string => {
 
       public static fields = [${ctx.message.fields.map(f => `'${f.name}'`).join(",")}]
 
+      ${(ctx.message.fields.filter(f => f instanceof CtxMapField) as CtxMapField[]).map(f => {
+        return templates.render('models.modelClassEncodeMap', { mapField: f })
+      }).join('\n')}
+
+      ${(ctx.message.fields.filter(f => f instanceof CtxMapField) as CtxMapField[]).map(f => {
+        return templates.render('models.modelClassDecodeMap', { mapField: f })
+      }).join('\n')}
+
       public get fields() {
         return ${ctx.message.className}.fields
       }
@@ -78,11 +87,9 @@ export const modelClassTemplate = (ctx: { message: CtxMessage }): string => {
         return ${ctx.message.className}.encode(this, w).finish();
       }
 
-      deserialize(buffer: Uint8Array | Buffer | pjs.Reader, length?: number): ${ctx.message.className} {
-        const r = (buffer instanceof pjs.Reader) ? buffer : new pjs.Reader(buffer);
-        const l = length ?? r.len
-        ${ctx.message.className}.decode(this, r, l);
-        return this;
+      deserialize(buffer: Uint8Array | Buffer): ${ctx.message.className} {
+        const r = new pjs.Reader(buffer);
+        return ${ctx.message.className}.decode(this, r, r.len);
       }
 
       toJSON(): ${ctx.message.jsonIfaceName} {
@@ -166,7 +173,7 @@ export const modelClassCtorTemplate = (ctx: { message: CtxMessage }): string => 
 export const modelClassFieldsTemplate = (ctx: { message: CtxMessage }): string => {
   return ctx.message.fields.map((field) => {
     if (field instanceof CtxMapField) {
-      return `${field.name}: Map<${field.keyTypeInfo.tsType}, ${field.valueTypeInfo.tsType}> = new Map()'};`
+      return `${field.name}: Map<${field.keyTypeInfo.tsType}, ${field.valueTypeInfo.tsType}> = new Map();`
     }
 
     if (field instanceof CtxOneof) {
@@ -186,13 +193,7 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
         if (field instanceof CtxMapField) {
             return `
               // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
-              w.uint32(${field.tag});
-              for (const [key, val] of m.${field.name}) {
-                w.uint32(${field.tag}); // !!!
-                ${templates.render('models.encodeField', { typeInfo: field.keyTypeInfo, variable: 'key' })}
-                w.uint32(${field.tag}); // !!!
-                ${templates.render('models.encodeField', { typeInfo: field.valueTypeInfo, variable: 'val' })}
-              }
+              ${ctx.message.className}.${field.encodeMethodName}(m.${field.name}, w);
             `
         }
 
@@ -207,7 +208,7 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
               // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
               if (m.${field.name} !== ${field.typeInfo.defaultValue}) {
                 w.uint32(${field.tag});
-                ${templates.render('models.encodeField', { typeInfo: field.typeInfo, variable: `m.${field.name}` })}
+                ${templates.render('models.encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
               }
             `
         }
@@ -218,9 +219,51 @@ export const modelClassEncodeTemplate = (ctx: { message: CtxMessage }): string =
   `
 }
 
+export const modelClassDecodeMapTemplate = (ctx: { mapField: CtxMapField }): string => {
+  return `
+    // map<${ctx.mapField.keyTypeInfo.protoType}, ${ctx.mapField.valueTypeInfo.protoType}> ${ctx.mapField.rawName} = ${ctx.mapField.number}
+    public static ${ctx.mapField.decodeMethodName}(r: pjs.Reader, length: number): [${ctx.mapField.keyTypeInfo.tsType}, ${ctx.mapField.valueTypeInfo.tsType}] {
+      const l = r.pos + length;
+      let k;
+      let v;
+      while (r.pos < l) {
+        const tag = r.uint32();
+        switch (tag) {
+          case ${ctx.mapField.keyTag}:
+            k = ${templates.render('models.decodeField', { typeInfo: ctx.mapField.keyTypeInfo })}
+            continue;
+          case ${ctx.mapField.valueTag}:
+            v = ${templates.render('models.decodeField', { typeInfo: ctx.mapField.valueTypeInfo, variable: `new ${ctx.mapField.valueTypeInfo.fullType}()` })}
+            continue;
+        }
+      }
+
+      return [k, v];
+    }
+  `
+}
+
+export const modelClassEncodeMapTemplate = (ctx: { mapField: CtxMapField }): string => {
+  return `
+    // map<${ctx.mapField.keyTypeInfo.protoType}, ${ctx.mapField.valueTypeInfo.protoType}> ${ctx.mapField.rawName} = ${ctx.mapField.number}
+    public static ${ctx.mapField.encodeMethodName}(m: Map<${ctx.mapField.keyTypeInfo.tsType}, ${ctx.mapField.valueTypeInfo.tsType}>, w: pjs.Writer): pjs.Writer {
+      for (const [key, val] of m) {
+        w.uint32(${ctx.mapField.tag});
+        const w2 = w.fork();
+        w.uint32(${ctx.mapField.keyTag});
+        ${templates.render('models.encodeField', { typeInfo: ctx.mapField.keyTypeInfo, writer: 'w', variable: 'key' })}
+        w.uint32(${ctx.mapField.valueTag});
+        ${templates.render('models.encodeField', { typeInfo: ctx.mapField.valueTypeInfo, writer: 'w2', variable: 'val' })}
+        w2.ldelim();
+      }
+      return w;
+    }
+  `
+}
+
 export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string => {
   return `
-    public static decode(m: ${ctx.message.className}, r: pjs.Reader, length: number): pjs.Reader {
+    public static decode(m: ${ctx.message.className}, r: pjs.Reader, length: number): ${ctx.message.className} {
       const l = r.pos + length;
       while (r.pos < l) {
         const tag = r.uint32();
@@ -232,23 +275,8 @@ export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string =
                 // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
                 case ${field.tag}:
                   {
-                    // r.skipType(0); // uint32 - ???
-                    // r.skipType(0); // uint32 - Key Tag
-                    const length = r.uint32();
-                    const keyTag = r.uint32();
-                    const key = ${templates.render('models.decodeField', { typeInfo: field.keyTypeInfo })}
-                    ${(() => {
-                      if (field.valueTypeInfo.typeMarker === "Message") {
-                        return `const value = ${templates.render('models.decodeField', { typeInfo: field.valueTypeInfo })}`
-                      } else {
-                        return  `
-                          r.skipType(0); // uint32 - Value Tag
-                          const value = ${templates.render('models.decodeField', { typeInfo: field.valueTypeInfo })}
-                        `
-                      }
-                    })()}
-
-                    m.${field.name}.set(key, value)
+                    const [k, v] = ${ctx.message.className}.${field.decodeMethodName}(r, r.uint32());
+                    m.${field.name}.set(k, v)
                   }
                   continue;
               `
@@ -276,7 +304,7 @@ export const modelClassDecodeTemplate = (ctx: { message: CtxMessage }): string =
         }
       }
 
-      return r;
+      return m;
     }
   `
 }
@@ -363,28 +391,26 @@ export const toJsonValueTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: stri
   }
 }
 
-export const decodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo }): string => {
+export const decodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, variable?: string }): string => {
   switch (ctx.typeInfo.typeMarker) {
     case "Enum":
-      return `r.uint32()`
     case "BigInt":
     case "Primitive":
     case "Bytes":
       return `r.${ctx.typeInfo.pjsFn}()`
     case "Message":
-      return `new ${ctx.typeInfo.tsType}().deserialize(r, r.uint32())`
+      return `${ctx.typeInfo.tsType}.decode(${ctx.variable}, r, r.uint32())`
   }
 }
 
-export const encodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, variable: string }): string => {
+export const encodeFieldTemplate = (ctx: { typeInfo: CtxTypeInfo, writer: string, variable: string }): string => {
   switch (ctx.typeInfo.typeMarker) {
     case "Enum":
-      return `w.uint32(${ctx.variable})`
     case "Bytes":
     case "BigInt":
     case "Primitive":
-      return `w.${ctx.typeInfo.pjsFn}(${ctx.variable})`
+      return `${ctx.writer}.${ctx.typeInfo.pjsFn}(${ctx.variable});`
     case "Message":
-      return `${ctx.typeInfo.tsType}.encode(${ctx.variable}, w)`
+      return `${ctx.typeInfo.tsType}.encode(${ctx.variable}, ${ctx.writer}.fork()).ldelim();`
   }
 }

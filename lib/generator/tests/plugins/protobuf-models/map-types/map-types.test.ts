@@ -31,7 +31,7 @@ describe("Map value types", () => {
     const pjsScalarTypes = loadProtoFileByProtobufjs(protoFilePath, 'map_types.MapTypes', EXPECTED_MESSAGE_OBJ);
 
     beforeAll(() => {
-        // generateModels(__dirname);
+        generateModels(__dirname);
     })
 
     it("initial", () => {
@@ -47,7 +47,7 @@ describe("Map value types", () => {
 
     it("encode", () => {
         const cfBuffer = new MapTypes().fromJSON(EXPECTED_MESSAGE_OBJ).serialize();
-        expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer)
+        expect(pjsScalarTypes.buffer).toStrictEqual(cfBuffer);
     })
 
     it("decode", () => {
