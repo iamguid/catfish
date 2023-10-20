@@ -2,6 +2,8 @@ import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDe
 import { ProjectContext, Import, TypeInfo } from "../../ProjectContext";
 import { getFullImportPath, getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getImports, getTag } from "./utils";
 import { filePathToPseudoNamespace, snakeToCamel, upperCaseFirst } from "../../utils";
+import { ProjectOptions } from "../../Project";
+import { PluginOptions } from "./plugin";
 
 export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
 
@@ -79,7 +81,9 @@ export interface TypeInfoContext {
     typeMarker: TypeMarker
 }
 
-export const buildPluginContext = (ctx: ProjectContext, files: FileDescriptor[]): PluginContext => {
+export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): PluginContext => {
+    const files = ctx.getFiles();
+
     return {
         files: files.map(f => buildFileContext(ctx, f))
     }

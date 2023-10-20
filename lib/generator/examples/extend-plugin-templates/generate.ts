@@ -1,4 +1,5 @@
 import { Project, ProtobufModelsPlugin } from "../../src";
+import { buildExtendedPluginContext, extendedPluginTemplates } from "./extended-pugin";
 
 const project = new Project({
     protoDirPath: __dirname,
@@ -7,6 +8,5 @@ const project = new Project({
 
 project
     .load()
-    .resgister(ProtobufModelsPlugin, ProtobufModelsPlugin.templates, () => undefined)
+    .resgister(ProtobufModelsPlugin.plugin, buildExtendedPluginContext, {  test: 'Hello, world' })
     .generate();
-    

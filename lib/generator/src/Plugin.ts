@@ -5,7 +5,7 @@ import { Templates } from "./Templates"
 export type PluginContextBuilder<TPluginContext, TPluginOptions> = (
     projectContext: ProjectContext,
     projectOptions: ProjectOptions,
-    pluginOptions: TPluginOptions,
+    pluginOptions?: TPluginOptions,
 ) => TPluginContext
 
 export interface PluginOutputFile {
@@ -17,7 +17,7 @@ export interface PluginOutput {
     files: PluginOutputFile[]
 }
 
-export type Plugin<TPluginContext, TPluginOptions, TTemplates extends Templates<Record<string, (args: any[]) => string>>> = (
+export type Plugin<TPluginContext, TPluginOptions extends Record<string, any>, TTemplates extends Templates<TPluginOptions, Record<string, (args: any[]) => string>>> = (
     projectContext: ProjectContext,
     projectOptions: ProjectOptions,
     pluginContextBuilder?: PluginContextBuilder<TPluginContext, TPluginOptions>,

@@ -1,28 +1,29 @@
 import { EnumContext, FileContext, MapFieldContext, MessageContext, OneofContext, TypeInfoContext, isMapField, isMessageField, isOneof } from "./context";
-import { templates } from "./templates";
+import { PluginOptions } from "./plugin";
+import { CloneFieldTemplate, DecodeFieldTemplate, EncodeFieldTemplate, EnumTemplate, FromJsonValueTemplate, JsonIfaceTemplate, MainTemplate, ModelClassCtorTemplate, ModelClassDecodeMapTemplate, ModelClassDecodeTemplate, ModelClassEncodeMapTemplate, ModelClassEncodeTemplate, ModelClassFieldsTemplate, ModelClassFromJSONTemplate, ModelClassTemplate, ModelClassToJSONTemplate, RecursiveTemplate, ToJsonValueTemplate } from "./templates";
 
-export const mainTemplate = (ctx: FileContext): string => `
-  ${templates.render('header', {
-    packageName: ctx.package,
-    fileName: ctx.filePath
+export const mainTemplate: MainTemplate = (render, opts, ctx) => `
+  ${render('header', {
+    packageName: ctx.file.package,
+    fileName: ctx.file.filePath
   })}
 
-  ${templates.render('imports', {
-    imports: ctx.imports
+  ${render('imports', {
+    imports: ctx.file.imports
   })}
 
   import * as pjs from "protobufjs/minimal"
   import * as runtime from "@catfish/runtime"
 
-  ${templates.render('recursive', {
-    messages: ctx.messages,
-    enums: ctx.enums
+  ${render('recursive', {
+    messages: ctx.file.messages,
+    enums: ctx.file.enums
   })}
 `;
 
-export const recursiveTemplate = (ctx: { messages: MessageContext[], enums: EnumContext[] }): string => `
+export const recursiveTemplate: RecursiveTemplate = (render, opts, ctx) => `
   ${ctx.messages.map((message) => `
-    ${ctx.enums.map((enm) => templates.render('enum', { enm })).join('\n')}
+    ${ctx.enums.map((enm) => render('enum', { enm })).join('\n')}
 
     ${(message.fields.filter(f => isOneof(f)) as OneofContext[]).map(f => {
       return `type ${f.tsTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`
@@ -32,13 +33,13 @@ export const recursiveTemplate = (ctx: { messages: MessageContext[], enums: Enum
       return `type ${f.jsonTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`
     })}
 
-    ${templates.render('jsonIface', { message })}
+    ${render('jsonIface', { message })}
 
-    ${templates.render('modelClass', { message })}
+    ${render('modelClass', { message })}
 
     ${message.messages.length > 0 || message.enums.length > 0 ? `
       export namespace ${message.className} {
-        ${templates.render('recursive', {
+        ${render('recursive', {
           messages: message.messages,
           enums: message.enums
         })}
@@ -47,44 +48,44 @@ export const recursiveTemplate = (ctx: { messages: MessageContext[], enums: Enum
   `).join('\n')}
 `;
 
-export const modelClassTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassTemplate: ModelClassTemplate = (render, opts, ctx) => {
   return `
     export class ${ctx.message.className} {
-      ${templates.render('modelClassFields', {
+      ${render('modelClassFields', {
         message: ctx.message
       })}
 
       public static fields = [${ctx.message.fields.map(f => `'${f.name}'`).join(",")}]
 
       ${(ctx.message.fields.filter(f => isMapField(f)) as MapFieldContext[]).map(f => {
-        return templates.render('modelClassEncodeMap', { mapField: f })
+        return render('modelClassEncodeMap', { mapField: f })
       }).join('\n')}
 
       ${(ctx.message.fields.filter(f => isMapField(f)) as MapFieldContext[]).map(f => {
-        return templates.render('modelClassDecodeMap', { mapField: f })
+        return render('modelClassDecodeMap', { mapField: f })
       }).join('\n')}
 
       public get fields() {
         return ${ctx.message.className}.fields
       }
 
-      ${templates.render('modelClassCtor', {
+      ${render('modelClassCtor', {
         message: ctx.message
       })}
 
-      ${templates.render('modelClassEncode', {
+      ${render('modelClassEncode', {
         message: ctx.message
       })}
 
-      ${templates.render('modelClassDecode', {
+      ${render('modelClassDecode', {
         message: ctx.message
       })}
 
-      ${templates.render('modelClassToJSON', {
+      ${render('modelClassToJSON', {
         message: ctx.message
       })}
 
-      ${templates.render('modelClassFromJSON', {
+      ${render('modelClassFromJSON', {
         message: ctx.message
       })}
 
@@ -113,7 +114,7 @@ export const modelClassTemplate = (ctx: { message: MessageContext }): string => 
   `;
 }
 
-export const jsonIfaceTemplate = (ctx: { message: MessageContext }) => `
+export const jsonIfaceTemplate: JsonIfaceTemplate = (render, opts, ctx) => `
   export interface ${ctx.message.jsonIfaceName} {
     ${ctx.message.fields.map((field) => {
       if (isMapField(field)) {
@@ -131,13 +132,13 @@ export const jsonIfaceTemplate = (ctx: { message: MessageContext }) => `
   }
 `;
 
-export const enumTemplate = ({ enm }: { enm: EnumContext }) => `
-  export enum ${enm.name} {
-    ${enm.fields.map((field) => `${field.name} = ${field.value},`).join('\n')}
+export const enumTemplate: EnumTemplate = (render, opts, ctx) => `
+  export enum ${ctx.enm.name} {
+    ${ctx.enm.fields.map((field) => `${field.name} = ${field.value},`).join('\n')}
   }
 `;
 
-export const modelClassCtorTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassCtorTemplate: ModelClassCtorTemplate = (render, opts, ctx) => {
   return `
     constructor(obj?: ${ctx.message.className}) {
       if (!obj) return;
@@ -148,7 +149,7 @@ export const modelClassCtorTemplate = (ctx: { message: MessageContext }): string
             if (isMapField(field)) {
               return `
                 const entries = Array.from(obj.${field.name}.entries());
-                const copy = entries.map(([key, val]) => [key, ${templates.render('cloneField', { typeInfo: field.valueTypeInfo, variable: 'val' })}]);
+                const copy = entries.map(([key, val]) => [key, ${render('cloneField', { typeInfo: field.valueTypeInfo, variable: 'val' })}]);
                 this.${field.name} = new Map(copy);
               `
             }
@@ -159,7 +160,7 @@ export const modelClassCtorTemplate = (ctx: { message: MessageContext }): string
                   ${field.fields.map(f => {
                     return `
                       case (obj.${field.name}.${f.name} !== undefined):
-                        this.${field.name} = { ${f.name}: ${templates.render('cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.name}.${f.name}` })} };
+                        this.${field.name} = { ${f.name}: ${render('cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.name}.${f.name}` })} };
                         break;
                     `
                   }).join('\n')}
@@ -169,10 +170,10 @@ export const modelClassCtorTemplate = (ctx: { message: MessageContext }): string
 
             if (isMessageField(field)) {
               if (field.repeated) {
-                return `this.${field.name} =  obj.${field.name}.map(val => ${templates.render('cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
+                return `this.${field.name} =  obj.${field.name}.map(val => ${render('cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
               }
 
-              return `this.${field.name} = ${templates.render('cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.name}` })};`
+              return `this.${field.name} = ${render('cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.name}` })};`
             }
           })()}
         }`
@@ -181,7 +182,7 @@ export const modelClassCtorTemplate = (ctx: { message: MessageContext }): string
   `
 }
 
-export const modelClassFieldsTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassFieldsTemplate: ModelClassFieldsTemplate = (render, opts, ctx) => {
   return ctx.message.fields.map((field) => {
     if (isMapField(field)) {
       return `${field.name}: Map<${field.keyTypeInfo.tsType}, ${field.valueTypeInfo.tsType}> = new Map();`
@@ -201,7 +202,7 @@ export const modelClassFieldsTemplate = (ctx: { message: MessageContext }): stri
   }).join('\n')
 }
 
-export const modelClassEncodeTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassEncodeTemplate: ModelClassEncodeTemplate = (render, opts, ctx) => {
   return `
     public static encode(m: ${ctx.message.className}, w: pjs.Writer): pjs.Writer {
       ${ctx.message.fields.map(field => {
@@ -220,7 +221,7 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageContext }): stri
                 return `
                   case (m.${field.name}?.${f.name} !== undefined):
                     w.uint32(${f.tag});
-                    ${templates.render('encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.name}.${f.name}` })}
+                    ${render('encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.name}.${f.name}` })}
                     break;
                 `
               }).join('\n')}
@@ -240,7 +241,7 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageContext }): stri
                     w.uint32(${field.tag});
                     w.uint32(m.${field.name}.length);
                     for (let item of m.${field.name}) {
-                      ${templates.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
+                      ${render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
                     }
                   }
                 `
@@ -252,7 +253,7 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageContext }): stri
                   if (m.${field.name}.length > 0) {
                     for (let item of m.${field.name}) {
                       w.uint32(${field.tag});
-                      ${templates.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
+                      ${render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
                     }
                   }
                 `
@@ -263,7 +264,7 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageContext }): stri
             // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
             if (m.${field.name} !== undefined) {
               w.uint32(${field.tag});
-              ${templates.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
+              ${render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
             }
           `
         }
@@ -274,7 +275,7 @@ export const modelClassEncodeTemplate = (ctx: { message: MessageContext }): stri
   `
 }
 
-export const modelClassDecodeMapTemplate = (ctx: { mapField: MapFieldContext }): string => {
+export const modelClassDecodeMapTemplate: ModelClassDecodeMapTemplate = (render, opts, ctx) => {
   return `
     // map<${ctx.mapField.keyTypeInfo.protoType}, ${ctx.mapField.valueTypeInfo.protoType}> ${ctx.mapField.rawName} = ${ctx.mapField.number}
     public static ${ctx.mapField.decodeMethodName}(r: pjs.Reader, length: number): [${ctx.mapField.keyTypeInfo.tsType}, ${ctx.mapField.valueTypeInfo.tsType}] {
@@ -285,10 +286,10 @@ export const modelClassDecodeMapTemplate = (ctx: { mapField: MapFieldContext }):
         const tag = r.uint32();
         switch (tag) {
           case ${ctx.mapField.keyTag}:
-            k = ${templates.render('decodeField', { typeInfo: ctx.mapField.keyTypeInfo })}
+            k = ${render('decodeField', { typeInfo: ctx.mapField.keyTypeInfo })}
             continue;
           case ${ctx.mapField.valueTag}:
-            v = ${templates.render('decodeField', { typeInfo: ctx.mapField.valueTypeInfo, variable: `new ${ctx.mapField.valueTypeInfo.fullType}()` })}
+            v = ${render('decodeField', { typeInfo: ctx.mapField.valueTypeInfo, variable: `new ${ctx.mapField.valueTypeInfo.fullType}()` })}
             continue;
         }
       }
@@ -298,7 +299,7 @@ export const modelClassDecodeMapTemplate = (ctx: { mapField: MapFieldContext }):
   `
 }
 
-export const modelClassEncodeMapTemplate = (ctx: { mapField: MapFieldContext }): string => {
+export const modelClassEncodeMapTemplate: ModelClassEncodeMapTemplate = (render, opts, ctx) => {
   return `
     // map<${ctx.mapField.keyTypeInfo.protoType}, ${ctx.mapField.valueTypeInfo.protoType}> ${ctx.mapField.rawName} = ${ctx.mapField.number}
     public static ${ctx.mapField.encodeMethodName}(m: Map<${ctx.mapField.keyTypeInfo.tsType}, ${ctx.mapField.valueTypeInfo.tsType}>, w: pjs.Writer): pjs.Writer {
@@ -306,9 +307,9 @@ export const modelClassEncodeMapTemplate = (ctx: { mapField: MapFieldContext }):
         w.uint32(${ctx.mapField.tag});
         const w2 = w.fork();
         w.uint32(${ctx.mapField.keyTag});
-        ${templates.render('encodeField', { typeInfo: ctx.mapField.keyTypeInfo, writer: 'w', variable: 'key' })}
+        ${render('encodeField', { typeInfo: ctx.mapField.keyTypeInfo, writer: 'w', variable: 'key' })}
         w.uint32(${ctx.mapField.valueTag});
-        ${templates.render('encodeField', { typeInfo: ctx.mapField.valueTypeInfo, writer: 'w2', variable: 'val' })}
+        ${render('encodeField', { typeInfo: ctx.mapField.valueTypeInfo, writer: 'w2', variable: 'val' })}
         w2.ldelim();
       }
       return w;
@@ -316,7 +317,7 @@ export const modelClassEncodeMapTemplate = (ctx: { mapField: MapFieldContext }):
   `
 }
 
-export const modelClassDecodeTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts, ctx) => {
   return `
     public static decode(m: ${ctx.message.className}, r: pjs.Reader, length: number): ${ctx.message.className} {
       const l = r.pos + length;
@@ -343,7 +344,7 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageContext }): stri
                 ${field.fields.map(f => {
                   return `
                     case ${f.tag}:
-                      m.${field.name} = { ${f.name}: ${templates.render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.fullType}()` })} };
+                      m.${field.name} = { ${f.name}: ${render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.fullType}()` })} };
                       break;
                   `
                 }).join('\n')}
@@ -362,7 +363,7 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageContext }): stri
                       case ${field.tag}: {
                         const l = r.uint32();
                         for (let i = 0; i < l; i++) {
-                          m.${field.name}.push(${templates.render('decodeField', { typeInfo: field.typeInfo })})
+                          m.${field.name}.push(${render('decodeField', { typeInfo: field.typeInfo })})
                         }
                         continue;
                       }
@@ -373,7 +374,7 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageContext }): stri
                     return `
                       // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
                       case ${field.tag}:
-                        m.${field.name}.push(${templates.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.fullType}()` })})
+                        m.${field.name}.push(${render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.fullType}()` })})
                         continue;
                     `
                 }
@@ -382,7 +383,7 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageContext }): stri
               return `
                 // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
                 case ${field.tag}:
-                  m.${field.name} = ${templates.render('decodeField', { typeInfo: field.typeInfo })}
+                  m.${field.name} = ${render('decodeField', { typeInfo: field.typeInfo })}
                   continue;
               `
             }
@@ -399,14 +400,14 @@ export const modelClassDecodeTemplate = (ctx: { message: MessageContext }): stri
   `
 }
 
-export const modelClassToJSONTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassToJSONTemplate: ModelClassToJSONTemplate = (render, opts, ctx) => {
   return `
     public static toJSON(m: ${ctx.message.className}): ${ctx.message.jsonIfaceName} {
       const obj = {};
 
       ${ctx.message.fields.map((field) => {
         if (isMapField(field)) {
-          return `obj['${field.name}'] = runtime.convertMapToRecord(m.${field.name}, (val) => ${templates.render('toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+          return `obj['${field.name}'] = runtime.convertMapToRecord(m.${field.name}, (val) => ${render('toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
         }
 
         if (isOneof(field)) {
@@ -416,7 +417,7 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageContext }): stri
               ${field.fields.map(f => {
                 return `
                   case (m.${field.name}?.${f.name} !== undefined):
-                    obj['${field.name}'] = { ${f.name}: ${templates.render('toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.name}.${f.name}` })} };
+                    obj['${field.name}'] = { ${f.name}: ${render('toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.name}.${f.name}` })} };
                     break;
                 `
               }).join('\n')}
@@ -426,7 +427,7 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageContext }): stri
 
         if (isMessageField(field)) {
           if (field.repeated) {
-            return `obj['${field.name}'] = m.${field.name}.map(val => ${templates.render('toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
+            return `obj['${field.name}'] = m.${field.name}.map(val => ${render('toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
           }
 
           let result = ''
@@ -434,7 +435,7 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageContext }): stri
             result += `if (m.${field.name} !== undefined) {`
           }
 
-          result += `obj['${field.name}'] = ${templates.render('toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.name}` })};`
+          result += `obj['${field.name}'] = ${render('toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.name}` })};`
 
           if (field.optional) {
             result += `}`
@@ -449,12 +450,12 @@ export const modelClassToJSONTemplate = (ctx: { message: MessageContext }): stri
   `
 }
 
-export const modelClassFromJSONTemplate = (ctx: { message: MessageContext }): string => {
+export const modelClassFromJSONTemplate: ModelClassFromJSONTemplate = (render, opts, ctx) => {
   return `
     public static fromJSON(m: ${ctx.message.className}, obj: ${ctx.message.jsonIfaceName}): ${ctx.message.className} {
       ${ctx.message.fields.map((field) => {
         if (isMapField(field)) {
-          return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${templates.render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+          return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
         }
 
         if (isOneof(field)) {
@@ -465,7 +466,7 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageContext }): st
                 ${field.fields.map(f => {
                   return `
                     case (obj.${field.name}?.${f.name} !== undefined):
-                      return { ${f.name}: ${templates.render('fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.name}?.${f.name}` })} }
+                      return { ${f.name}: ${render('fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.name}?.${f.name}` })} }
                   `
                 }).join('\n')}
               }
@@ -475,7 +476,7 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageContext }): st
 
         if (isMessageField(field)) {
           if (field.repeated) {
-            return `m.${field.name} = obj.${field.name}.map((val) => ${templates.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
+            return `m.${field.name} = obj.${field.name}.map((val) => ${render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
           }
 
           let result = ''
@@ -483,7 +484,7 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageContext }): st
             result += `if (obj.${field.name} !== undefined) {`
           }
 
-          result += `m.${field.name} = ${templates.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+          result += `m.${field.name} = ${render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
 
           if (field.optional) {
             result += `}`
@@ -498,7 +499,7 @@ export const modelClassFromJSONTemplate = (ctx: { message: MessageContext }): st
   `
 }
 
-export const cloneFieldTemplate = (ctx: { typeInfo: TypeInfoContext, variable: string }): string => {
+export const cloneFieldTemplate: CloneFieldTemplate = (render, opts, ctx) => {
   switch (ctx.typeInfo.typeMarker) {
     case "FixedSmall":
     case "String":
@@ -513,7 +514,7 @@ export const cloneFieldTemplate = (ctx: { typeInfo: TypeInfoContext, variable: s
   }
 }
 
-export const fromJsonValueTemplate = (ctx: { typeInfo: TypeInfoContext, variable: string }): string => {
+export const fromJsonValueTemplate: FromJsonValueTemplate = (render, opts, ctx) => {
   switch (ctx.typeInfo.typeMarker) {
     case "FixedSmall":
     case "String":
@@ -529,7 +530,7 @@ export const fromJsonValueTemplate = (ctx: { typeInfo: TypeInfoContext, variable
   }
 }
 
-export const toJsonValueTemplate = (ctx: { typeInfo: TypeInfoContext, variable: string }): string => {
+export const toJsonValueTemplate: ToJsonValueTemplate = (render, opts, ctx) => {
   switch (ctx.typeInfo.typeMarker) {
     case "String":
     case "FixedSmall":
@@ -545,7 +546,7 @@ export const toJsonValueTemplate = (ctx: { typeInfo: TypeInfoContext, variable: 
   }
 }
 
-export const decodeFieldTemplate = (ctx: { typeInfo: TypeInfoContext, variable?: string }): string => {
+export const decodeFieldTemplate: DecodeFieldTemplate = (render, opts, ctx) => {
   switch (ctx.typeInfo.typeMarker) {
     case "FixedSmall":
     case "FixedBig":
@@ -558,7 +559,7 @@ export const decodeFieldTemplate = (ctx: { typeInfo: TypeInfoContext, variable?:
   }
 }
 
-export const encodeFieldTemplate = (ctx: { typeInfo: TypeInfoContext, writer: string, variable: string }): string => {
+export const encodeFieldTemplate: EncodeFieldTemplate = (render, opts, ctx) => {
   switch (ctx.typeInfo.typeMarker) {
     case "FixedSmall":
     case "FixedBig":
