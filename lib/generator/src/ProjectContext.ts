@@ -21,7 +21,7 @@ export interface Dependency {
     descriptor: FileDescriptor
 }
 
-export class Context {
+export class ProjectContext {
     private readonly protoFiles = new Map<string, FileDescriptor>; // key - relative path to proto file
     private readonly filesPaths = new Map<FileDescriptor, string>; // value - relative path to proto file
     private readonly dependencies = new Map<FileDescriptor, Dependency[]>;

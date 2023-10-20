@@ -1,6 +1,6 @@
 import { BaseDescriptor, EnumDescriptor, FileDescriptor } from "@catfish/parser";
-import { CtxTypeInfo, TypeMarker } from "./reflection";
-import { Context, Import, TypeInfo } from '../../Context';
+import { CtxTypeInfo, TypeMarker } from "./context";
+import { ProjectContext, Import, TypeInfo } from '../../ProjectContext';
 import { filePathToPseudoNamespace, replaceProtoSuffix } from "../../utils";
 
 export const getScalarDefaultValue = (typeInfo: TypeInfo) => {
@@ -149,7 +149,7 @@ export const getTag = (fieldNUmber: number, wireType: number) => {
   return ((fieldNUmber << 3) | wireType) >>> 0;
 }
 
-export const getFullImportPath = (ctx: Context, file: FileDescriptor, desc: BaseDescriptor) => {
+export const getFullImportPath = (ctx: ProjectContext, file: FileDescriptor, desc: BaseDescriptor) => {
     const filePath = ctx.getFilePathByDescriptor(desc.fileDescriptor);
     const modelsFilePath = replaceProtoSuffix(filePath, 'models');
     const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
@@ -162,7 +162,7 @@ export const getFullImportPath = (ctx: Context, file: FileDescriptor, desc: Base
     }
 }
 
-export const getImports = (ctx: Context, file: FileDescriptor): Import[] => {
+export const getImports = (ctx: ProjectContext, file: FileDescriptor): Import[] => {
     const imports: Import[] = [];
     const dependencies = ctx.getDependencies(file, true);
 

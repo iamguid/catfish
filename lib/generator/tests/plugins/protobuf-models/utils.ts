@@ -1,4 +1,4 @@
-import protobuf, { FieldBase } from "protobufjs";
+import protobuf from "protobufjs";
 import { Project, ProtobufModelsPlugin } from "../../../src";
 
 export const loadProtoFileByProtobufjs = (protoFilePath: string, typePath: string, obj: Record<string, any>) => {

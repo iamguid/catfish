@@ -2,21 +2,21 @@ import fs from 'node:fs';
 import path from 'node:path';
 import prettier from 'prettier';
 
-import { Context } from './Context';
-import { Plugin } from './Plugin';
+import { ProjectContext } from './ProjectContext';
+import { Plugin, PluginContextBuilder } from './Plugin';
+import { Templates } from './Templates';
 
 export interface ProjectOptions {
     protoDirPath: string
     outDirPath: string
 }
 
-
 export class Project {
-    private context: Context;
-    private plugins: [Plugin<any>, any][] = [];
+    private context: ProjectContext;
+    private plugins: [Plugin<any, any, any>, any, any, any][] = [];
 
     constructor(private readonly options: ProjectOptions) {
-        this.context = new Context(options)
+        this.context = new ProjectContext(options)
     }
 
     // TODO: make async
@@ -30,8 +30,8 @@ export class Project {
     generate() {
         fs.mkdirSync(this.options.outDirPath, { recursive: true })
 
-        for (const [plugin, options] of this.plugins) {
-            const result = plugin(this.context, this.options, options);
+        for (const [plugin, pluginContextBuilder, pluginTemplates, pluginOptions] of this.plugins) {
+            const result = plugin(this.context, this.options, pluginOptions, pluginContextBuilder);
 
             for (const file of result.files) {
                 const prettiedContent = prettier.format(file.content, { parser: 'typescript' })
@@ -40,8 +40,18 @@ export class Project {
         }
     }
 
-    resgister<TOptions>(plugin: Plugin<TOptions>, options?: TOptions) {
-        this.plugins.push([plugin, options]);
+    resgister<
+        TContext,
+        TTemplates extends Templates<TTemplatesType>,
+        TOptions,
+        TTemplatesType extends Record<string, (args: any[]) => string>
+    >(
+        plugin: Plugin<TContext, TOptions, TTemplatesType>,
+        templates?: TTemplates,
+        contextBuilder?: PluginContextBuilder<TContext, TOptions>,
+        options?: TOptions,
+    ) {
+        this.plugins.push([plugin, contextBuilder, templates, options]);
         return this;
     }
 }

@@ -1,2 +1,1 @@
-import ProtobufModelsPlugin from './protobuf-models'
-export { ProtobufModelsPlugin }
+export * as ProtobufModelsPlugin from './protobuf-models'

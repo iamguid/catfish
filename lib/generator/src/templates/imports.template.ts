@@ -1,4 +1,4 @@
-import { Import } from "../Context";
+import { Import } from "../ProjectContext";
 
 export const importsTemplate = (ctx: { imports: Import[] }) => (
     ctx.imports.map((imprt) => `
