@@ -25,6 +25,6 @@ export const generateModels = (path: string) => {
 
     project
         .load()
-        .resgister(ProtobufModelsPlugin)
+        .resgister(ProtobufModelsPlugin.plugin)
         .generate();
 }

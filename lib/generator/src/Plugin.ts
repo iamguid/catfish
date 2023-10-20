@@ -1,8 +1,8 @@
 import { ProjectContext } from "./ProjectContext"
 import { ProjectOptions } from "./Project"
-import { Templates } from "./Templates"
+import { TemplatesRegistry } from "./Templates"
 
-export type PluginContextBuilder<TPluginContext, TPluginOptions> = (
+export type PluginContextBuilder<TPluginContext, TPluginOptions extends Record<string, any>> = (
     projectContext: ProjectContext,
     projectOptions: ProjectOptions,
     pluginOptions?: TPluginOptions,
@@ -17,10 +17,10 @@ export interface PluginOutput {
     files: PluginOutputFile[]
 }
 
-export type Plugin<TPluginContext, TPluginOptions extends Record<string, any>, TTemplates extends Templates<TPluginOptions, Record<string, (args: any[]) => string>>> = (
+export type Plugin<TPluginContext, TPluginOptions extends Record<string, any>, TTemplatesRegistry extends TemplatesRegistry> = (
     projectContext: ProjectContext,
     projectOptions: ProjectOptions,
-    pluginContextBuilder?: PluginContextBuilder<TPluginContext, TPluginOptions>,
-    pluginTemplates?: TTemplates,
     pluginOptions?: TPluginOptions,
+    pluginTemplates?: TTemplatesRegistry,
+    pluginContextBuilder?: PluginContextBuilder<TPluginContext, TPluginOptions>,
 ) => PluginOutput;

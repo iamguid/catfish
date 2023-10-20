@@ -1,8 +1,4 @@
-import { TemplateFn, TemplateRegistry } from "../Templates";
-
-export type HeaderTemplate = TemplateFn<any, any, { packageName: string, fileName: string }>
-
-export const headerTemplate: HeaderTemplate = (render, opts, ctx) => `
+export const headerTemplate = (render: any, opts: any, ctx: { packageName: string, fileName: string }) => `
     // @ts-nocheck
     //
     // Generated code by catfish

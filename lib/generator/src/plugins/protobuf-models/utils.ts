@@ -1,5 +1,5 @@
 import { BaseDescriptor, EnumDescriptor, FileDescriptor } from "@catfish/parser";
-import { CtxTypeInfo, TypeMarker } from "./context";
+import { TypeInfoContext, TypeMarker } from "./context";
 import { ProjectContext, Import, TypeInfo } from '../../ProjectContext';
 import { filePathToPseudoNamespace, replaceProtoSuffix } from "../../utils";
 
@@ -25,7 +25,7 @@ export const getScalarDefaultValue = (typeInfo: TypeInfo) => {
 }
 
 // Based on https://github.com/protobufjs/protobuf.js/blob/master/src/types.js#L37
-export const getWireTypeByTypeInfo = (typeInfo: CtxTypeInfo): number => {
+export const getWireTypeByTypeInfo = (typeInfo: TypeInfoContext): number => {
   switch (typeInfo.protoType) {
     case "int32":
     case "uint32":

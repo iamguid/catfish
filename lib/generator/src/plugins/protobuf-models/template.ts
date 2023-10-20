@@ -1,15 +1,14 @@
-import { EnumContext, FileContext, MapFieldContext, MessageContext, OneofContext, TypeInfoContext, isMapField, isMessageField, isOneof } from "./context";
-import { PluginOptions } from "./plugin";
+import { MapFieldContext, OneofContext, isMapField, isMessageField, isOneof } from "./context";
 import { CloneFieldTemplate, DecodeFieldTemplate, EncodeFieldTemplate, EnumTemplate, FromJsonValueTemplate, JsonIfaceTemplate, MainTemplate, ModelClassCtorTemplate, ModelClassDecodeMapTemplate, ModelClassDecodeTemplate, ModelClassEncodeMapTemplate, ModelClassEncodeTemplate, ModelClassFieldsTemplate, ModelClassFromJSONTemplate, ModelClassTemplate, ModelClassToJSONTemplate, RecursiveTemplate, ToJsonValueTemplate } from "./templates";
 
 export const mainTemplate: MainTemplate = (render, opts, ctx) => `
   ${render('header', {
     packageName: ctx.file.package,
-    fileName: ctx.file.filePath
+    fileName: ctx.file.filePath,
   })}
 
   ${render('imports', {
-    imports: ctx.file.imports
+    imports: ctx.file.imports,
   })}
 
   import * as pjs from "protobufjs/minimal"
@@ -17,8 +16,8 @@ export const mainTemplate: MainTemplate = (render, opts, ctx) => `
 
   ${render('recursive', {
     messages: ctx.file.messages,
-    enums: ctx.file.enums
-  })}
+    enums: ctx.file.enums,
+  })} 
 `;
 
 export const recursiveTemplate: RecursiveTemplate = (render, opts, ctx) => `
@@ -383,7 +382,7 @@ export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts,
               return `
                 // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
                 case ${field.tag}:
-                  m.${field.name} = ${render('decodeField', { typeInfo: field.typeInfo })}
+                  m.${field.name} = ${render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.fullType}()` })}
                   continue;
               `
             }
