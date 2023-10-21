@@ -1,4 +1,4 @@
-import { GrpcJsPlugin, Project, ProtobufModelsPlugin } from "../../../src";
+import { GrpcJsPlugin, Project, ProtobufModelsPlugin } from "../../../index";
 
 export const generateAll = (
     path: string,

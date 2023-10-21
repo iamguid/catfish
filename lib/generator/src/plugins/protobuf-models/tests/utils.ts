@@ -1,5 +1,5 @@
 import protobuf from "protobufjs";
-import { Project, ProtobufModelsPlugin } from "../../../src";
+import { Project, ProtobufModelsPlugin } from "../../../index";
 
 export const loadProtoFileByProtobufjs = (protoFilePath: string, typePath: string, obj: Record<string, any>) => {
     const protoRoot = protobuf.loadSync(protoFilePath);
