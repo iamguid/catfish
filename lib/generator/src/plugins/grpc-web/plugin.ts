@@ -3,7 +3,10 @@ import { replaceProtoSuffix } from '../../utils';
 import { PluginContext, buildPluginContext } from './context';
 import { PluginTemplatesRegistry, buildTemplates, pluginTemplatesRegistry } from './templates';
 
-export interface PluginOptions {}
+export interface PluginOptions {
+    generateClientsStubs?: boolean,
+    generateServerStubs?: boolean,
+}
 
 export const plugin: Plugin<PluginContext, PluginOptions, PluginTemplatesRegistry> = (projectContext, projectOptions, pluginOptions, pluginTemplates, pluginContextBuilder) => {
     const result: PluginOutputFile[] = []
@@ -17,7 +20,7 @@ export const plugin: Plugin<PluginContext, PluginOptions, PluginTemplatesRegistr
 
     for (const file of pluginContext.files) {
         const resultFileContent = resultTemplates.render('main', { file });
-        const resultFilePath = replaceProtoSuffix(file.filePath, 'models.ts');
+        const resultFilePath = replaceProtoSuffix(file.filePath, 'grpc.ts');
         result.push({ path: resultFilePath, content: resultFileContent });
     }
 

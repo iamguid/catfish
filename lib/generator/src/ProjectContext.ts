@@ -93,15 +93,15 @@ export class ProjectContext {
             return files;
         } else {
             return files.filter(f => {
-                const filePath = this.getFilePathByDescriptor(f)
+                const filePath = this.getProtoFilePath(f)
                 return !(filePath in wellKnownTypesToProtoFilesMap)
             })
         }
     }
 
-    getFilePathByDescriptor(descriptor: FileDescriptor) {
+    getProtoFilePath(descriptor: FileDescriptor) {
         if (!this.filesPaths.has(descriptor)) {
-            throw new Error(`Cannot resolve file path by descriptor for file ${this.getFilePathByDescriptor(descriptor)}`)
+            throw new Error(`Cannot resolve file path by descriptor for file ${this.getProtoFilePath(descriptor)}`)
         }
 
         return this.filesPaths.get(descriptor)!;
@@ -109,7 +109,7 @@ export class ProjectContext {
 
     getDependencies(descriptor: FileDescriptor, includePublic = false) {
         if (!this.dependencies.has(descriptor)) {
-            throw new Error(`There is no dependencies of file ${this.getFilePathByDescriptor(descriptor)}`)
+            throw new Error(`There is no dependencies of file ${this.getProtoFilePath(descriptor)}`)
         }
 
         const dependencies = this.dependencies.get(descriptor)!;
@@ -125,7 +125,7 @@ export class ProjectContext {
         const resolvedType = this.resolveType(descriptor, fullname);
 
         if (!resolvedType) {
-            throw new Error(`There is no type descriptor ${fullname} for file ${this.getFilePathByDescriptor(descriptor)}`)
+            throw new Error(`There is no type descriptor ${fullname} for file ${this.getProtoFilePath(descriptor)}`)
         }
 
         return resolvedType;

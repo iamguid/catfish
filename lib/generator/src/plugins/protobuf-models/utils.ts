@@ -148,34 +148,3 @@ export const getPjsFnNameByTypeInfo = (typeInfo: TypeInfo) => {
 export const getTag = (fieldNUmber: number, wireType: number) => {
   return ((fieldNUmber << 3) | wireType) >>> 0;
 }
-
-export const getFullImportPath = (ctx: ProjectContext, file: FileDescriptor, desc: BaseDescriptor) => {
-    const filePath = ctx.getFilePathByDescriptor(desc.fileDescriptor);
-    const modelsFilePath = replaceProtoSuffix(filePath, 'models');
-    const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
-
-    // Model defined in current file
-    if (desc.fileDescriptor === file) {
-        return desc.fullname
-    } else {
-        return `${modelsFileImportName}.${desc.fullname}`
-    }
-}
-
-export const getImports = (ctx: ProjectContext, file: FileDescriptor): Import[] => {
-    const imports: Import[] = [];
-    const dependencies = ctx.getDependencies(file, true);
-
-    for (const dependency of dependencies) {
-        const filePath = ctx.getFilePathByDescriptor(dependency);
-        const modelsFilePath = replaceProtoSuffix(filePath, 'models');
-        const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
-
-        imports.push({
-            path: `./${modelsFilePath}`,
-            name: modelsFileImportName
-        })
-    }
-
-    return imports;
-}

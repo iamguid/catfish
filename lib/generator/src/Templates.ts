@@ -6,7 +6,7 @@ export type ExtractCtx<TTemplatesRegistry extends TemplatesRegistry, TName exten
 export class TemplatesRenderer<TPluginOptions extends Record<string, any>, TTemplatesRegistry extends TemplatesRegistry> {
   constructor(private opts: TPluginOptions, private registry: TTemplatesRegistry) {}
 
-  render = <TName extends keyof TTemplatesRegistry>(name: TName | string, ctx: ExtractCtx<TTemplatesRegistry, TName>): string => {
+  render = <TName extends keyof TTemplatesRegistry>(name: TName, ctx: ExtractCtx<TTemplatesRegistry, TName>): string => {
     const template = this.registry[name];
     return template(this.render, this.opts, ctx);
   }

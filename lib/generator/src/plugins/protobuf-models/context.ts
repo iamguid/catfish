@@ -1,7 +1,7 @@
 import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor } from "@catfish/parser";
 import { ProjectContext, Import, TypeInfo } from "../../ProjectContext";
-import { getFullImportPath, getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getImports, getTag } from "./utils";
-import { filePathToPseudoNamespace, snakeToCamel, upperCaseFirst } from "../../utils";
+import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getTag } from "./utils";
+import { filePathToPseudoNamespace, getFullImportPath, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
 
@@ -91,10 +91,10 @@ export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectO
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
     return {
-        imports: getImports(ctx, file),
+        imports: getImports(ctx, file, 'models', false),
         enums: file.enums.map(enm => buildEnumContext(ctx, file, enm)),
         messages: file.messages.map(msg => buildMessageContext(ctx, file, msg)),
-        filePath: ctx.getFilePathByDescriptor(file),
+        filePath: ctx.getProtoFilePath(file),
         package: file.package,
     }
 }
@@ -186,7 +186,7 @@ export const buildFieldContext = (ctx: ProjectContext, file: FileDescriptor, des
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getFullImportPath(ctx, file, typeInfo.descriptor) : null;
+    const fullType = typeInfo.descriptor ? getFullImportPath(ctx, file, typeInfo.descriptor, 'models', true) : null;
     const tsType = getTsTypeByTypeInfo(typeInfo) ?? fullType ?? '';
     const typeMarker = getTypeMarkerByTypeInfo(typeInfo);
 
