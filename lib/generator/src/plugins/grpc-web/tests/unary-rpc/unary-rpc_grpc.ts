@@ -23,6 +23,15 @@ export const SimpleServiceDefinition = {
     (bytes: Uint8Array) =>
       new unary_rpc_models.SimpleMessage().deserialize(bytes)
   ),
+  ServerStreamMethod: new grpc.MethodDescriptor(
+    "/simple_service.SimpleService/ServerStreamMethod",
+    grpc.MethodType.SERVER_STREAMING,
+    unary_rpc_models.SimpleMessage,
+    unary_rpc_models.SimpleMessage,
+    (message: unary_rpc_models.SimpleMessage) => message.serialize(),
+    (bytes: Uint8Array) =>
+      new unary_rpc_models.SimpleMessage().deserialize(bytes)
+  ),
 } as const;
 
 export class SimpleServiceClient {
@@ -58,6 +67,18 @@ export class SimpleServiceClient {
       request,
       metadata ?? {},
       SimpleServiceDefinition.UnaryMethod
+    );
+  }
+
+  ServerStreamMethod(
+    request: unary_rpc_models.SimpleMessage,
+    metadata: grpc.Metadata | null
+  ): grpc.ClientReadableStream<unary_rpc_models.SimpleMessage> {
+    return this.client.serverStreaming(
+      this.hostname + "/simple_service.SimpleService/ServerStreamMethod",
+      request,
+      metadata ?? {},
+      SimpleServiceDefinition.ServerStreamMethod
     );
   }
 }

@@ -4,6 +4,7 @@ package simple_service;
 
 service SimpleService {
   rpc UnaryMethod(SimpleMessage) returns (SimpleMessage);
+  rpc ServerStreamMethod(SimpleMessage) returns (stream SimpleMessage);
 }
 
 message SimpleMessage {

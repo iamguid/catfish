@@ -74,7 +74,7 @@ export const clientStubClassMethodTemplate: ClientStubClassMethodTemplate = (ren
   ${ctx.method.name}(
     request: ${ctx.method.requestTypeInfo.fullType},
     metadata: grpc.Metadata | null,
-  ): Promise<${ctx.method.responseTypeInfo.fullType}> {
+  ): ${ctx.method.serverStreaming ? `grpc.ClientReadableStream<${ctx.method.responseTypeInfo.fullType}>` : `Promise<${ctx.method.responseTypeInfo.fullType}>`} {
     return this.client.${ctx.method.serverStreaming ? 'serverStreaming' : 'unaryCall'}(
       this.hostname + "${ctx.method.path}",
       request,
