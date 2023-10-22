@@ -18,10 +18,10 @@
   "devDependencies": {
     "@types/prettier": "2.7.3",
     "glob": "^10.3.10",
+    "grpc-web": "1.4.2",
     "long": "5.2.3",
     "prettier": "2.8.8",
     "protobufjs": "7.2.5",
-    "xhr-mock": "2.5.1",
-    "grpc-web": "1.4.2"
+    "xhr-mock": "2.5.1"
   }
 }
