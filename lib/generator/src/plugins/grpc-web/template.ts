@@ -39,8 +39,8 @@ export const serviceDefinitionTemplate: ServiceDefinitionTemplate = (render, opt
         ${render('methodStreamType', { method })},
         ${method.requestTypeInfo.fullType},
         ${method.responseTypeInfo.fullType},
-        (message: ${method.requestTypeInfo.fullType}) => ${method.requestTypeInfo.fullType}.serialize(message),
-        (bytes: ${method.responseTypeInfo.fullType}) => ${method.responseTypeInfo.fullType}.deserialize(bytes),
+        (message: ${method.requestTypeInfo.fullType}) => message.serialize(),
+        (bytes: Uint8Array) => new ${method.responseTypeInfo.fullType}().deserialize(bytes),
       ),`
     }).join('\n')}
   } as const
@@ -51,21 +51,19 @@ export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, c
     private readonly client: grpc.AbstractClientBase;
     private readonly hostname: string;
     private readonly credentials?: null | { [index: string]: string; };
-    private readonly options?: null | { [index: string]: any; };
+    private readonly options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any; };
 
-    constructor (
+    constructor(
       hostname: string,
       credentials?: null | { [index: string]: string; },
-      options?: null | { [index: string]: any; },
+      options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any; },
+      client: (new (options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any; }) => grpc.AbstractClientBase) = grpc.GrpcWebClientBase,
     ) {
-      if (!options) options = {};
-      if (!credentials) credentials = {};
-      options['format'] = 'text';
-  
-      this.client = new grpc.GrpcWebClientBase(options);
       this.hostname = hostname.replace(/\\/+$/, '');
-      this.credentials = credentials;
-      this.options = options;
+      this.credentials = credentials ?? {};
+      this.options = options ?? {};
+      this.options['format'] = 'text';
+      this.client = new client(this.options);
     }
 
     ${ctx.service.methods.map(method => render('clientStubClassMethod', { method, service: ctx.service })).join('\n')}
@@ -76,8 +74,13 @@ export const clientStubClassMethodTemplate: ClientStubClassMethodTemplate = (ren
   ${ctx.method.name}(
     request: ${ctx.method.requestTypeInfo.fullType},
     metadata: grpc.Metadata | null,
-  ): grpc.ClientReadableStream<${ctx.method.responseTypeInfo.fullType}> {
-    return this.client.${ctx.method.serverStreaming ? 'serverStreaming' : 'rpcCall'}(this.hostname + "${ctx.method.path}", request, metadata || {}, ${ctx.service.serviceDefinitionName}.${ctx.method.name});
+  ): Promise<${ctx.method.responseTypeInfo.fullType}> {
+    return this.client.${ctx.method.serverStreaming ? 'serverStreaming' : 'unaryCall'}(
+      this.hostname + "${ctx.method.path}",
+      request,
+      metadata ?? {},
+      ${ctx.service.serviceDefinitionName}.${ctx.method.name},
+    );
   }
 `;
 

@@ -76,7 +76,7 @@ export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescrip
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getFullImportPath(ctx, file, typeInfo.descriptor, 'models', true) : null;
+    const fullType = typeInfo.descriptor ? getFullImportPath(ctx, file, typeInfo.descriptor, 'models', false) : null;
 
     return {
         desc: typeInfo.descriptor ?? null,

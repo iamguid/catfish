@@ -13,14 +13,15 @@
   },
   "dependencies": {
     "@catfish/parser": "*",
-    "@catfish/runtime": "*",
-    "grpc-web": "1.4.2"
+    "@catfish/runtime": "*"
   },
   "devDependencies": {
     "@types/prettier": "2.7.3",
-    "prettier": "2.8.8",
     "glob": "^10.3.10",
     "long": "5.2.3",
-    "protobufjs": "7.2.5"
+    "prettier": "2.8.8",
+    "protobufjs": "7.2.5",
+    "xhr-mock": "2.5.1",
+    "grpc-web": "1.4.2"
   }
 }

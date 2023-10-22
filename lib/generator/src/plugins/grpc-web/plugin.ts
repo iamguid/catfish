@@ -3,10 +3,7 @@ import { replaceProtoSuffix } from '../../utils';
 import { PluginContext, buildPluginContext } from './context';
 import { PluginTemplatesRegistry, buildTemplates, pluginTemplatesRegistry } from './templates';
 
-export interface PluginOptions {
-    generateClientsStubs?: boolean,
-    generateServerStubs?: boolean,
-}
+export interface PluginOptions {}
 
 export const plugin: Plugin<PluginContext, PluginOptions, PluginTemplatesRegistry> = (projectContext, projectOptions, pluginOptions, pluginTemplates, pluginContextBuilder) => {
     const result: PluginOutputFile[] = []

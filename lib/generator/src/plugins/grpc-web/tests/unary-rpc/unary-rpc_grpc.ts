@@ -17,10 +17,11 @@ export const SimpleServiceDefinition = {
   UnaryMethod: new grpc.MethodDescriptor(
     "/simple_service.SimpleService/UnaryMethod",
     grpc.MethodType.UNARY,
-    SimpleMessage,
-    SimpleMessage,
-    (message: SimpleMessage) => SimpleMessage.serialize(message),
-    (bytes: SimpleMessage) => SimpleMessage.deserialize(bytes)
+    unary_rpc_models.SimpleMessage,
+    unary_rpc_models.SimpleMessage,
+    (message: unary_rpc_models.SimpleMessage) => message.serialize(),
+    (bytes: Uint8Array) =>
+      new unary_rpc_models.SimpleMessage().deserialize(bytes)
   ),
 } as const;
 
@@ -28,31 +29,34 @@ export class SimpleServiceClient {
   private readonly client: grpc.AbstractClientBase;
   private readonly hostname: string;
   private readonly credentials?: null | { [index: string]: string };
-  private readonly options?: null | { [index: string]: any };
+  private readonly options?:
+    | null
+    | grpc.GrpcWebClientBaseOptions
+    | { [index: string]: any };
 
   constructor(
     hostname: string,
     credentials?: null | { [index: string]: string },
-    options?: null | { [index: string]: any }
+    options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any },
+    client: new (
+      options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any }
+    ) => grpc.AbstractClientBase = grpc.GrpcWebClientBase
   ) {
-    if (!options) options = {};
-    if (!credentials) credentials = {};
-    options["format"] = "text";
-
-    this.client = new grpc.GrpcWebClientBase(options);
     this.hostname = hostname.replace(/\/+$/, "");
-    this.credentials = credentials;
-    this.options = options;
+    this.credentials = credentials ?? {};
+    this.options = options ?? {};
+    this.options["format"] = "text";
+    this.client = new client(this.options);
   }
 
   UnaryMethod(
-    request: SimpleMessage,
+    request: unary_rpc_models.SimpleMessage,
     metadata: grpc.Metadata | null
-  ): grpc.ClientReadableStream<SimpleMessage> {
-    return this.client.rpcCall(
+  ): Promise<unary_rpc_models.SimpleMessage> {
+    return this.client.unaryCall(
       this.hostname + "/simple_service.SimpleService/UnaryMethod",
       request,
-      metadata || {},
+      metadata ?? {},
       SimpleServiceDefinition.UnaryMethod
     );
   }
