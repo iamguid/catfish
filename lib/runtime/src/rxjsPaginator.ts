@@ -1,26 +1,72 @@
-import * as rxjs from 'rxjs';
+import { Observable, BehaviorSubject, Subject, combineLatestWith, switchMap, mergeScan, startWith, of } from 'rxjs';
 
-export type DataFetcher<TData, TParameters> = (filterParameters: TParameters, itemsPerPage: number) => (source$: Observable<number>) => Observable<TData[]>;
+export type DataFetcher<TParameters, TResponse> = (itemsPerPage: number, pageToken: string, parameters: TParameters) => (source$: Observable<number>) => Observable<TResponse>;
 
-export const createPaginator = <TData, TParameters>(
-    destroy$: rxjs.Observable<void>,
-    parameters$: rxjs.Subject<TParameters>,
-    nextPage$: rxjs.Subject<void>,
-    reset$: rxjs.Subject<void>,
-    fetcher: DataFetcher<TData, TParameters>,
-    itemsPerPage: number
-): rxjs.Observable<PaginatorData<TData>> => {
-    const onNextPage$: Observable<PaginatorEvent> = nextPage$.pipe(
-        skip(1), // Fix bug with double loading (because initially onNextPage$ fired after onReset$, because they are BehaviourSubjects)
-        switchMap(() => concat(of(PaginatorEvent.ChunkLoading), of(PaginatorEvent.NextPage)))
-    );
+export enum PaginatorState {
+    INITIAL,
+    LAODING,
+    IDLE,
+}
 
-    const onReset$: Observable<PaginatorEvent> = reset$.pipe(
-        switchMap(() => concat(of(PaginatorEvent.Reset), of(PaginatorEvent.NextPage)))
-    );
+export enum PaginatorAction {
+    LOAD_NEXT,
+    RESET,
+}
+
+export interface PaginatorData<TData> {
+    state: PaginatorState
+    data: TData[]
+    hasMore: boolean
+}
+
+export const createPaginator = <TData, TParameters, TResponse>(
+    itemsPerPage: number,
+    fetcher: DataFetcher<TResponse, TParameters>,
+    nextPageTokenGetter: (resp: TResponse) => string,
+    dataGetter: (resp: TResponse) => TData[],
+    parameters$: Observable<TParameters>,
+    nextPage$: Observable<void>,
+    reset$: Observable<void>,
+): Observable<PaginatorData<TData>> => {
+    const state$ = new BehaviorSubject<PaginatorState>(PaginatorState.INITIAL);
+    const events$ = merge(parameters$.pipe(map(params => { type: })), )
+    const pageToken$ = new Subject<string>();
+
+    return state$.pipe(
+        combineLatestWith(parameters$),
+        combineLatestWith(pageToken$.pipe(startWith(''))),
+        switchMap(([[state, parameters], pageToken]) => {
+            return events$.pipe(
+                mergeScan((acc, current) => {
+                    if (state === PaginatorState.INITIAL) {
+                        return fetcher(parameters, pageToken, itemsPerPage)
+                            .pipe(
+                                map((resp) =>
+                            )
+                        )
+                    }
+
+                    if (acc.hasMore) {
+                        of({ state, data: [], hasMore: true, currentPageToken: '', nextPageToken: '' });
+                        return of(acc.page).pipe(
+                            fetcher(parameters, itemsPerPage),
+                            map((data) =>
+                                new PaginatorData<TData>(acc.data.concat(data), false, acc.page, data.length === itemsPerPage)
+                            )
+                        );
+                    }
+                }, {
+                    state,
+                    data: [],
+                    hasMore: true,
+                    currentPageToken: '',
+                    nextPageToken: ''
+                })
+            )
+        })
+    )
 
     return parameters$.pipe(
-        filter(parameters => parameters !== null),
         switchMap(parameters => {
             return merge(onReset$, onNextPage$).pipe(
                 mergeScan((acc, current) => {
