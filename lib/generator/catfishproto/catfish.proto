@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package catfish;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.MessageOptions {
+    optional bool msg_pagination_request = 66000;
+}
+
+extend google.protobuf.MessageOptions {
+    optional bool msg_pagination_response = 66001;
+}
+
+extend google.protobuf.FieldOptions  {
+    optional bool fld_next_page_token = 66002;
+}
+
+extend google.protobuf.FieldOptions  {
+    optional bool fld_page_result = 66003;
+}
+
+extend google.protobuf.FieldOptions  {
+    optional bool fld_page_token = 66004;
+}
+
+extend google.protobuf.FieldOptions  {
+    optional bool fld_page_size = 66005;
+}

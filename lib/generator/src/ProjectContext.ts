@@ -4,7 +4,7 @@ import path from 'node:path';
 import { BaseDescriptor, FileDescriptor, parse } from "@catfish/parser"
 import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
-import { wellKnownTypesToProtoFilesMap } from './wellKnownTypes';
+import { catfishWellKnownTypesToProtoFilesMap, googleWellKnownTypesToProtoFilesMap } from './wellKnownTypes';
 
 export interface Import {
     name: string
@@ -32,10 +32,16 @@ export class ProjectContext {
     // TODO: Make async
     load() {
         // Load protobuf well known types
-        for (const [googlePath, realPath] of Object.entries(wellKnownTypesToProtoFilesMap)) {
+        for (const [googlePath, realPath] of Object.entries(googleWellKnownTypesToProtoFilesMap)) {
             const parsed = parse(fs.readFileSync(realPath, 'utf8'));
             this.protoFiles.set(googlePath, parsed);
         }
+
+        // // Load catfish well known types
+        // for (const [catfishPath, realPath] of Object.entries(catfishWellKnownTypesToProtoFilesMap)) {
+        //     const parsed = parse(fs.readFileSync(realPath, 'utf8'));
+        //     this.protoFiles.set(catfishPath, parsed);
+        // }
 
         // Load project files
         walkByFiles({
@@ -94,7 +100,7 @@ export class ProjectContext {
         } else {
             return files.filter(f => {
                 const filePath = this.getProtoFilePath(f)
-                return !(filePath in wellKnownTypesToProtoFilesMap)
+                return !(filePath in googleWellKnownTypesToProtoFilesMap)
             })
         }
     }

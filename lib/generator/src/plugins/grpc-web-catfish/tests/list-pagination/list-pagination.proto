@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package simple_service;
+
+service BooksService {
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+}
+
+message Book {
+  string name = 1;
+  map<string, string> labels = 2;
+}
+
+message ListBooksRequest {
+  option catfish.msg_pagination_request = true;
+  string parent = 1;
+  int32 page_size = 2 [catfish.fld_page_size = true];
+  string page_token = 3 [catfish.fld_page_token = true];
+}
+
+message ListBooksResponse {
+  option catfish.msg_pagination_response = true;
+  repeated Book books = 1 [catfish.fld_page_result = true];
+  string next_page_token = 2 [catfish.fld_next_page_token = true];
+}
