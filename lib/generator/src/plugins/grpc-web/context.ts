@@ -1,4 +1,4 @@
-import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor } from "@catfish/parser";
+import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor, Options } from "@catfish/parser";
 import { Import, ProjectContext, TypeInfo } from "../../ProjectContext";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
@@ -9,6 +9,7 @@ export interface PluginContext {
 }
 
 export interface FileContext {
+    options: Options[]
     imports: Import[]
     services: ServiceContext[]
     filePath: string
@@ -16,6 +17,7 @@ export interface FileContext {
 }
 
 export interface ServiceContext {
+    options: Options[]
     serviceRawFullname: string
     serviceDefinitionName: string
     clientClassName: string
@@ -23,6 +25,7 @@ export interface ServiceContext {
 }
 
 export interface ServiceMethodContext {
+    options: Options[]
     name: string
     path: string
     clientStreaming: boolean
@@ -47,6 +50,7 @@ export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectO
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
     return {
+        options: file.options,
         imports: getImports(ctx, file, 'models', true),
         services: file.services.map(s => buildServiceContext(ctx, file, s)),
         filePath: ctx.getProtoFilePath(file),
@@ -56,6 +60,7 @@ export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): Fil
 
 export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, desc: ServiceDescriptor): ServiceContext => {
     return {
+        options: file.options,
         serviceRawFullname: desc.fullname,
         serviceDefinitionName: `${upperCaseFirst(snakeToCamel(desc.name))}Definition`,
         clientClassName: `${upperCaseFirst(snakeToCamel(desc.name))}Client`,
@@ -65,6 +70,7 @@ export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, d
 
 export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescriptor, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): ServiceMethodContext => {
     return {
+        options: file.options,
         name: snakeToCamel(methodDesc.name),
         path: `/${serviceDesc.fullpath}/${methodDesc.name}`,
         clientStreaming: methodDesc.isClientStreaming,

@@ -1,4 +1,4 @@
-import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor } from "@catfish/parser";
+import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, Options } from "@catfish/parser";
 import { ProjectContext, Import, TypeInfo } from "../../ProjectContext";
 import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getTag } from "./utils";
 import { filePathToPseudoNamespace, getFullImportPath, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
@@ -12,6 +12,7 @@ export interface PluginContext {
 }
 
 export interface FileContext {
+    options: Options[],
     imports: Import[]
     enums: EnumContext[]
     messages: MessageContext[]
@@ -25,11 +26,13 @@ export interface EnumContext {
 }
 
 export interface EnumFieldContext {
+    options: Options[],
     name: string
     value: number
 }
 
 export interface MessageContext {
+    options: Options[],
     fields: (MapFieldContext | MessageFieldContext | OneofContext)[]
     enums: EnumContext[]
     messages: MessageContext[]
@@ -38,6 +41,7 @@ export interface MessageContext {
 }
 
 export interface MessageFieldContext {
+    options: Options[],
     type: "MessageField"
     typeInfo: TypeInfoContext
     rawName: string
@@ -49,6 +53,7 @@ export interface MessageFieldContext {
 }
 
 export interface MapFieldContext {
+    options: Options[],
     type: "MapField"
     keyTypeInfo: TypeInfoContext
     valueTypeInfo: TypeInfoContext
@@ -91,6 +96,7 @@ export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectO
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
     return {
+        options: file.options,
         imports: getImports(ctx, file, 'models', false),
         enums: file.enums.map(enm => buildEnumContext(ctx, file, enm)),
         messages: file.messages.map(msg => buildMessageContext(ctx, file, msg)),
@@ -108,6 +114,7 @@ export const buildEnumContext = (ctx: ProjectContext, file: FileDescriptor, desc
 
 export const buildEnumFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: EnumFieldDescriptor): EnumFieldContext => {
     return {
+        options: desc.options,
         name: desc.fieldName,
         value: desc.fieldValue,
     }
@@ -115,6 +122,7 @@ export const buildEnumFieldContext = (ctx: ProjectContext, file: FileDescriptor,
 
 export const buildMessageContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageDescriptor): MessageContext => {
     return {
+        options: desc.options,
         className: desc.name,
         jsonIfaceName: `${desc.name}JSON`,
         fields: desc.fields.map(f => buildFieldContext(ctx, file, f)),
@@ -129,6 +137,7 @@ export const buildMessageFieldContext = (ctx: ProjectContext, file: FileDescript
 
     return {
         type: "MessageField",
+        options: desc.options,
         typeInfo: buildTypeInfoContext(ctx, file, desc.type),
         rawName: desc.name,
         name: snakeToCamel(desc.name),
@@ -155,6 +164,7 @@ export const buildMapFieldContext = (ctx: ProjectContext, file: FileDescriptor, 
 
     return {
         type: "MapField",
+        options: desc.options,
         keyTypeInfo,
         valueTypeInfo,
         encodeMethodName: `encode${upperCaseFirst(snakeToCamel(desc.name))}`,

@@ -1,4 +1,4 @@
-import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor } from "@catfish/parser";
+import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor, Options } from "@catfish/parser";
 import { Import, ProjectContext, TypeInfo } from "../../ProjectContext";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
@@ -9,6 +9,7 @@ export interface PluginContext {
 }
 
 export interface FileContext {
+    options: Options[],
     imports: Import[]
     services: ServiceContext[]
     filePath: string
@@ -16,6 +17,7 @@ export interface FileContext {
 }
 
 export interface ServiceContext {
+    options: Options[],
     serviceRawFullname: string
     rxjsClientClassName: string
     grpcClientFullName: string
@@ -23,6 +25,7 @@ export interface ServiceContext {
 }
 
 export interface ServiceMethodContext {
+    options: Options[],
     name: string
     clientStreaming: boolean
     serverStreaming: boolean
@@ -46,6 +49,7 @@ export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectO
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
     return {
+        options: file.options,
         imports: [...getImports(ctx, file, 'models', true), ...getImports(ctx, file, 'grpc', true)],
         services: file.services.map(s => buildServiceContext(ctx, file, s)),
         filePath: ctx.getProtoFilePath(file),
@@ -55,6 +59,7 @@ export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): Fil
 
 export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, desc: ServiceDescriptor): ServiceContext => {
     return {
+        options: desc.options,
         serviceRawFullname: desc.fullname,
         rxjsClientClassName: `${upperCaseFirst(snakeToCamel(desc.name))}RxjsClient`,
         grpcClientFullName: getGrpcClientFullImportPath(ctx, file, `${upperCaseFirst(snakeToCamel(desc.name))}Client`, 'grpc'),
@@ -64,6 +69,7 @@ export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, d
 
 export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescriptor, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): ServiceMethodContext => {
     return {
+        options: methodDesc.options,
         name: snakeToCamel(methodDesc.name),
         clientStreaming: methodDesc.isClientStreaming,
         serverStreaming: methodDesc.isServerStreaming,
