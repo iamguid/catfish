@@ -5,7 +5,7 @@
 // DO NOT EDIT!
 //
 // package: simple_service
-// file: unary-rpc.proto
+// file: simple-rpc.proto
 
 import * as pjs from "protobufjs/minimal";
 import * as runtime from "@catfish/runtime";

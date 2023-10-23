@@ -1,7 +1,7 @@
 import xhrmock from "xhr-mock";
-import { SimpleServiceClient, SimpleServiceDefinition } from "./unary-rpc_grpc";
-import { SimpleMessage } from "./unary-rpc_models";
-import { collectClientReadableStream, createGrpcResponseBody } from "../utils";
+import { SimpleServiceClient, SimpleServiceDefinition } from "./simple-rpc_grpc";
+import { SimpleMessage } from "./simple-rpc_models";
+import { collectClientReadableStream, createGrpcResponseBody } from "../../../../../tests/GrpcWebTestUtils";
 
 describe("Unary RPC service", () => {
     beforeEach(() => xhrmock.setup());
@@ -14,11 +14,10 @@ describe("Unary RPC service", () => {
         const responseMessage = new SimpleMessage();
         responseMessage.fInt32 = 43;
         
-        xhrmock.post(SimpleServiceDefinition.UnaryMethod.getName(), (req, res) => {
-            return res
-              .headers({ 'content-type': 'application/grpc' })
-              .status(200)
-              .body(createGrpcResponseBody(responseMessage, {'grpc-status': '0', 'grpc-message': ''}));
+        xhrmock.post(SimpleServiceDefinition.UnaryMethod.getName(), {
+            headers: { 'content-type': 'application/grpc' },
+            status: 200,
+            body: createGrpcResponseBody(responseMessage, {'grpc-status': '0', 'grpc-message': 'test'}),
         })
 
         const client = new SimpleServiceClient('');
@@ -36,7 +35,7 @@ describe("Unary RPC service", () => {
         xhrmock.post(SimpleServiceDefinition.ServerStreamMethod.getName(), {
             headers: { 'content-type': 'application/grpc' },
             status: 200,
-            body: createGrpcResponseBody(responseMessage, {'grpc-status': '0', 'grpc-message': ''}),
+            body: createGrpcResponseBody(responseMessage, {'grpc-status': '0', 'grpc-message': 'test'}),
         })
 
         const client = new SimpleServiceClient('');

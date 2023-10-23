@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package simple_service;
+
+service SimpleService {
+  rpc UnaryMethod(SimpleMessage) returns (SimpleMessage);
+  rpc ServerStreamMethod(SimpleMessage) returns (stream SimpleMessage);
+}
+
+message SimpleMessage {
+  int32 f_int32 = 1;
+}
