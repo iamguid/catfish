@@ -45,7 +45,7 @@ export class ProjectContext {
                 if (path.extname(filePath) === '.proto') {
                     try {
                         const parsed = parse(fs.readFileSync(path.join(this.config.protoDirPath, filePath), 'utf8'));
-                        this.protoFiles.set(filePath, parsed);
+                        this.protoFiles.set(path.normalize(filePath).split(path.sep).join('/'), parsed);
                     } catch (e) {
                         console.error(`Cannot parse file ${filePath}, ${(e as Error).message}`)
                     }

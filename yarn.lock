@@ -2021,11 +2021,6 @@ minimatch@^9.0.1:
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.0.4.tgz#dbce03740f50a4786ba994c1fb908844d27b038c"
   integrity sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==
 
-mock-xmlhttprequest@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/mock-xmlhttprequest/-/mock-xmlhttprequest-8.2.0.tgz#d9ad9ca82265bcbe2eea5354f556448a2bc0133c"
-  integrity sha512-agEokniRxw/MhrmIl9Ytn5wuj6kK+pu4KaGPV2fGEKStHXH9HIzYPChth2Jb/MB3TMX0ER1F1QMsvMA3BBe3qA==
-
 ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
