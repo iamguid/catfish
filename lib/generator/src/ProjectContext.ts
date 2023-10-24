@@ -5,6 +5,7 @@ import { BaseDescriptor, FileDescriptor, parse } from "@catfish/parser"
 import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
 import { catfishWellKnownTypesToProtoFilesMap, googleWellKnownTypesToProtoFilesMap } from './wellKnownTypes';
+import { ResolversGroup } from './Resolver';
 
 export interface Import {
     name: string
@@ -25,9 +26,10 @@ export class ProjectContext {
     private readonly protoFiles = new Map<string, FileDescriptor>; // key - relative path to proto file
     private readonly filesPaths = new Map<FileDescriptor, string>; // value - relative path to proto file
     private readonly dependencies = new Map<FileDescriptor, Dependency[]>;
+
+    public readonly resolver = new ResolversGroup('root');
     
-    constructor(private readonly config: ProjectOptions) {
-    }
+    constructor(private readonly config: ProjectOptions) {}
 
     // TODO: Make async
     load() {

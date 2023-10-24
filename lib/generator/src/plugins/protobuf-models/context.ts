@@ -4,6 +4,7 @@ import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, ge
 import { filePathToPseudoNamespace, getDescriptorFullImportName, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
+import { ResolversGroup } from "../../Resolver";
 
 export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
 
@@ -123,8 +124,8 @@ export const buildEnumFieldContext = (ctx: ProjectContext, file: FileDescriptor,
 export const buildMessageContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageDescriptor): MessageContext => {
     return {
         options: desc.options,
-        className: desc.name,
-        jsonIfaceName: `${desc.name}JSON`,
+        className: ctx.resolver.register(`root@model@class@${desc.fullname}`, desc),
+        jsonIfaceName: ctx.resolver.register(`root@model@json-iface@${desc.fullname}`, desc),
         fields: desc.fields.map(f => buildFieldContext(ctx, file, f)),
         enums: desc.enums.map(e => buildEnumContext(ctx, file, e)),
         messages: desc.messages.map(m => buildMessageContext(ctx, file, m)),
@@ -153,8 +154,8 @@ export const buildOneofContext = (ctx: ProjectContext, file: FileDescriptor, des
         type: "Oneof",
         fields: desc.fields.map(f => buildMessageFieldContext(ctx, file, f)),
         name: snakeToCamel(desc.name),
-        tsTypeName: `${snakeToCamel(filePathToPseudoNamespace(desc.fullname))}Type`,
-        jsonTypeName: `${snakeToCamel(filePathToPseudoNamespace(desc.fullname))}JSONType`,
+        tsTypeName: `${snakeToCamel(filePathToPseudoNamespace(desc.fullname))}Type`, // !!!
+        jsonTypeName: `${snakeToCamel(filePathToPseudoNamespace(desc.fullname))}JSONType`, // !!!
     }
 }
 
