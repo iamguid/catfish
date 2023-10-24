@@ -17,14 +17,6 @@ import * as grpc from "grpc-web";
 
 // #region BooksService
 export class BooksServiceRxjsClient extends list_pagination_grpc.BooksServiceClient {
-  constructor(
-    hostname: string,
-    credentials?: null | { [index: string]: string },
-    options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any }
-  ) {
-    super(hostname, credentials, options);
-  }
-
   ListBooks(
     request: list_pagination_models.ListBooksRequest,
     metadata: grpc.Metadata | null

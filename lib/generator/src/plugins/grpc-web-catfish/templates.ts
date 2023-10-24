@@ -1,23 +1,35 @@
 import { TemplateFn, TemplatesRenderer } from "../../Templates";
 import { headerTemplate } from "../../templates/header.template";
 import { importsTemplate } from "../../templates/imports.template";
-import { FileContext } from "./context";
+import { FileContext, ServiceContext, ServiceMethodContext } from "./context";
 import { PluginOptions } from "./plugin";
-import { mainTemplate } from "./template";
+import { extensionsTemplate, grpcBasedExtensionsTemplate, mainTemplate, rxjsBasedExtensionsTemplate, rxjsBasedPaginationExtensionTemplate } from "./template";
 
 export type PluginTamplateFn<TCtx> = TemplateFn<PluginTemplatesRegistry, PluginOptions, TCtx>
 export type MainTemplate = PluginTamplateFn<{ file: FileContext }>
+export type ExtensionsTemplate = PluginTamplateFn<{ file: FileContext }>
+export type RxjsBasedExtensionsTemplate = PluginTamplateFn<{ service: ServiceContext }>
+export type RxjsBasedPaginationExtensionTemplate = PluginTamplateFn<{ service: ServiceContext, method: ServiceMethodContext }>
+export type GrpcBasedExtensionsTemplate = PluginTamplateFn<{ service: ServiceContext }>
 
 export type PluginTemplatesRegistry = {
   main: MainTemplate,
   header: typeof headerTemplate,
   imports: typeof importsTemplate,
+  extensions: ExtensionsTemplate,
+  rxjsBasedExtensions: RxjsBasedExtensionsTemplate,
+  rxjsBasedPaginationExtension: RxjsBasedPaginationExtensionTemplate,
+  grpcBasedExtensions: GrpcBasedExtensionsTemplate,
 }
 
 export const pluginTemplatesRegistry: PluginTemplatesRegistry = {
   main: mainTemplate,
   header: headerTemplate,
   imports: importsTemplate,
+  extensions: extensionsTemplate,
+  rxjsBasedExtensions: rxjsBasedExtensionsTemplate,
+  rxjsBasedPaginationExtension: rxjsBasedPaginationExtensionTemplate,
+  grpcBasedExtensions: grpcBasedExtensionsTemplate,
 }
 
 export const buildTemplates = <TTemplatesRegistry extends PluginTemplatesRegistry>(opts: PluginOptions, registry: TTemplatesRegistry) => {

@@ -101,10 +101,6 @@ export type ExtendedPluginContext = ProtobufModelsPlugin.context.PluginContext &
   files: ExtendedFileContext[]
 }
 
-export type ExtendedProjectContext = ProjectContext & {
-  messages: ExtendedMessageContext[]
-}
-
 export type ExtendedFileContext = FileContext & {
   messages: ExtendedMessageContext[]
 }

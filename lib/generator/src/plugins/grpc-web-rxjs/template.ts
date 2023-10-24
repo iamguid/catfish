@@ -32,15 +32,7 @@ export const servicesTemplate: ServicesTemplate = (render, opts, ctx) => {
 }
 
 export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, ctx) => `
-  export class ${ctx.service.rxjsClientClassName} extends ${ctx.service.grpcClientFullName} {
-    constructor(
-      hostname: string,
-      credentials?: null | { [index: string]: string; },
-      options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any; },
-    ) {
-      super(hostname, credentials, options)
-    }
-
+  export class ${ctx.service.rxjsClientClassName} extends ${ctx.service.grpcClientFullImportName} {
     ${ctx.service.methods.map(method => method.serverStreaming 
       ? render('clientStubClassServerStreamingMethod', { method, service: ctx.service }) 
       : render('clientStubClassUnaryMethod', { method, service: ctx.service })).join('\n')}

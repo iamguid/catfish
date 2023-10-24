@@ -2,6 +2,9 @@ import * as pjs from "protobufjs/minimal";
 import * as rxjs from "rxjs";
 import grpc from "grpc-web";
 
+export * as asyncPaginator from "./asyncPaginator";
+export * as rxjsPaginator from "./rxjsPaginator";
+
 export const convertRecordToMap = <TKey extends string | number, TInputVal, TOutputVal>(
     input: Record<TKey, TInputVal>,
     converter: (val: TInputVal) => TOutputVal

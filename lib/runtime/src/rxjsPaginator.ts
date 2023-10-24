@@ -1,105 +1,66 @@
-import { Observable, BehaviorSubject, Subject, combineLatestWith, switchMap, mergeScan, startWith, of } from 'rxjs';
+import { Observable, combineLatestWith, switchMap, mergeScan, concat, of, map, merge } from 'rxjs';
 
-export type DataFetcher<TParameters, TResponse> = (itemsPerPage: number, pageToken: string, parameters: TParameters) => (source$: Observable<number>) => Observable<TResponse>;
-
-export enum PaginatorState {
-    INITIAL,
-    LAODING,
-    IDLE,
-}
+export type DataFetcher<TParameters, TResponse> = (itemsPerPage: number, pageToken: string, parameters: TParameters) => Observable<TResponse>;
 
 export enum PaginatorAction {
+    CHANGE_PARAMETERS,
     LOAD_NEXT,
     RESET,
 }
 
 export interface PaginatorData<TData> {
-    state: PaginatorState
     data: TData[]
     hasMore: boolean
+    nextPageToken: string
 }
 
 export const createPaginator = <TData, TParameters, TResponse>(
     itemsPerPage: number,
-    fetcher: DataFetcher<TResponse, TParameters>,
+    fetcher: DataFetcher<TParameters, TResponse>,
     nextPageTokenGetter: (resp: TResponse) => string,
     dataGetter: (resp: TResponse) => TData[],
     parameters$: Observable<TParameters>,
     nextPage$: Observable<void>,
-    reset$: Observable<void>,
+    reload$: Observable<void>,
 ): Observable<PaginatorData<TData>> => {
-    const state$ = new BehaviorSubject<PaginatorState>(PaginatorState.INITIAL);
-    const events$ = merge(parameters$.pipe(map(params => { type: })), )
-    const pageToken$ = new Subject<string>();
+    const parametersChangedAction$ = parameters$.pipe(switchMap(() => concat(of(PaginatorAction.CHANGE_PARAMETERS), of(PaginatorAction.LOAD_NEXT) )))
+    const nextPageAction$ = nextPage$.pipe(map(() => PaginatorAction.LOAD_NEXT ))
+    const reloadAction$ = reload$.pipe(switchMap(() => concat(of(PaginatorAction.RESET), of(PaginatorAction.LOAD_NEXT) )));
+    const actions$ = merge(parametersChangedAction$, nextPageAction$, reloadAction$);
 
-    return state$.pipe(
+    const intitialContext: PaginatorData<TData> = {
+        data: [],
+        hasMore: true,
+        nextPageToken: '',
+    }
+
+    return actions$.pipe(
         combineLatestWith(parameters$),
-        combineLatestWith(pageToken$.pipe(startWith(''))),
-        switchMap(([[state, parameters], pageToken]) => {
-            return events$.pipe(
-                mergeScan((acc, current) => {
-                    if (state === PaginatorState.INITIAL) {
-                        return fetcher(parameters, pageToken, itemsPerPage)
-                            .pipe(
-                                map((resp) =>
-                            )
-                        )
-                    }
+        mergeScan((context, [action, parameters]) => {
+            if (action === PaginatorAction.CHANGE_PARAMETERS || action === PaginatorAction.RESET) {
+                return of(intitialContext)
+            }
 
-                    if (acc.hasMore) {
-                        of({ state, data: [], hasMore: true, currentPageToken: '', nextPageToken: '' });
-                        return of(acc.page).pipe(
-                            fetcher(parameters, itemsPerPage),
-                            map((data) =>
-                                new PaginatorData<TData>(acc.data.concat(data), false, acc.page, data.length === itemsPerPage)
-                            )
-                        );
-                    }
-                }, {
-                    state,
-                    data: [],
-                    hasMore: true,
-                    currentPageToken: '',
-                    nextPageToken: ''
-                })
-            )
-        })
+            if (action === PaginatorAction.LOAD_NEXT && context.hasMore) {
+                return fetcher(itemsPerPage, context.nextPageToken, parameters).pipe(
+                    map((response) => {
+                        const data = dataGetter(response);
+                        const nextPageToken = nextPageTokenGetter(response);
+
+                        return {
+                            data,
+                            nextPageToken,
+                            hasMore: data.length >= itemsPerPage,
+                        }
+                    })
+                )
+            }
+
+            return of({
+                data: [],
+                nextPageToken: '',
+                hasMore: false,
+            })
+        }, intitialContext, 1)
     )
-
-    return parameters$.pipe(
-        switchMap(parameters => {
-            return merge(onReset$, onNextPage$).pipe(
-                mergeScan((acc, current) => {
-                    // no more items
-                    if (!acc.hasMore && (current === PaginatorEvent.ChunkLoading || current === PaginatorEvent.NextPage)) {
-                        return of(acc);
-                    }
-                    // sets the state and clean up the data
-                    else if (current === PaginatorEvent.Reset) {
-                        return of(new PaginatorData<TData>([], true, 0, true));
-                    }
-                    // sets the state only
-                    else if (current === PaginatorEvent.ChunkLoading) {
-                        return of(new PaginatorData<TData>(acc.data, true, acc.page + 1, acc.hasMore));
-                    }
-                    // requests a data and concat it
-                    else if (current === PaginatorEvent.NextPage) {
-                        return of(acc.page).pipe(
-                            fetcher(parameters, itemsPerPage),
-                            map((data) =>
-                                new PaginatorData<TData>(acc.data.concat(data), false, acc.page, data.length === itemsPerPage)
-                            )
-                        );
-                    }
-                    else {
-                        return of(acc);
-                    }
-                },
-                new PaginatorData<TData>([], false, -1, true),
-                1)
-            );
-        }),
-        rxjs.takeUntil(destroy$),
-        rxjs.shareReplay({ refCount: true }),
-    );
-};
+}

@@ -17,14 +17,6 @@ import * as grpc from "grpc-web";
 
 // #region SimpleService
 export class SimpleServiceRxjsClient extends simple_rpc_grpc.SimpleServiceClient {
-  constructor(
-    hostname: string,
-    credentials?: null | { [index: string]: string },
-    options?: null | grpc.GrpcWebClientBaseOptions | { [index: string]: any }
-  ) {
-    super(hostname, credentials, options);
-  }
-
   UnaryMethod(
     request: simple_rpc_models.SimpleMessage,
     metadata: grpc.Metadata | null

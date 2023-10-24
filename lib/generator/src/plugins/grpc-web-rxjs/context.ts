@@ -1,8 +1,8 @@
-import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor, Options } from "@catfish/parser";
-import { Import, ProjectContext, TypeInfo } from "../../ProjectContext";
+import { FileDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor, Options } from "@catfish/parser";
+import { Import, ProjectContext } from "../../ProjectContext";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
-import { filePathToPseudoNamespace, getFullImportPath, getImports, replaceProtoSuffix, snakeToCamel, upperCaseFirst } from "../../utils";
+import { getDescriptorFullImportName, getImports, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
 
 export interface PluginContext {
     files: FileContext[]
@@ -20,7 +20,7 @@ export interface ServiceContext {
     options: Options[],
     serviceRawFullname: string
     rxjsClientClassName: string
-    grpcClientFullName: string
+    grpcClientFullImportName: string
     methods: ServiceMethodContext[]
 }
 
@@ -62,7 +62,7 @@ export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, d
         options: desc.options,
         serviceRawFullname: desc.fullname,
         rxjsClientClassName: `${upperCaseFirst(snakeToCamel(desc.name))}RxjsClient`,
-        grpcClientFullName: getGrpcClientFullImportPath(ctx, file, `${upperCaseFirst(snakeToCamel(desc.name))}Client`, 'grpc'),
+        grpcClientFullImportName: `${getModuleImportName(ctx, file, 'grpc')}.${upperCaseFirst(snakeToCamel(desc.name))}Client`,
         methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
     }
 }
@@ -80,7 +80,7 @@ export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescrip
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getFullImportPath(ctx, file, typeInfo.descriptor, 'models', false) : null;
+    const fullType = typeInfo.descriptor ? getDescriptorFullImportName(ctx, file, typeInfo.descriptor, 'models', false) : null;
 
     return {
         desc: typeInfo.descriptor ?? null,
@@ -88,11 +88,3 @@ export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, 
         fullType,
     }
 }
-
-
-export const getGrpcClientFullImportPath = (ctx: ProjectContext, file: FileDescriptor, grpcClientName: string, suffix: string) => {
-    const filePath = ctx.getProtoFilePath(file);
-    const moduleFilePath = replaceProtoSuffix(filePath, suffix);
-    const moduleFileImportName = filePathToPseudoNamespace(moduleFilePath);
-    return `${moduleFileImportName}.${grpcClientName}`
-  }

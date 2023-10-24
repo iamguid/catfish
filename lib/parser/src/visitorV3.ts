@@ -117,8 +117,8 @@ export class VisitorV3 extends ParseTreeVisitor<IDescriptor> implements Protobuf
             options,
             isClientStreaming: Boolean(ctx.getToken(Protobuf3Parser.STREAM, 1)),
             isServerStreaming: Boolean(ctx.getToken(Protobuf3Parser.STREAM, 0)),
-            inputMessageType: ctx.messageType(0).getText(),
-            outputMessageType: ctx.messageType(1).getText(),
+            inputMessageType: ctx.messageType_list()[0].getText(),
+            outputMessageType: ctx.messageType_list()[1].getText(),
         });
     }
 

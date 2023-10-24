@@ -1,7 +1,7 @@
 import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, Options } from "@catfish/parser";
 import { ProjectContext, Import, TypeInfo } from "../../ProjectContext";
 import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getTag } from "./utils";
-import { filePathToPseudoNamespace, getFullImportPath, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
+import { filePathToPseudoNamespace, getDescriptorFullImportName, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
 
@@ -196,7 +196,7 @@ export const buildFieldContext = (ctx: ProjectContext, file: FileDescriptor, des
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getFullImportPath(ctx, file, typeInfo.descriptor, 'models', true) : null;
+    const fullType = typeInfo.descriptor ? getDescriptorFullImportName(ctx, file, typeInfo.descriptor, 'models', true) : null;
     const tsType = getTsTypeByTypeInfo(typeInfo) ?? fullType ?? '';
     const typeMarker = getTypeMarkerByTypeInfo(typeInfo);
 

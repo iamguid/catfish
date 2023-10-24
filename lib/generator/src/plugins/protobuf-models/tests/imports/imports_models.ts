@@ -13,12 +13,11 @@ import * as pjs from "protobufjs/minimal";
 import * as runtime from "@catfish/runtime";
 
 export interface TestMessageJSON {
-  fImported: importme_importme_models.ImportMeJSON;
+  fImported: imports_models.ImportMeJSON;
 }
 
 export class TestMessage {
-  fImported: importme_importme_models.ImportMe =
-    new importme_importme_models.ImportMe();
+  fImported: imports_models.ImportMe = new imports_models.ImportMe();
 
   public static fields = ["fImported"];
 
@@ -30,7 +29,7 @@ export class TestMessage {
     if (!obj) return;
 
     if (obj.fImported !== undefined) {
-      this.fImported = new importme_importme_models.ImportMe(obj.fImported);
+      this.fImported = new imports_models.ImportMe(obj.fImported);
     }
   }
 
@@ -38,7 +37,7 @@ export class TestMessage {
     // ImportMe f_imported = 1
     if (m.fImported !== undefined) {
       w.uint32(10);
-      importme_importme_models.ImportMe.encode(m.fImported, w.fork()).ldelim();
+      imports_models.ImportMe.encode(m.fImported, w.fork()).ldelim();
     }
 
     return w;
@@ -55,8 +54,8 @@ export class TestMessage {
       switch (tag) {
         // ImportMe f_imported = 1
         case 10:
-          m.fImported = importme_importme_models.ImportMe.decode(
-            new importme_importme_models.ImportMe(),
+          m.fImported = imports_models.ImportMe.decode(
+            new imports_models.ImportMe(),
             r,
             r.uint32()
           );
@@ -80,9 +79,7 @@ export class TestMessage {
   }
 
   public static fromJSON(m: TestMessage, obj: TestMessageJSON): TestMessage {
-    m.fImported = new importme_importme_models.ImportMe().fromJSON(
-      obj.fImported
-    );
+    m.fImported = new imports_models.ImportMe().fromJSON(obj.fImported);
 
     return m;
   }

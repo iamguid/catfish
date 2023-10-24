@@ -17,7 +17,7 @@ extend google.protobuf.FieldOptions  {
 }
 
 extend google.protobuf.FieldOptions  {
-    optional bool fld_page_result = 66003;
+    optional bool fld_page_data = 66003;
 }
 
 extend google.protobuf.FieldOptions  {
@@ -26,4 +26,8 @@ extend google.protobuf.FieldOptions  {
 
 extend google.protobuf.FieldOptions  {
     optional bool fld_page_size = 66005;
+}
+
+extend google.protobuf.MethodOptions  {
+    optional bool mtd_paginated = 66006;
 }

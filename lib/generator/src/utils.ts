@@ -1,4 +1,4 @@
-import { BaseDescriptor, FileDescriptor } from "@catfish/parser";
+import { BaseDescriptor, FileDescriptor, Option, Options } from "@catfish/parser";
 import { Import, ProjectContext } from "./ProjectContext";
 
 export function filePathToPseudoNamespace(filePath: string): string {
@@ -133,17 +133,27 @@ export function normaliseFieldObjectName(name: string): string {
   return name;
 }
 
-export const getFullImportPath = (ctx: ProjectContext, file: FileDescriptor, desc: BaseDescriptor, suffix: string, ignoreCurrentFile = false) => {
-  const filePath = ctx.getProtoFilePath(desc.fileDescriptor);
-  const modelsFilePath = replaceProtoSuffix(filePath, suffix);
-  const modelsFileImportName = filePathToPseudoNamespace(modelsFilePath);
+export const getModuleImportName = (ctx: ProjectContext, file: FileDescriptor, suffix: string) => {
+  const filePath = ctx.getProtoFilePath(file);
+  const moduleFilePath = replaceProtoSuffix(filePath, suffix);
+  return filePathToPseudoNamespace(moduleFilePath);
+}
+
+export const getDescriptorFullImportName = (ctx: ProjectContext, file: FileDescriptor, desc: BaseDescriptor, suffix: string, ignoreCurrentFile = false) => {
+  const moduleFileImportName = getModuleImportName(ctx, file, suffix);
 
   // Module defined in current file
   if (ignoreCurrentFile && desc.fileDescriptor === file) {
     return desc.fullname
   } else {
-    return `${modelsFileImportName}.${desc.fullname}`
+    return `${moduleFileImportName}.${desc.fullname}`
   }
+}
+
+export const getImportPath = (ctx: ProjectContext, file: FileDescriptor, suffix: string): string => {
+  const filePath = ctx.getProtoFilePath(file);
+  const moduleFilePath = replaceProtoSuffix(filePath, suffix);
+  return `./${moduleFilePath}`;
 }
 
 export const getImports = (ctx: ProjectContext, file: FileDescriptor, suffix: string, includeCurrentFile = true): Import[] => {
@@ -172,4 +182,38 @@ export const getImports = (ctx: ProjectContext, file: FileDescriptor, suffix: st
     }
 
     return imports;
+}
+
+export const findOption = (opts: Options[], path: string) => {
+  for (const opt of opts) {
+    const result = getOption(opt, path)
+
+    if (typeof result !== 'undefined') {
+      return result;
+    }
+  }
+
+  return undefined;
+}
+
+export const getOption = (opts: Options, path: string): Option => {
+  if (typeof opts[path] !== 'undefined') {
+    return opts[path];
+  }
+
+  const splittedPath = path.split('.');
+
+  let current: Option = opts;
+  for (const prop of splittedPath) {
+    if (typeof opts[prop] === 'object') {
+      current = opts[prop];
+      continue;
+    }
+
+    if (typeof opts[prop] === 'undefined') {
+      return undefined;
+    }
+  }
+
+  return current;
 }

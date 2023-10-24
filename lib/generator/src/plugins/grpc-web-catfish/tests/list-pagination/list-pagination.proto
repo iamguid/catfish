@@ -3,7 +3,9 @@ syntax = "proto3";
 package simple_service;
 
 service BooksService {
-  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse) {
+    option catfish.mtd_paginated = true;
+  }
 }
 
 message Book {
@@ -20,6 +22,6 @@ message ListBooksRequest {
 
 message ListBooksResponse {
   option catfish.msg_pagination_response = true;
-  repeated Book books = 1 [catfish.fld_page_result = true];
+  repeated Book books = 1 [catfish.fld_page_data = true];
   string next_page_token = 2 [catfish.fld_next_page_token = true];
 }
