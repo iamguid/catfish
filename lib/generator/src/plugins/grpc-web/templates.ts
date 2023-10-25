@@ -1,3 +1,4 @@
+import { Import } from "../../ProjectContext";
 import { TemplateFn, TemplatesRenderer } from "../../Templates";
 import { headerTemplate } from "../../templates/header.template";
 import { importsTemplate } from "../../templates/imports.template";
@@ -6,7 +7,7 @@ import { PluginOptions } from "./plugin";
 import { clientStubClassTemplate, clientStubClassMethodTemplate, mainTemplate, methodStreamTypeTemplate, serviceDefinitionTemplate, servicesTemplate } from "./template";
 
 export type PluginTamplateFn<TCtx> = TemplateFn<PluginTemplatesRegistry, PluginOptions, TCtx>
-export type MainTemplate = PluginTamplateFn<{ file: FileContext }>
+export type MainTemplate = PluginTamplateFn<{ file: FileContext, imports: Import[] }>
 export type ServicesTemplate = PluginTamplateFn<{ services: ServiceContext[] }>
 export type ServiceDefinitionTemplate = PluginTamplateFn<{ service: ServiceContext }>
 export type ClientStubClassTemplate = PluginTamplateFn<{ service: ServiceContext }>

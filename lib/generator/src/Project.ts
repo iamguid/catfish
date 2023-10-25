@@ -3,8 +3,8 @@ import path from 'node:path';
 import prettier from 'prettier';
 
 import { ProjectContext } from './ProjectContext';
-import { Plugin, PluginContextBuilder } from './Plugin';
-import { TemplatesRegistry, TemplatesRenderer } from './Templates';
+import { Plugin } from './Plugin';
+import { TemplatesRegistry } from './Templates';
 
 export interface ProjectOptions {
     protoDirPath: string
@@ -13,7 +13,7 @@ export interface ProjectOptions {
 
 export class Project {
     private context: ProjectContext;
-    private plugins: [Plugin<any, any, any>, any, any, any][] = [];
+    private plugins: [Plugin<any, any>, any, any][] = [];
 
     constructor(private readonly options: ProjectOptions) {
         this.context = new ProjectContext(options)
@@ -30,8 +30,8 @@ export class Project {
     generate() {
         fs.mkdirSync(this.options.outDirPath, { recursive: true })
 
-        for (const [plugin, pluginOptions, templates, pluginContextBuilder] of this.plugins) {
-            const result = plugin(this.context, this.options, pluginOptions, templates, pluginContextBuilder);
+        for (const [plugin, pluginOptions, templates] of this.plugins) {
+            const result = plugin(this.context, this.options, pluginOptions, templates);
 
             for (const file of result.files) {
                 const prettiedContent = prettier.format(file.content, { parser: 'typescript' })
@@ -41,16 +41,14 @@ export class Project {
     }
 
     resgister<
-        TPluginContext,
         TPluginOptions extends Record<string, any>,
         TPluginTemplates extends TemplatesRegistry,
     >(
-        plugin: Plugin<TPluginContext, TPluginOptions, TPluginTemplates>,
+        plugin: Plugin<TPluginOptions, TPluginTemplates>,
         options?: TPluginOptions,
         templates?: TPluginTemplates,
-        contextBuilder?: PluginContextBuilder<TPluginContext, TPluginOptions>,
     ) {
-        this.plugins.push([plugin, options, templates, contextBuilder]);
+        this.plugins.push([plugin, options, templates]);
         return this;
     }
 }

@@ -1,3 +1,4 @@
+import { Import } from "../../ProjectContext";
 import { TemplateFn, TemplatesRenderer } from "../../Templates";
 import { headerTemplate } from "../../templates/header.template";
 import { importsTemplate } from "../../templates/imports.template";
@@ -6,7 +7,7 @@ import { PluginOptions } from "./plugin";
 import { extensionsTemplate, grpcBasedExtensionsTemplate, mainTemplate, rxjsBasedExtensionsTemplate, rxjsBasedPaginationExtensionTemplate } from "./template";
 
 export type PluginTamplateFn<TCtx> = TemplateFn<PluginTemplatesRegistry, PluginOptions, TCtx>
-export type MainTemplate = PluginTamplateFn<{ file: FileContext }>
+export type MainTemplate = PluginTamplateFn<{ file: FileContext, imports: Import[] }>
 export type ExtensionsTemplate = PluginTamplateFn<{ file: FileContext }>
 export type RxjsBasedExtensionsTemplate = PluginTamplateFn<{ service: ServiceContext }>
 export type RxjsBasedPaginationExtensionTemplate = PluginTamplateFn<{ service: ServiceContext, method: ServiceMethodContext }>

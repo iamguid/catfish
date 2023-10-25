@@ -1,16 +1,11 @@
 import { MessageFieldDescriptor, FileDescriptor, MessageDescriptor, BaseDescriptor, Options, ServiceDescriptor, MethodDescriptor } from "@catfish/parser";
-import { ProjectContext, Import } from "../../ProjectContext";
-import { findOption, getDescriptorFullImportName, getImportPath, getImports, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
+import { ProjectContext } from "../../ProjectContext";
+import { findOption, getDescriptorFullImportName, getImportPath, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
 
-export interface PluginContext {
-    files: FileContext[]
-}
-
 export interface FileContext {
     options: Options[]
-    imports: Import[]
     services: ServiceContext[]
     filePath: string
     package: string
@@ -78,18 +73,9 @@ export interface TypeInfoContext {
     fullType: string | null
 }
 
-export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): PluginContext => {
-    const files = ctx.getFiles();
-
-    return {
-        files: files.map(f => buildFileContext(ctx, f))
-    }
-}
-
-export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
+export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
     return {
         options: file.options,
-        imports: [...getImports(ctx, file, 'grpc', true), ...getImports(ctx, file, 'grpc_rxjs', true)],
         services: file.services.map(srv => buildServiceContext(ctx, file, srv)),
         filePath: ctx.getProtoFilePath(file),
         package: file.package,
@@ -97,14 +83,17 @@ export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): Fil
 }
 
 export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, desc: ServiceDescriptor): ServiceContext => {
+    const rxjsClient = ctx.resolver.resolveOne('grpcrxjs.client', desc, file);
+    const grpcClient = ctx.resolver.resolveOne('grpc.client', desc, file);
+
     return {
         options: desc.options,
-        rxjsClientImportPath: `${getImportPath(ctx, file, 'grpc_rxjs')}`,
-        rxjsClientName: `${upperCaseFirst(snakeToCamel(desc.name))}RxjsClient`,
-        rxjsClientFullName: `${getModuleImportName(ctx, file, 'grpc_rxjs')}.${upperCaseFirst(snakeToCamel(desc.name))}RxjsClient`,
-        grpcClientImportPath: `${getImportPath(ctx, file, 'grpc')}`,
-        grpcClientName: `${upperCaseFirst(snakeToCamel(desc.name))}Client`,
-        grpcClientFullName: `${getModuleImportName(ctx, file, 'grpc_rxjs')}.${upperCaseFirst(snakeToCamel(desc.name))}Client`,
+        rxjsClientImportPath: rxjsClient.importPath,
+        rxjsClientName: rxjsClient.name,
+        rxjsClientFullName: `${rxjsClient.importName}.${rxjsClient.name}`,
+        grpcClientImportPath: grpcClient.importPath,
+        grpcClientName: grpcClient.name,
+        grpcClientFullName: `${grpcClient.importName}.${grpcClient.name}`,
         methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
     }
 }

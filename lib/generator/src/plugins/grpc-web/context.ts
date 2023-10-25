@@ -1,16 +1,12 @@
-import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor, Options } from "@catfish/parser";
-import { Import, ProjectContext, TypeInfo } from "../../ProjectContext";
+import { FileDescriptor, BaseDescriptor, ServiceDescriptor, MethodDescriptor, Options } from "@catfish/parser";
+import { ProjectContext } from "../../ProjectContext";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
-import { getDescriptorFullImportName, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
-
-export interface PluginContext {
-    files: FileContext[]
-}
+import { getDescriptorFullImportName, snakeToCamel, upperCaseFirst } from "../../utils";
+import { fileNameBuilder } from "./resolver";
 
 export interface FileContext {
     options: Options[]
-    imports: Import[]
     services: ServiceContext[]
     filePath: string
     package: string
@@ -40,18 +36,9 @@ export interface TypeInfoContext {
     fullType: string | null
 }
 
-export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): PluginContext => {
-    const files = ctx.getFiles();
-
-    return {
-        files: files.map(f => buildFileContext(ctx, f))
-    }
-}
-
-export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
+export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
     return {
         options: file.options,
-        imports: getImports(ctx, file, 'models', true),
         services: file.services.map(s => buildServiceContext(ctx, file, s)),
         filePath: ctx.getProtoFilePath(file),
         package: file.package,
@@ -62,8 +49,8 @@ export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, d
     return {
         options: file.options,
         serviceRawFullname: desc.fullname,
-        serviceDefinitionName: `${upperCaseFirst(snakeToCamel(desc.name))}Definition`,
-        clientClassName: `${upperCaseFirst(snakeToCamel(desc.name))}Client`,
+        serviceDefinitionName: ctx.resolver.resolveTypeName('grpc.definition', desc, file),
+        clientClassName: ctx.resolver.resolveTypeName('grpc.client', desc, file),
         methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
     }
 }
@@ -82,7 +69,7 @@ export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescrip
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getDescriptorFullImportName(ctx, file, typeInfo.descriptor, 'models', false) : null;
+    const fullType = typeInfo.descriptor ? ctx.resolver.resolveFullTypeName(['model.class', 'model.enum'], typeInfo.descriptor, file, fileNameBuilder, protoType) : null;
 
     return {
         desc: typeInfo.descriptor ?? null,

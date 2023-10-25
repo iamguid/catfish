@@ -7,7 +7,7 @@ export const mainTemplate: MainTemplate = (render, opts, ctx) => `
   })}
 
   ${render('imports', {
-    imports: ctx.file.imports,
+    imports: ctx.imports,
   })}
 
   import * as runtime from "@catfish/runtime"
@@ -32,7 +32,7 @@ export const servicesTemplate: ServicesTemplate = (render, opts, ctx) => {
 }
 
 export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, ctx) => `
-  export class ${ctx.service.rxjsClientClassName} extends ${ctx.service.grpcClientFullImportName} {
+  export class ${ctx.service.rxjsClientClassName} extends ${ctx.service.grpcClientClassName} {
     ${ctx.service.methods.map(method => method.serverStreaming 
       ? render('clientStubClassServerStreamingMethod', { method, service: ctx.service }) 
       : render('clientStubClassUnaryMethod', { method, service: ctx.service })).join('\n')}

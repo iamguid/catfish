@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import { BaseDescriptor, EnumDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor } from "@catfish/parser";
 import { ProjectOptions } from "../../Project";
 import { ProjectContext } from "../../ProjectContext";
@@ -13,13 +11,9 @@ export const oneofJsonTypeNameBuilder = (thing: BaseDescriptor) => `${thing.name
 export const oneofTypeNameBuilder = (thing: BaseDescriptor) => `${thing.name}OneofType`
 export const fileNameBuilder = (file: FileDescriptor, ctx: ProjectContext) => replaceProtoSuffix(ctx.getProtoFilePath(file), 'models.ts');
 
-export const registerPluginTypes = (ctx: ProjectContext, projectOptions: ProjectOptions, pluginOptions?: PluginOptions) => {
-    const files = ctx.getFiles();
-
-    for (const file of files) {
-        registerEnums(ctx, file.enums)
-        registerMessages(ctx, file.messages)
-    }
+export const registerFileTypes = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions) => {
+    registerEnums(ctx, file.enums)
+    registerMessages(ctx, file.messages)
 }
 
 const registerEnums = (ctx: ProjectContext, enums: EnumDescriptor[]) => {

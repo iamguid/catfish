@@ -1,13 +1,13 @@
 import { FileDescriptor, MessageDescriptor } from "@catfish/parser";
-import { PluginContextBuilder, ProjectContext, ProtobufModelsPlugin, TemplateFn } from "../../src";
+import { ProtobufModelsPlugin, TemplateFn } from "../../src";
 import { PluginTemplatesRegistry } from "../../src/plugins/protobuf-models";
-import { FileContext, MapFieldContext, MessageContext, buildFileContext, buildMessageContext } from "../../src/plugins/protobuf-models/context";
+import { MapFieldContext, MessageContext } from "../../src/plugins/protobuf-models/context";
 
 export type ExtendedPluginOptions = ProtobufModelsPlugin.PluginOptions & {
     enableHelloWorld: boolean
 }
 
-export type ExtendedModelClassTemplate = TemplateFn<ExtendedPluginTemplatesRegistry, ExtendedPluginOptions, { message: ExtendedMessageContext }>
+export type ExtendedModelClassTemplate = TemplateFn<ExtendedPluginTemplatesRegistry, ExtendedPluginOptions, { message: MessageContext }>
 export type HelloWorldTemplate = TemplateFn<ExtendedPluginTemplatesRegistry, ExtendedPluginOptions, { text: string }>;
 
 export type ExtendedPluginTemplatesRegistry = Omit<PluginTemplatesRegistry, "modelClass"> & {
@@ -18,7 +18,7 @@ export type ExtendedPluginTemplatesRegistry = Omit<PluginTemplatesRegistry, "mod
 export const helloWorldTemplate: HelloWorldTemplate = (render, opts, ctx) => {
   return opts.enableHelloWorld ? `
     helloworld(): string {
-      return ${ctx.text}
+      return '${ctx.text}'
     }
   ` : ''
 }
@@ -86,7 +86,7 @@ export const extendedModelClassTemplate: ExtendedModelClassTemplate = (render, o
     }
 
     ${render('helloworld', {
-      text: ctx.message.someProp
+      text: 'Hello, world'
     })}
   }
 `;
@@ -95,42 +95,4 @@ export const extendedPluginTemplatesRegistry: ExtendedPluginTemplatesRegistry = 
   ...ProtobufModelsPlugin.pluginTemplatesRegistry,
   modelClass: extendedModelClassTemplate,
   helloworld: helloWorldTemplate,
-}
-
-export type ExtendedPluginContext = ProtobufModelsPlugin.context.PluginContext & {
-  files: ExtendedFileContext[]
-}
-
-export type ExtendedFileContext = FileContext & {
-  messages: ExtendedMessageContext[]
-}
-
-export type ExtendedMessageContext = MessageContext & {
-  someProp: string
-}
-
-export const buildExtendedPluginContext: PluginContextBuilder<ExtendedPluginContext, ExtendedPluginOptions> = (projectContext, projectOptions, pluginOptions) => {
-  const files = projectContext.getFiles();
-
-  return {
-    files: files.map(f => buildExtendedFileContext(projectContext, f))
-  }
-}
-
-export const buildExtendedFileContext = (ctx: ProjectContext, file: FileDescriptor): ExtendedFileContext => {
-  const baseFileContext = buildFileContext(ctx, file);
-  
-  return {
-    ...baseFileContext,
-    messages: file.messages.map(m => buildExtendedMessageContext(ctx, file, m)),
-  }
-}
-
-export const buildExtendedMessageContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageDescriptor): ExtendedMessageContext => {
-  const baseMessageContext = buildMessageContext(ctx, file, desc);
-
-  return {
-    ...baseMessageContext,
-    someProp: "test",
-  }
 }

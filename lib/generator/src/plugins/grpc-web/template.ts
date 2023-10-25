@@ -7,7 +7,7 @@ export const mainTemplate: MainTemplate = (render, opts, ctx) => `
   })}
 
   ${render('imports', {
-    imports: ctx.file.imports,
+    imports: ctx.imports,
   })}
 
   import * as runtime from "@catfish/runtime"

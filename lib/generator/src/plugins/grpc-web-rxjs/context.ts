@@ -3,14 +3,10 @@ import { Import, ProjectContext } from "../../ProjectContext";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
 import { getDescriptorFullImportName, getImports, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
-
-export interface PluginContext {
-    files: FileContext[]
-}
+import { fileNameBuilder } from "./resolver";
 
 export interface FileContext {
     options: Options[],
-    imports: Import[]
     services: ServiceContext[]
     filePath: string
     package: string
@@ -20,7 +16,7 @@ export interface ServiceContext {
     options: Options[],
     serviceRawFullname: string
     rxjsClientClassName: string
-    grpcClientFullImportName: string
+    grpcClientClassName: string
     methods: ServiceMethodContext[]
 }
 
@@ -39,18 +35,9 @@ export interface TypeInfoContext {
     fullType: string | null
 }
 
-export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): PluginContext => {
-    const files = ctx.getFiles();
-
-    return {
-        files: files.map(f => buildFileContext(ctx, f))
-    }
-}
-
-export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
+export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
     return {
         options: file.options,
-        imports: [...getImports(ctx, file, 'models', true), ...getImports(ctx, file, 'grpc', true)],
         services: file.services.map(s => buildServiceContext(ctx, file, s)),
         filePath: ctx.getProtoFilePath(file),
         package: file.package,
@@ -61,8 +48,8 @@ export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, d
     return {
         options: desc.options,
         serviceRawFullname: desc.fullname,
-        rxjsClientClassName: `${upperCaseFirst(snakeToCamel(desc.name))}RxjsClient`,
-        grpcClientFullImportName: `${getModuleImportName(ctx, file, 'grpc')}.${upperCaseFirst(snakeToCamel(desc.name))}Client`,
+        rxjsClientClassName: ctx.resolver.resolveTypeName('grpcrxjs.client', desc, file),
+        grpcClientClassName: ctx.resolver.resolveFullTypeName('grpc.client', desc, file, fileNameBuilder),
         methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
     }
 }
@@ -80,7 +67,7 @@ export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescrip
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getDescriptorFullImportName(ctx, file, typeInfo.descriptor, 'models', false) : null;
+    const fullType = typeInfo.descriptor ? ctx.resolver.resolveFullTypeName(['model.class', 'model.enum'], typeInfo.descriptor, file, fileNameBuilder, protoType) : null;
 
     return {
         desc: typeInfo.descriptor ?? null,

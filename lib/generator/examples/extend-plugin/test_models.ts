@@ -79,6 +79,6 @@ export class TestMessage {
   }
 
   helloworld(): string {
-    return test;
+    return "Hello, world";
   }
 }

@@ -1,23 +1,35 @@
 import { Plugin, PluginOutputFile } from '../../Plugin';
-import { replaceProtoSuffix } from '../../utils';
-import { PluginContext, buildPluginContext } from './context';
+import { buildFileContext } from './context';
+import { fileNameBuilder, registerFileTypes } from './resolver';
 import { PluginTemplatesRegistry, buildTemplates, pluginTemplatesRegistry } from './templates';
 
 export interface PluginOptions {}
 
-export const plugin: Plugin<PluginContext, PluginOptions, PluginTemplatesRegistry> = (projectContext, projectOptions, pluginOptions, pluginTemplates, pluginContextBuilder) => {
+export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry> = (projectContext, projectOptions, pluginOptions, pluginTemplates) => {
     const result: PluginOutputFile[] = []
 
     const resultOptions = pluginOptions ?? {};
     const resultTempleateRegistry = pluginTemplates ?? pluginTemplatesRegistry
     const resultTemplates = buildTemplates(resultOptions, resultTempleateRegistry)
-    const pluginContext = pluginContextBuilder
-        ? pluginContextBuilder(projectContext, projectOptions, resultOptions) 
-        : buildPluginContext(projectContext, projectOptions, resultOptions)
 
-    for (const file of pluginContext.files) {
-        const resultFileContent = resultTemplates.render('main', { file });
-        const resultFilePath = replaceProtoSuffix(file.filePath, 'grpc.ts');
+    const files = projectContext.getFiles();
+
+    // Register files types
+    for (const file of files) {
+        registerFileTypes(projectContext, file, projectOptions, resultOptions)
+    }
+
+    for (const file of files) {
+        // Capture usages
+        const stopCapture = projectContext.resolver.capture()
+        const fileContext = buildFileContext(projectContext, file, projectOptions, resultOptions)
+        const usedThings = stopCapture();
+
+        // Render file template
+        const resultFilePath = fileNameBuilder(file, projectContext);
+        const imports = projectContext.resolver.getImports(usedThings, file, resultFilePath)
+        const resultFileContent = resultTemplates.render('main', { file: fileContext, imports });
+
         result.push({ path: resultFilePath, content: resultFileContent });
     }
 

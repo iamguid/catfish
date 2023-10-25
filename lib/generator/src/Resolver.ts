@@ -26,7 +26,7 @@ export type ResolverNode = {
 export class Resolver {
     private readonly registry: ResolverNode = { [ResolverSymbol]: new Map() }
 
-    private capturedResolves: ResolvedThing[] = []
+    private captured: ResolvedThingImport[] = []
     private isCaptured = false;
 
     constructor(private readonly projectContext: ProjectContext) {}
@@ -44,16 +44,13 @@ export class Resolver {
 
         const things = node[ResolverSymbol].get(thingProtofullname)!;
         const thing: ResolvedThing = {
-            id: 'i_' + crypto.createHash("md5").update(thingName_ + fileName_ + thingDesc.fullpath, "binary").digest("hex"),
+            id: 'i' + crypto.createHash("md5").update(thingDesc.fileDescriptor.package + fileName_, "binary").digest("hex"),
             name: thingName_,
             desc: thingDesc,
             file: fileName_,
         };
-        things.push(thing)
 
-        if (this.isCaptured) {
-            this.capturedResolves.push(thing)
-        }
+        things.push(thing)
 
         return thing;
     }
@@ -76,6 +73,10 @@ export class Resolver {
             }
 
             stack.push(...Object.getOwnPropertyNames(currentNode).map(prop => currentNode[prop]))
+        }
+
+        if (this.isCaptured) {
+            this.captured.push(...result);
         }
 
         return result;
@@ -114,13 +115,35 @@ export class Resolver {
         return filteredTypes[0]
     }
 
-    resolveFullTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string, ignorePreffixInCurrentFile = true): string {
+    resolveTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string, ignorePreffixInCurrentFile = true): string {
+        const resolvedType = this.resolveOne(namespace, thingDesc, file, protoType);
+        return resolvedType.name;
+    }
+
+    tryResolveTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string, ignorePreffixInCurrentFile = true): string | null {
+        try {
+            return this.resolveTypeName(namespace, thingDesc, file, protoType);
+        } catch {
+            return null;
+        }
+    }
+
+    resolveFullTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true): string {
+        const fileName_ = typeof fileName === 'function' ? fileName(file, this.projectContext) : fileName
         const resolvedType = this.resolveOne(namespace, thingDesc, file, protoType);
 
-        if (ignorePreffixInCurrentFile && resolvedType.desc.fileDescriptor === file) {
+        if (ignorePreffixInCurrentFile && resolvedType.file === fileName_) {
             return resolvedType.name
         } else {
             return `${resolvedType.importName}.${resolvedType.name}`
+        }
+    }
+
+    tryResolveFullTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true): string | null {
+        try {
+            return this.resolveFullTypeName(namespace, thingDesc, file, fileName, protoType, ignorePreffixInCurrentFile)
+        } catch {
+            return null;
         }
     }
 
@@ -141,13 +164,13 @@ export class Resolver {
         return currentNode
     }
 
-    capture(): () => ResolvedThing[] {
+    capture(): () => ResolvedThingImport[] {
         this.isCaptured = true;
 
         return () => {
             this.isCaptured = false;
-            const result = this.capturedResolves;
-            this.capturedResolves = [];
+            const result = this.captured;
+            this.captured = [];
             return result;
         }
     }
@@ -164,17 +187,15 @@ export class Resolver {
         }
     }
 
-    getImports(resolvedThings: ResolvedThing[], file: FileDescriptor): Import[] {
+    getImports(resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[] {
+        const fileName_ = typeof fileName === 'function' ? fileName(file, this.projectContext) : fileName
         const imports: Map<string, Import> = new Map();
         
         for (const thing of resolvedThings) {
-            // TODO: Fix thing.desc.fileDescriptor !== file
-            if (!imports.has(thing.file) && thing.desc.fileDescriptor !== file) {
-                const resolvedThing = this.getResolvedThingImport(thing, file);
-
+            if (!imports.has(thing.file) && thing.file !== fileName_) {
                 imports.set(thing.file, {
-                    name: resolvedThing.importName,
-                    path: resolvedThing.importPath,
+                    name: thing.importName,
+                    path: thing.importPath,
                 })
             }
         }
@@ -191,32 +212,30 @@ export const getPathPreffix = (source: string, target: string) => {
     const targetArr = path.normalize(target).split(path.sep).filter(p => p !== '');
 
     let i = 0;
-    let j = 0;
 
     let result = './';
     while (true) {
         const s = sourceArr[i];
-        const t = targetArr[j];
+        const t = targetArr[i];
 
         if (i >= sourceArr.length) {
-            result += targetArr.slice(j).join('/');
+            result += targetArr.slice(i).join('/');
             break;
         }
 
-        if (j >= targetArr.length) {
+        if (i >= targetArr.length) {
             result += '../'.repeat(sourceArr.length - i);
             break;
         }
 
         if (s !== t) {
             result += '../'.repeat(sourceArr.length - i);
-            result += targetArr.slice(j).join('/');
+            result += targetArr.slice(i).join('/');
             break;
         }
 
         if (s === t) {
             i++;
-            j++;
         }
     }
 
