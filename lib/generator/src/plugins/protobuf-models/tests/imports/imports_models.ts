@@ -7,17 +7,17 @@
 // package: test
 // file: imports.proto
 
-import * as importme_importme_models from "./importme/importme_models";
+import * as i_ed2f5212072fdfc93dd4f2bf5fca9406 from "./importme/importme_models.ts";
 
 import * as pjs from "protobufjs/minimal";
 import * as runtime from "@catfish/runtime";
 
 export interface TestMessageJSON {
-  fImported: imports_models.ImportMeJSON;
+  fImported: ImportMeJSON;
 }
 
 export class TestMessage {
-  fImported: imports_models.ImportMe = new imports_models.ImportMe();
+  fImported: ImportMe = new ImportMe();
 
   public static fields = ["fImported"];
 
@@ -29,7 +29,7 @@ export class TestMessage {
     if (!obj) return;
 
     if (obj.fImported !== undefined) {
-      this.fImported = new imports_models.ImportMe(obj.fImported);
+      this.fImported = new ImportMe(obj.fImported);
     }
   }
 
@@ -37,7 +37,7 @@ export class TestMessage {
     // ImportMe f_imported = 1
     if (m.fImported !== undefined) {
       w.uint32(10);
-      imports_models.ImportMe.encode(m.fImported, w.fork()).ldelim();
+      ImportMe.encode(m.fImported, w.fork()).ldelim();
     }
 
     return w;
@@ -54,11 +54,7 @@ export class TestMessage {
       switch (tag) {
         // ImportMe f_imported = 1
         case 10:
-          m.fImported = imports_models.ImportMe.decode(
-            new imports_models.ImportMe(),
-            r,
-            r.uint32()
-          );
+          m.fImported = ImportMe.decode(new ImportMe(), r, r.uint32());
           continue;
       }
 
@@ -79,7 +75,7 @@ export class TestMessage {
   }
 
   public static fromJSON(m: TestMessage, obj: TestMessageJSON): TestMessage {
-    m.fImported = new imports_models.ImportMe().fromJSON(obj.fImported);
+    m.fImported = new ImportMe().fromJSON(obj.fImported);
 
     return m;
   }

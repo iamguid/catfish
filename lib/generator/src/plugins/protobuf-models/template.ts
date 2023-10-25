@@ -8,7 +8,7 @@ export const mainTemplate: MainTemplate = (render, opts, ctx) => `
   })}
 
   ${render('imports', {
-    imports: ctx.file.imports,
+    imports: ctx.imports,
   })}
 
   import * as pjs from "protobufjs/minimal"
@@ -288,7 +288,7 @@ export const modelClassDecodeMapTemplate: ModelClassDecodeMapTemplate = (render,
             k = ${render('decodeField', { typeInfo: ctx.mapField.keyTypeInfo })}
             continue;
           case ${ctx.mapField.valueTag}:
-            v = ${render('decodeField', { typeInfo: ctx.mapField.valueTypeInfo, variable: `new ${ctx.mapField.valueTypeInfo.fullType}()` })}
+            v = ${render('decodeField', { typeInfo: ctx.mapField.valueTypeInfo, variable: `new ${ctx.mapField.valueTypeInfo.tsType}()` })}
             continue;
         }
       }
@@ -343,7 +343,7 @@ export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts,
                 ${field.fields.map(f => {
                   return `
                     case ${f.tag}:
-                      m.${field.name} = { ${f.name}: ${render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.fullType}()` })} };
+                      m.${field.name} = { ${f.name}: ${render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.tsType}()` })} };
                       break;
                   `
                 }).join('\n')}
@@ -373,7 +373,7 @@ export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts,
                     return `
                       // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
                       case ${field.tag}:
-                        m.${field.name}.push(${render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.fullType}()` })})
+                        m.${field.name}.push(${render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })})
                         continue;
                     `
                 }
@@ -382,7 +382,7 @@ export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts,
               return `
                 // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
                 case ${field.tag}:
-                  m.${field.name} = ${render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.fullType}()` })}
+                  m.${field.name} = ${render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })}
                   continue;
               `
             }
@@ -509,7 +509,7 @@ export const cloneFieldTemplate: CloneFieldTemplate = (render, opts, ctx) => {
     case "Bytes":
       return `new pjs.util.Buffer(${ctx.variable})`
     case "Message":
-      return `new ${ctx.typeInfo.fullType}(${ctx.variable})`
+      return `new ${ctx.typeInfo.tsType}(${ctx.variable})`
   }
 }
 
@@ -523,9 +523,9 @@ export const fromJsonValueTemplate: FromJsonValueTemplate = (render, opts, ctx) 
     case "Bytes":
       return `runtime.convertBase64ToBytes(${ctx.variable})`
     case "Enum":
-      return `${ctx.typeInfo.fullType}[${ctx.variable}]`
+      return `${ctx.typeInfo.enumType}[${ctx.variable}]`
     case "Message":
-      return `new ${ctx.typeInfo.fullType}().fromJSON(${ctx.variable})`
+      return `new ${ctx.typeInfo.tsType}().fromJSON(${ctx.variable})`
   }
 }
 
@@ -539,7 +539,7 @@ export const toJsonValueTemplate: ToJsonValueTemplate = (render, opts, ctx) => {
     case "Bytes":
       return `runtime.convertBytesToBase64(${ctx.variable})`
     case "Enum":
-      return `${ctx.typeInfo.fullType}[${ctx.variable}]`
+      return `${ctx.typeInfo.enumType}[${ctx.variable}]`
     case "Message":
       return `${ctx.variable}.toJSON()`
   }

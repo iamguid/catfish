@@ -1,5 +1,6 @@
 import { BaseDescriptor, FileDescriptor, Option, Options } from "@catfish/parser";
 import { Import, ProjectContext } from "./ProjectContext";
+import { ResolvedThing, ResolvedThingImport, Resolver } from "./Resolver";
 
 export function filePathToPseudoNamespace(filePath: string): string {
     return filePath

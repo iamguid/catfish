@@ -8,8 +8,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "yarn test:generate && yarn jest",
-    "test:generate": "ts-node ./generate.ts"
+    "test": "yarn jest",
+    "test:generate": "ts-node ./generate.ts",
+    "test:full": "yarn test:generate && yarn test"
   },
   "dependencies": {
     "@catfish/parser": "*",

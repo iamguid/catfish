@@ -1,50 +1,138 @@
 import path from "node:path";
+import crypto from "node:crypto";
 import { BaseDescriptor, FileDescriptor } from "@catfish/parser";
 import { filePathToPseudoNamespace } from "./utils";
-import { ProjectContext } from "./ProjectContext";
+import { Import, ProjectContext } from "./ProjectContext";
 
-interface ResolvedThing {
+export interface ResolvedThing {
+    id: string
     name: string
     desc: BaseDescriptor
+    file: string
 }
 
-interface ResolvedThingImport extends ResolvedThing {
+export interface ResolvedThingImport extends ResolvedThing {
     importPath: string
     importName: string
 }
 
+export const ResolverSymbol = Symbol('resolver');
+
+export type ResolverNode = {
+    [node: string]: ResolverNode,
+    [ResolverSymbol]: Map<string, ResolvedThing[]>,
+}
+
 export class Resolver {
-    private readonly registry: Record<string, any> = {}
+    private readonly registry: ResolverNode = { [ResolverSymbol]: new Map() }
 
-    register(namespace: string, fullname: string, desc: BaseDescriptor): string {
-        const resolver = this.findResolver(namespace, fullname);
+    private capturedResolves: ResolvedThing[] = []
+    private isCaptured = false;
 
-        if (!(resolver instanceof ThingResolver)) {
-            throw new Error(`Connot find thing resolver by path ${path}`)
+    constructor(private readonly projectContext: ProjectContext) {}
+
+    register(namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing {
+        const thingProtofullname = thingDesc.fullname;
+        const thingName_ = typeof thingName === 'function' ? thingName(thingDesc) : thingName;
+        const fileName_ = typeof fileName === 'function' ? fileName(thingDesc.fileDescriptor, this.projectContext) : fileName;
+
+        const node = this.findNode(namespace);
+
+        if (!node[ResolverSymbol].has(thingProtofullname)) {
+            node[ResolverSymbol].set(thingProtofullname, [])
         }
 
-        return resolver.register(fullname, desc);
-    }
+        const things = node[ResolverSymbol].get(thingProtofullname)!;
+        const thing: ResolvedThing = {
+            id: 'i_' + crypto.createHash("md5").update(thingName_ + fileName_ + thingDesc.fullpath, "binary").digest("hex"),
+            name: thingName_,
+            desc: thingDesc,
+            file: fileName_,
+        };
+        things.push(thing)
 
-    resolve(path: string, file: FileDescriptor): ResolvedThingImport[] {
-        const [fullname, resolver] = this.findResolver(path);
-
-        if (!(resolver instanceof ThingResolver)) {
-            throw new Error(`Connot find thing resolver by path ${path}`)
+        if (this.isCaptured) {
+            this.capturedResolves.push(thing)
         }
 
-        return resolver.resolve(fullname, file)
+        return thing;
     }
 
-    createNamespace(namespace: string): Record<string, any> {
-        const stack = namespace.split('@');
+    resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport[] {
+        const result: ResolvedThingImport[] = [];
+
+        const stack: ResolverNode[] = [];
+        stack.push(node)
+
+        while (stack.length > 0) {
+            const currentNode = stack.pop()!
+            const resolvers = currentNode[ResolverSymbol].get(protoType ?? thingDesc.fullname)
+
+            if (resolvers && resolvers.length) {
+                for (const thing of resolvers) {
+                    const resolvedThingImport = this.getResolvedThingImport(thing, file);
+                    result.push(resolvedThingImport)
+                }
+            }
+
+            stack.push(...Object.getOwnPropertyNames(currentNode).map(prop => currentNode[prop]))
+        }
+
+        return result;
+    }
+
+    resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport[] {
+        const resolved: ResolvedThingImport[] = [];
+
+        if (Array.isArray(namespace)) {
+            for (const ns of namespace) {
+                const node = this.findNode(ns);
+                const part = this.resolveByNode(node, thingDesc, file, protoType);
+                resolved.push(...part)
+            }
+        } else {
+            const node = this.findNode(namespace);
+            const part = this.resolveByNode(node, thingDesc, file, protoType);
+            resolved.push(...part)
+        }
+
+        return resolved;
+    }
+
+    resolveOne(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport {
+        const resolvedTypes = this.resolveByNamespace(namespace, thingDesc, file, protoType)
+        const filteredTypes = resolvedTypes.filter(t => t.desc === thingDesc)
+
+        if (filteredTypes.length === 0) {
+            throw new Error(`Cannot resolve type ${protoType}`)
+        }
+
+        if (filteredTypes.length !== 1) {
+            throw new Error(`Found many types (${filteredTypes.map(t => t.name).join(', ')})`)
+        }
+
+        return filteredTypes[0]
+    }
+
+    resolveFullTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string, ignorePreffixInCurrentFile = true): string {
+        const resolvedType = this.resolveOne(namespace, thingDesc, file, protoType);
+
+        if (ignorePreffixInCurrentFile && resolvedType.desc.fileDescriptor === file) {
+            return resolvedType.name
+        } else {
+            return `${resolvedType.importName}.${resolvedType.name}`
+        }
+    }
+
+    findNode(namespace: string): ResolverNode {
+        const stack = namespace.split('.');
 
         let currentNode = this.registry;
         while (stack.length > 0) {
             const nodeName = stack.shift()!;
 
             if (typeof currentNode[nodeName] === 'undefined') {
-                currentNode[nodeName] = { resolver: null }
+                currentNode[nodeName] = { [ResolverSymbol]: new Map() }
             }
 
             currentNode = currentNode[nodeName]
@@ -53,79 +141,54 @@ export class Resolver {
         return currentNode
     }
 
-    findResolver(path: string):  {
-        const splitted = path.split('@');
+    capture(): () => ResolvedThing[] {
+        this.isCaptured = true;
 
-        if (splitted[0] !== this.id) {
-            throw new Error(`Cannot find resolver by path ${path}`)
+        return () => {
+            this.isCaptured = false;
+            const result = this.capturedResolves;
+            this.capturedResolves = [];
+            return result;
         }
-
-        if (splitted.length < 2) {
-            throw new Error(`Incorrect resolver path ${path}`)
-        }
-
-        const found = this.resolvers.find(r => r.id === splitted[1])
-
-        if (!found) {
-            throw new Error(`Cannot find resolver by path ${path}`)
-        }
-
-        if (found instanceof ResolversGroup) {
-            return found.findResolver(splitted.slice(1).join('@'))
-        }
-
-        return [splitted[1], found];
     }
-}
 
-export class ThingResolver {
-    private readonly registry: Map<string, ResolvedThing> = new Map() // key - thing_fullname
-
-    constructor(
-        private readonly projectCtx: ProjectContext,
-        private readonly thingNameBuilder: (thing: BaseDescriptor) => string,
-        private readonly fileNameBuilder: (file: FileDescriptor) => string,
-    ) { }
-
-    resolve(fullpath: string, file: FileDescriptor): ResolvedThingImport[] {
-        if (!this.registry.has(fullpath)) {
-            throw new Error(`Cannot resolve thing ${fullpath}`)
-        }
-
-        const thing = this.registry.get(fullpath)!
-
-        const sourcePath = path.dirname(path.normalize(this.projectCtx.getProtoFilePath(thing.desc.fileDescriptor)))
-        const targetPath = path.dirname(path.normalize(this.projectCtx.getProtoFilePath(file)))
+    getResolvedThingImport(thing: ResolvedThing, file: FileDescriptor): ResolvedThingImport {
+        const targetPath = path.dirname(this.projectContext.getProtoFilePath(thing.desc.fileDescriptor))
+        const sourcePath = path.dirname(this.projectContext.getProtoFilePath(file))
         const pathPreffix = getPathPreffix(sourcePath, targetPath)
 
-        return [{
+        return {
             ...thing,
-            importName: filePathToPseudoNamespace(thing.desc.fullpath),
-            importPath: pathPreffix + this.fileNameBuilder(thing.desc.fileDescriptor),
-        }]
-    }
-
-    register(fullname: string, desc: BaseDescriptor): string {
-        const name = this.thingNameBuilder(desc);
-        this.registry.set(fullname, { desc, name });
-        return name;
-    }
-}
-
-export class ResolversGroup implements IResolver {
-    private readonly resolvers: IResolver[] = [];
-
-    constructor(public readonly id: string, initialResolvers?: IResolver[]) {
-        for (const resolver of initialResolvers ?? []) {
-            this.resolvers.push(resolver);
+            importName: thing.id,
+            importPath: pathPreffix + '/' + path.basename(thing.file),
         }
     }
 
+    getImports(resolvedThings: ResolvedThing[], file: FileDescriptor): Import[] {
+        const imports: Map<string, Import> = new Map();
+        
+        for (const thing of resolvedThings) {
+            // TODO: Fix thing.desc.fileDescriptor !== file
+            if (!imports.has(thing.file) && thing.desc.fileDescriptor !== file) {
+                const resolvedThing = this.getResolvedThingImport(thing, file);
+
+                imports.set(thing.file, {
+                    name: resolvedThing.importName,
+                    path: resolvedThing.importPath,
+                })
+            }
+        }
+      
+        return Array.from(imports.values());
+    }
 }
 
 export const getPathPreffix = (source: string, target: string) => {
-    const sourceArr = source.split('/');
-    const targetArr = target.split('/');
+    source = source === '' || source === '.' ? '/' : source;
+    target = target === '' || target === '.' ? '/' : target;
+
+    const sourceArr = path.normalize(source).split(path.sep).filter(p => p !== '');
+    const targetArr = path.normalize(target).split(path.sep).filter(p => p !== '');
 
     let i = 0;
     let j = 0;
@@ -145,15 +208,17 @@ export const getPathPreffix = (source: string, target: string) => {
             break;
         }
 
-        if (s === t) {
-            i++;
-            j++;
-        } else {
+        if (s !== t) {
             result += '../'.repeat(sourceArr.length - i);
             result += targetArr.slice(j).join('/');
             break;
         }
+
+        if (s === t) {
+            i++;
+            j++;
+        }
     }
 
-    return result;
+    return './' + path.normalize(result).split(path.sep).filter(p => p !== '').join('/');
 }

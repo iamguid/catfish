@@ -7,6 +7,8 @@
 // package: importme
 // file: importme/importme.proto
 
+import * as i_b26bd26781888ed0ff5b492fd52c13ae from "./../imports_models.ts";
+
 import * as pjs from "protobufjs/minimal";
 import * as runtime from "@catfish/runtime";
 

@@ -1,10 +1,9 @@
 import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, Options } from "@catfish/parser";
-import { ProjectContext, Import, TypeInfo } from "../../ProjectContext";
 import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getTag } from "./utils";
-import { filePathToPseudoNamespace, getDescriptorFullImportName, getImports, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
+import { ProjectContext, TypeInfo } from "../../ProjectContext";
+import { snakeToCamel, upperCaseFirst } from "../../utils";
 import { PluginOptions } from "./plugin";
-import { ResolversGroup } from "../../Resolver";
 
 export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
 
@@ -14,7 +13,7 @@ export interface PluginContext {
 
 export interface FileContext {
     options: Options[],
-    imports: Import[]
+    desc: FileDescriptor,
     enums: EnumContext[]
     messages: MessageContext[]
     filePath: string
@@ -81,9 +80,9 @@ export interface TypeInfoContext {
     defaultValue: string
     desc: BaseDescriptor | null
     pjsFn: string
+    enumType: string | null
     tsType: string
     jsonType: string
-    fullType: string | null
     typeMarker: TypeMarker
 }
 
@@ -98,7 +97,7 @@ export const buildPluginContext = (ctx: ProjectContext, projectOptions: ProjectO
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor): FileContext => {
     return {
         options: file.options,
-        imports: getImports(ctx, file, 'models', false),
+        desc: file,
         enums: file.enums.map(enm => buildEnumContext(ctx, file, enm)),
         messages: file.messages.map(msg => buildMessageContext(ctx, file, msg)),
         filePath: ctx.getProtoFilePath(file),
@@ -124,14 +123,13 @@ export const buildEnumFieldContext = (ctx: ProjectContext, file: FileDescriptor,
 export const buildMessageContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageDescriptor): MessageContext => {
     return {
         options: desc.options,
-        className: ctx.resolver.register(`root@model@class@${desc.fullname}`, desc),
-        jsonIfaceName: ctx.resolver.register(`root@model@json-iface@${desc.fullname}`, desc),
+        className: ctx.resolver.resolveFullTypeName('model.class', desc, file),
+        jsonIfaceName: ctx.resolver.resolveFullTypeName('model.jsonIface', desc, file),
         fields: desc.fields.map(f => buildFieldContext(ctx, file, f)),
         enums: desc.enums.map(e => buildEnumContext(ctx, file, e)),
         messages: desc.messages.map(m => buildMessageContext(ctx, file, m)),
     }
 }
-
 
 export const buildMessageFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageFieldDescriptor): MessageFieldContext => {
     const typeInfo = buildTypeInfoContext(ctx, file, desc.type);
@@ -154,8 +152,8 @@ export const buildOneofContext = (ctx: ProjectContext, file: FileDescriptor, des
         type: "Oneof",
         fields: desc.fields.map(f => buildMessageFieldContext(ctx, file, f)),
         name: snakeToCamel(desc.name),
-        tsTypeName: `${snakeToCamel(filePathToPseudoNamespace(desc.fullname))}Type`, // !!!
-        jsonTypeName: `${snakeToCamel(filePathToPseudoNamespace(desc.fullname))}JSONType`, // !!!
+        tsTypeName: ctx.resolver.resolveByNamespace('model.oneof.type', desc, file)[0].name,
+        jsonTypeName: ctx.resolver.resolveByNamespace('model.oneof.jsonType', desc, file)[0].name,
     }
 }
 
@@ -197,18 +195,21 @@ export const buildFieldContext = (ctx: ProjectContext, file: FileDescriptor, des
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getDescriptorFullImportName(ctx, file, typeInfo.descriptor, 'models', true) : null;
-    const tsType = getTsTypeByTypeInfo(typeInfo) ?? fullType ?? '';
+    const enumType: string | null = typeInfo.descriptor ? ctx.resolver.resolveByNamespace('model.enum', typeInfo.descriptor, file, protoType)[0]?.name ?? null : null;
+    const tsFullType: string | null = typeInfo.descriptor ? ctx.resolver.resolveByNamespace('model.class', typeInfo.descriptor, file, protoType)[0]?.name ?? null : null;
+    const jsonFullType: string | null = typeInfo.descriptor ? ctx.resolver.resolveByNamespace('model.jsonIface', typeInfo.descriptor, file, protoType)[0]?.name ?? null : null;
+    const tsType = getTsTypeByTypeInfo(typeInfo) ?? tsFullType ?? '';
+    const jsonType = getJsonTypeByTypeInfo(typeInfo) ?? jsonFullType ?? '';
     const typeMarker = getTypeMarkerByTypeInfo(typeInfo);
 
     return {
         protoType,
         desc: typeInfo.descriptor ?? null,
-        defaultValue: getDefaultValue(typeInfo, tsType, typeMarker, fullType),
+        defaultValue: getDefaultValue(typeInfo, tsType, typeMarker, protoType),
         pjsFn: getPjsFnNameByTypeInfo(typeInfo),
         tsType,
-        jsonType: getJsonTypeByTypeInfo(typeInfo) ?? `${fullType}JSON`,
-        fullType,
+        jsonType,
+        enumType,
         typeMarker,
     }
 }

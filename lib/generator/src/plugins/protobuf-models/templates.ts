@@ -1,4 +1,5 @@
-import { TemplateFn, TemplatesRegistry, TemplatesRenderer } from "../../Templates";
+import { Import } from "../../ProjectContext";
+import { TemplateFn, TemplatesRenderer } from "../../Templates";
 import { headerTemplate } from "../../templates/header.template";
 import { importsTemplate } from "../../templates/imports.template";
 import { EnumContext, FileContext, MapFieldContext, MessageContext, TypeInfoContext } from "./context";
@@ -6,7 +7,7 @@ import { PluginOptions } from "./plugin";
 import { recursiveTemplate, modelClassTemplate, modelClassDecodeMapTemplate, modelClassEncodeMapTemplate, modelClassFieldsTemplate, modelClassCtorTemplate, modelClassEncodeTemplate, modelClassDecodeTemplate, modelClassToJSONTemplate, modelClassFromJSONTemplate, jsonIfaceTemplate, decodeFieldTemplate, encodeFieldTemplate, fromJsonValueTemplate, toJsonValueTemplate, cloneFieldTemplate, enumTemplate, mainTemplate } from "./template";
 
 export type PluginTamplateFn<TCtx> = TemplateFn<PluginTemplatesRegistry, PluginOptions, TCtx>
-export type MainTemplate = PluginTamplateFn<{ file: FileContext }>
+export type MainTemplate = PluginTamplateFn<{ file: FileContext, imports: Import[] }>
 export type RecursiveTemplate = PluginTamplateFn<{ messages: MessageContext[], enums: EnumContext[] }>
 export type ModelClassTemplate = PluginTamplateFn<{ message: MessageContext }>
 export type ModelClassDecodeMapTemplate = PluginTamplateFn<{ mapField: MapFieldContext }>
