@@ -5,5 +5,8 @@ const generateScripts = globSync(["**/tests/**/generate.ts", "examples/**/genera
 generateScripts.forEach(f => {
     const fullpath = f.fullpath();
     const generatefn = require(fullpath);
-    generatefn.default();
+
+    if (typeof generatefn?.default === 'function') {
+        generatefn.default();
+    }
 })
