@@ -8,7 +8,6 @@
 // file: list-pagination.proto
 
 import * as ibb4ec9a82008b43ae7458e3d53713799 from "././list-pagination_grpc.ts";
-
 import * as i57b033e2b69dc7dff8a274f7cedaded5 from "././list-pagination_models.ts";
 
 import * as runtime from "@catfish/runtime";

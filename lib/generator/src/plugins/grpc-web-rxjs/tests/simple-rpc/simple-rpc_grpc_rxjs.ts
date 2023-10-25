@@ -8,7 +8,6 @@
 // file: simple-rpc.proto
 
 import * as i46be985838c89d4a9ef4547b05f7a8f6 from "././simple-rpc_grpc.ts";
-
 import * as i304a882bba12abcf5b0b1d2f7051afc3 from "././simple-rpc_models.ts";
 
 import * as runtime from "@catfish/runtime";

@@ -15,9 +15,8 @@ message Book {
 
 message ListBooksRequest {
   option catfish.msg_pagination_request = true;
-  string parent = 1;
-  int32 page_size = 2 [catfish.fld_page_size = true];
-  string page_token = 3 [catfish.fld_page_token = true];
+  int32 page_size = 1 [catfish.fld_page_size = true];
+  string page_token = 2 [catfish.fld_page_token = true];
 }
 
 message ListBooksResponse {

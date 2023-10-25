@@ -2,7 +2,7 @@ import { MessageFieldDescriptor, FileDescriptor, MessageDescriptor, BaseDescript
 import { ProjectContext } from "../../ProjectContext";
 import { findOption, getDescriptorFullImportName, getImportPath, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
-import { PluginOptions } from "./plugin";
+import { PluginOptions, fileNameBuilder } from "./plugin";
 
 export interface FileContext {
     options: Options[]
@@ -60,6 +60,9 @@ export interface MessageFieldContext {
 export interface RequestMessageContext extends MessageContext {
     pageSizeField: MessageFieldContext
     pageTokenField: MessageFieldContext
+    requestJsonType: string
+    requestTypeInfo: TypeInfoContext
+    requestParametersTypeName: string
 }
 
 export interface ResponseMessageContext extends MessageContext {
@@ -159,6 +162,9 @@ export const buildRequestMessageContext = (ctx: ProjectContext, file: FileDescri
     return {
         options: desc.options,
         name: desc.name,
+        requestTypeInfo: buildTypeInfoContext(ctx, file, desc.fullname),
+        requestJsonType: ctx.resolver.resolveFullTypeName('model.jsonIface', desc, file, fileNameBuilder),
+        requestParametersTypeName: `${desc.name}Parameters`,
         pageSizeField: buildMessageFieldContext(ctx, file, pageSizeFieldDesc),
         pageTokenField: buildMessageFieldContext(ctx, file, pageTokenFieldDesc),
     }
@@ -224,7 +230,7 @@ export const buildMessageFieldContext = (ctx: ProjectContext, file: FileDescript
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? getDescriptorFullImportName(ctx, file, typeInfo.descriptor, 'models', true) : null;
+    const fullType = typeInfo.descriptor ? ctx.resolver.resolveFullTypeName(['model.class', 'model.enum'], typeInfo.descriptor, file, fileNameBuilder, protoType) : null;
 
     return {
         protoType,

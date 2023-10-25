@@ -155,17 +155,15 @@ export class Book {
 }
 
 export interface ListBooksRequestJSON {
-  parent: string;
   pageSize: number;
   pageToken: string;
 }
 
 export class ListBooksRequest {
-  parent: string = "";
   pageSize: number = 0;
   pageToken: string = "";
 
-  public static fields = ["parent", "pageSize", "pageToken"];
+  public static fields = ["pageSize", "pageToken"];
 
   public get fields() {
     return ListBooksRequest.fields;
@@ -174,9 +172,6 @@ export class ListBooksRequest {
   constructor(obj?: ListBooksRequest) {
     if (!obj) return;
 
-    if (obj.parent !== undefined) {
-      this.parent = obj.parent;
-    }
     if (obj.pageSize !== undefined) {
       this.pageSize = obj.pageSize;
     }
@@ -186,21 +181,15 @@ export class ListBooksRequest {
   }
 
   public static encode(m: ListBooksRequest, w: pjs.Writer): pjs.Writer {
-    // string parent = 1
-    if (m.parent !== undefined) {
-      w.uint32(10);
-      w.string(m.parent);
-    }
-
-    // int32 page_size = 2
+    // int32 page_size = 1
     if (m.pageSize !== undefined) {
-      w.uint32(16);
+      w.uint32(8);
       w.int32(m.pageSize);
     }
 
-    // string page_token = 3
+    // string page_token = 2
     if (m.pageToken !== undefined) {
-      w.uint32(26);
+      w.uint32(18);
       w.string(m.pageToken);
     }
 
@@ -216,18 +205,13 @@ export class ListBooksRequest {
     while (r.pos < l) {
       const tag = r.uint32();
       switch (tag) {
-        // string parent = 1
-        case 10:
-          m.parent = r.string();
-          continue;
-
-        // int32 page_size = 2
-        case 16:
+        // int32 page_size = 1
+        case 8:
           m.pageSize = r.int32();
           continue;
 
-        // string page_token = 3
-        case 26:
+        // string page_token = 2
+        case 18:
           m.pageToken = r.string();
           continue;
       }
@@ -243,7 +227,6 @@ export class ListBooksRequest {
   public static toJSON(m: ListBooksRequest): ListBooksRequestJSON {
     const obj = {};
 
-    obj["parent"] = m.parent;
     obj["pageSize"] = m.pageSize;
     obj["pageToken"] = m.pageToken;
 
@@ -254,7 +237,6 @@ export class ListBooksRequest {
     m: ListBooksRequest,
     obj: ListBooksRequestJSON
   ): ListBooksRequest {
-    m.parent = obj.parent;
     m.pageSize = obj.pageSize;
     m.pageToken = obj.pageToken;
 
