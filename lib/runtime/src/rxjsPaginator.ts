@@ -1,6 +1,6 @@
 import { Observable, combineLatestWith, switchMap, mergeScan, concat, of, map, merge } from 'rxjs';
 
-export type DataFetcher<TParameters, TResponse> = (itemsPerPage: number, pageToken: string, parameters: TParameters) => Observable<TResponse>;
+export type PageFetcher<TParameters, TResponse> = (itemsPerPage: number, pageToken: string, parameters: TParameters) => Observable<TResponse>;
 
 export enum PaginatorAction {
     CHANGE_PARAMETERS,
@@ -16,7 +16,7 @@ export interface PaginatorData<TData> {
 
 export const createPaginator = <TData, TParameters, TResponse>(
     itemsPerPage: number,
-    fetcher: DataFetcher<TParameters, TResponse>,
+    fetcher: PageFetcher<TParameters, TResponse>,
     nextPageTokenGetter: (resp: TResponse) => string,
     dataGetter: (resp: TResponse) => TData[],
     parameters$: Observable<TParameters>,

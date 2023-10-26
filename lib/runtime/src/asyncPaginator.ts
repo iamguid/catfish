@@ -1,4 +1,4 @@
-export type PaginatorPageFetcher<TParams, TResponse> = (itemsPerPage: number, nextPageToken: string, params: TParams) => Promise<TResponse>
+export type PageFetcher<TParams, TResponse> = (itemsPerPage: number, nextPageToken: string, params: TParams) => Promise<TResponse>
 
 export class Paginator<TData, TParams, TResponse> {
     private params: TParams | null = null;
@@ -6,7 +6,7 @@ export class Paginator<TData, TParams, TResponse> {
 
     constructor(
         private itemsPerPage: number,
-        private fetcher: PaginatorPageFetcher<TParams | null | undefined, TResponse>,
+        private fetcher: PageFetcher<TParams | null | undefined, TResponse>,
         private nextPageTokenGetter: (resp: TResponse) => string,
         private dataGetter: (resp: TResponse) => TData[],
     ) {
@@ -60,7 +60,7 @@ export class Paginator<TData, TParams, TResponse> {
 
 export const createPaginator = <TData, TParams, TResponse>(
     itemsPerPage: number,
-    fetcher: PaginatorPageFetcher<TParams | null | undefined, TResponse>,
+    fetcher: PageFetcher<TParams | null | undefined, TResponse>,
     nextPageTokenGetter: (resp: TResponse) => string,
     dataGetter: (resp: TResponse) => TData[],
 ) => {

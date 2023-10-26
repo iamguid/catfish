@@ -25,7 +25,8 @@ export interface ServiceContext {
 export interface ServiceMethodContext {
     options: Options[]
     name: string
-    createPaginatorName: string
+    createRxjsPaginatorName: string
+    createAsyncPaginatorName: string
     clientStreaming: boolean
     serverStreaming: boolean
     request: RequestMessageContext
@@ -108,7 +109,8 @@ export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescrip
     return {
         options: methodDesc.options,
         name: snakeToCamel(methodDesc.name),
-        createPaginatorName: `create${snakeToCamel(methodDesc.name)}Paginator`,
+        createRxjsPaginatorName: `create${snakeToCamel(methodDesc.name)}RxjsPaginator`,
+        createAsyncPaginatorName: `create${snakeToCamel(methodDesc.name)}AsyncPaginator`,
         clientStreaming: methodDesc.isClientStreaming,
         serverStreaming: methodDesc.isServerStreaming,
         request: buildRequestMessageContext(ctx, file, requestTypeInfo),

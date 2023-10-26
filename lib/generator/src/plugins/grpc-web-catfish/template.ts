@@ -1,5 +1,5 @@
 import { findOption } from "../../utils";
-import { ExtensionsTemplate, GrpcBasedExtensionsTemplate, MainTemplate, RxjsBasedExtensionsTemplate, RxjsBasedPaginationExtensionTemplate } from "./templates";
+import { ExtensionsTemplate, GrpcBasedExtensionsTemplate, GrpcBasedPaginationExtensionTemplate, MainTemplate, RxjsBasedExtensionsTemplate, RxjsBasedPaginationExtensionTemplate } from "./templates";
 
 export const mainTemplate: MainTemplate = (render, opts, ctx) => `
   ${render('header', {
@@ -32,13 +32,9 @@ export const rxjsBasedExtensionsTemplate: RxjsBasedExtensionsTemplate = (render,
   const paginatedMethods = ctx.service.methods
     .filter(method => typeof findOption(method.options, 'catfish.mtd_paginated') !== 'undefined')
 
-  return `
-    ${
-      paginatedMethods
-        .map(method => render('rxjsBasedPaginationExtension', { service: ctx.service, method }))
-        .join('\n')
-    }
-  `
+  return paginatedMethods
+    .map(method => render('rxjsBasedPaginationExtension', { service: ctx.service, method }))
+    .join('\n')
 }
 
 export const rxjsBasedPaginationExtensionTemplate: RxjsBasedPaginationExtensionTemplate = (render, opts, ctx) => {
@@ -48,7 +44,7 @@ export const rxjsBasedPaginationExtensionTemplate: RxjsBasedPaginationExtensionT
 
     declare module '${ctx.service.rxjsClientImportPath}' {
       export interface ${ctx.service.rxjsClientName} {
-        ${ctx.method.createPaginatorName}(
+        ${ctx.method.createRxjsPaginatorName}(
           itemsPerPage: number, 
           parameters$: Observable<${ctx.method.request.requestParametersTypeName}>,
           nextPage$: Observable<void>,
@@ -57,14 +53,14 @@ export const rxjsBasedPaginationExtensionTemplate: RxjsBasedPaginationExtensionT
       }
     }
 
-    ${ctx.service.rxjsClientFullName}.prototype.${ctx.method.createPaginatorName} = function (
+    ${ctx.service.rxjsClientFullName}.prototype.${ctx.method.createRxjsPaginatorName} = function (
       this: ${ctx.service.rxjsClientFullName},
       itemsPerPage: number, 
       parameters$: Observable<${ctx.method.request.requestParametersTypeName}>,
       nextPage$: Observable<void>,
       reload$: Observable<void>,
-    ): Observable {
-      const fetcher = (itemsPerPage, pageToken, parameters) => {
+    ) {
+      const fetcher: runtime.rxjsPaginator.PageFetcher<${ctx.method.request.requestParametersTypeName}, ${ctx.method.responseTypeInfo.fullType}> = (itemsPerPage, pageToken, parameters) => {
         return this.${ctx.method.name}(new ${ctx.method.request.requestTypeInfo.fullType}().fromJSON({
           ...parameters,
           ${ctx.method.request.pageSizeField.name}: itemsPerPage,
@@ -85,10 +81,44 @@ export const rxjsBasedPaginationExtensionTemplate: RxjsBasedPaginationExtensionT
   `
 }
 
-export const grpcBasedExtensionsTemplate: GrpcBasedExtensionsTemplate = (render, opts, ctx) => `
+export const grpcBasedExtensionsTemplate: GrpcBasedExtensionsTemplate = (render, opts, ctx) => {
+  const paginatedMethods = ctx.service.methods
+    .filter(method => typeof findOption(method.options, 'catfish.mtd_paginated') !== 'undefined')
+
+  return paginatedMethods
+    .map(method => render('grpcBasedPaginationExtension', { service: ctx.service, method }))
+    .join('\n')
+}
+
+export const grpcBasedPaginationExtensionTemplate: GrpcBasedPaginationExtensionTemplate = (render, opts, ctx) => `
   declare module '${ctx.service.grpcClientImportPath}' {
     export interface ${ctx.service.grpcClientName} {
-      helloworld(): string;
+      ${ctx.method.createAsyncPaginatorName}(itemsPerPage: number):
+        runtime.asyncPaginator.Paginator<
+          ${ctx.method.response.dataField.typeInfo.fullType},
+          ${ctx.method.request.requestParametersTypeName},
+          ${ctx.method.response.name},
+        >;
     }
+  }
+
+  ${ctx.service.grpcClientFullName}.prototype.${ctx.method.createAsyncPaginatorName} = function (
+    this: ${ctx.service.grpcClientFullName},
+    itemsPerPage: number,
+  ) {
+    const fetcher: runtime.asyncPaginator.PageFetcher<${ctx.method.request.requestParametersTypeName}, ${ctx.method.responseTypeInfo.fullType}> = (itemsPerPage, pageToken, parameters) => {
+      return this.${ctx.method.name}(new ${ctx.method.request.requestTypeInfo.fullType}().fromJSON({
+        ...parameters,
+        ${ctx.method.request.pageSizeField.name}: itemsPerPage,
+        ${ctx.method.request.pageTokenField.name}: pageToken,
+      }))
+    }
+
+    return runtime.asyncPaginator.createPaginator(
+      itemsPerPage,
+      fetcher,
+      (resp) => resp.${ctx.method.response.nextPageTokenField.name},
+      (resp) => resp.${ctx.method.response.dataField.name},
+    );
   }
 `
