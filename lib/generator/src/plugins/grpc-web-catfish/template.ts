@@ -40,28 +40,28 @@ export const rxjsBasedExtensionsTemplate: RxjsBasedExtensionsTemplate = (render,
 export const rxjsBasedPaginationExtensionTemplate: RxjsBasedPaginationExtensionTemplate = (render, opts, ctx) => {
   return `
     export type ${ctx.method.request.requestParametersTypeName} = 
-      Omit<${ctx.method.request.requestJsonType}, '${ctx.method.request.pageSizeField.name}' | '${ctx.method.request.pageTokenField.name}'>
+      Omit<${ctx.method.request.requestJsonIfaceThing}, '${ctx.method.request.pageSizeField.name}' | '${ctx.method.request.pageTokenField.name}'>
 
-    declare module '${ctx.service.rxjsClientImportPath}' {
-      export interface ${ctx.service.rxjsClientName} {
+    declare module '${ctx.service.rxjsClientThing.importPath}' {
+      export interface ${ctx.service.rxjsClientThing.name} {
         ${ctx.method.createRxjsPaginatorName}(
           itemsPerPage: number, 
           parameters$: Observable<${ctx.method.request.requestParametersTypeName}>,
           nextPage$: Observable<void>,
           reload$: Observable<void>,
-        ): rxjs.Observable<runtime.rxjsPaginator.PaginatorData<${ctx.method.response.dataField.typeInfo.fullType}>>;
+        ): rxjs.Observable<runtime.rxjsPaginator.PaginatorData<${ctx.method.response.dataField.typeInfo.thing!.fullImport}>>;
       }
     }
 
-    ${ctx.service.rxjsClientFullName}.prototype.${ctx.method.createRxjsPaginatorName} = function (
-      this: ${ctx.service.rxjsClientFullName},
+    ${ctx.service.rxjsClientThing.fullImport}.prototype.${ctx.method.createRxjsPaginatorName} = function (
+      this: ${ctx.service.rxjsClientThing.fullImport},
       itemsPerPage: number, 
       parameters$: Observable<${ctx.method.request.requestParametersTypeName}>,
       nextPage$: Observable<void>,
       reload$: Observable<void>,
     ) {
-      const fetcher: runtime.rxjsPaginator.PageFetcher<${ctx.method.request.requestParametersTypeName}, ${ctx.method.responseTypeInfo.fullType}> = (itemsPerPage, pageToken, parameters) => {
-        return this.${ctx.method.name}(new ${ctx.method.request.requestTypeInfo.fullType}().fromJSON({
+      const fetcher: runtime.rxjsPaginator.PageFetcher<${ctx.method.request.requestParametersTypeName}, ${ctx.method.responseTypeInfo.thing!.fullImport}> = (itemsPerPage, pageToken, parameters) => {
+        return this.${ctx.method.name}(new ${ctx.method.request.requestTypeInfo.thing!.fullImport}().fromJSON({
           ...parameters,
           ${ctx.method.request.pageSizeField.name}: itemsPerPage,
           ${ctx.method.request.pageTokenField.name}: pageToken,
@@ -91,23 +91,23 @@ export const grpcBasedExtensionsTemplate: GrpcBasedExtensionsTemplate = (render,
 }
 
 export const grpcBasedPaginationExtensionTemplate: GrpcBasedPaginationExtensionTemplate = (render, opts, ctx) => `
-  declare module '${ctx.service.grpcClientImportPath}' {
-    export interface ${ctx.service.grpcClientName} {
+  declare module '${ctx.service.grpcClientThing.importPath}' {
+    export interface ${ctx.service.grpcClientThing.name} {
       ${ctx.method.createAsyncPaginatorName}(itemsPerPage: number):
         runtime.asyncPaginator.Paginator<
-          ${ctx.method.response.dataField.typeInfo.fullType},
+          ${ctx.method.response.dataField.typeInfo.thing!.fullImport},
           ${ctx.method.request.requestParametersTypeName},
           ${ctx.method.response.name},
         >;
     }
   }
 
-  ${ctx.service.grpcClientFullName}.prototype.${ctx.method.createAsyncPaginatorName} = function (
-    this: ${ctx.service.grpcClientFullName},
+  ${ctx.service.grpcClientThing.fullImport}.prototype.${ctx.method.createAsyncPaginatorName} = function (
+    this: ${ctx.service.grpcClientThing.fullImport},
     itemsPerPage: number,
   ) {
-    const fetcher: runtime.asyncPaginator.PageFetcher<${ctx.method.request.requestParametersTypeName}, ${ctx.method.responseTypeInfo.fullType}> = (itemsPerPage, pageToken, parameters) => {
-      return this.${ctx.method.name}(new ${ctx.method.request.requestTypeInfo.fullType}().fromJSON({
+    const fetcher: runtime.asyncPaginator.PageFetcher<${ctx.method.request.requestParametersTypeName}, ${ctx.method.responseTypeInfo.thing!.fullImport}> = (itemsPerPage, pageToken, parameters) => {
+      return this.${ctx.method.name}(new ${ctx.method.request.requestTypeInfo.thing!.fullImport}().fromJSON({
         ...parameters,
         ${ctx.method.request.pageSizeField.name}: itemsPerPage,
         ${ctx.method.request.pageTokenField.name}: pageToken,

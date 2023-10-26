@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package simple_service;
+
+service SimpleService {
+  rpc GetMethod(SimpleRequest) returns (SimpleResponse) {
+    option catfish.tanstack.query_method = true;
+  }
+  rpc UpdateMethod(SimpleRequest) returns (SimpleResponse) {
+    option catfish.tanstack.mutation_method = true;
+  }
+}
+
+message SimpleRequest {
+  int32 f_int32 = 1;
+}
+
+message SimpleResponse {
+  message SomeData {
+    int32 data = 1;
+  }
+  
+  SomeData data = 1 [catfish.tanstack.data_marker = true];
+}

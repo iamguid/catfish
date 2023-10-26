@@ -3,6 +3,7 @@ import { ProjectContext } from "../../ProjectContext";
 import { findOption, getDescriptorFullImportName, getImportPath, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
 import { PluginOptions, fileNameBuilder } from "./plugin";
+import { ResolvedThing, ResolvedThingImport } from "../../Resolver";
 
 export interface FileContext {
     options: Options[]
@@ -13,12 +14,8 @@ export interface FileContext {
 
 export interface ServiceContext {
     options: Options[]
-    rxjsClientImportPath: string
-    rxjsClientName: string
-    rxjsClientFullName: string
-    grpcClientImportPath: string
-    grpcClientName: string
-    grpcClientFullName: string
+    rxjsClientThing: ResolvedThingImport
+    grpcClientThing: ResolvedThingImport
     methods: ServiceMethodContext[]
 }
 
@@ -61,7 +58,7 @@ export interface MessageFieldContext {
 export interface RequestMessageContext extends MessageContext {
     pageSizeField: MessageFieldContext
     pageTokenField: MessageFieldContext
-    requestJsonType: string
+    requestJsonIfaceThing: ResolvedThingImport
     requestTypeInfo: TypeInfoContext
     requestParametersTypeName: string
 }
@@ -72,9 +69,9 @@ export interface ResponseMessageContext extends MessageContext {
 }
 
 export interface TypeInfoContext {
-    protoType: string
     desc: BaseDescriptor | null
-    fullType: string | null
+    thing: ResolvedThingImport | null
+    protoType: string
 }
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
@@ -87,17 +84,13 @@ export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, proj
 }
 
 export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, desc: ServiceDescriptor): ServiceContext => {
-    const rxjsClient = ctx.resolver.resolveOne('grpcrxjs.client', desc, file);
-    const grpcClient = ctx.resolver.resolveOne('grpc.client', desc, file);
+    const rxjsClientThing = ctx.resolver.resolveOne('grpcrxjs.client', desc, file);
+    const grpcClientThing = ctx.resolver.resolveOne('grpc.client', desc, file);
 
     return {
         options: desc.options,
-        rxjsClientImportPath: rxjsClient.importPath,
-        rxjsClientName: rxjsClient.name,
-        rxjsClientFullName: `${rxjsClient.importName}.${rxjsClient.name}`,
-        grpcClientImportPath: grpcClient.importPath,
-        grpcClientName: grpcClient.name,
-        grpcClientFullName: `${grpcClient.importName}.${grpcClient.name}`,
+        rxjsClientThing,
+        grpcClientThing,
         methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
     }
 }
@@ -165,7 +158,7 @@ export const buildRequestMessageContext = (ctx: ProjectContext, file: FileDescri
         options: desc.options,
         name: desc.name,
         requestTypeInfo: buildTypeInfoContext(ctx, file, desc.fullname),
-        requestJsonType: ctx.resolver.resolveFullTypeName('model.jsonIface', desc, file, fileNameBuilder),
+        requestJsonIfaceThing: ctx.resolver.resolveOne('model.jsonIface', desc, file),
         requestParametersTypeName: `${desc.name}Parameters`,
         pageSizeField: buildMessageFieldContext(ctx, file, pageSizeFieldDesc),
         pageTokenField: buildMessageFieldContext(ctx, file, pageTokenFieldDesc),
@@ -232,11 +225,11 @@ export const buildMessageFieldContext = (ctx: ProjectContext, file: FileDescript
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? ctx.resolver.resolveFullTypeName(['model.class', 'model.enum'], typeInfo.descriptor, file, fileNameBuilder, protoType) : null;
+    const fullType = typeInfo.descriptor ? ctx.resolver.resolveOne(['model.class', 'model.enum'], typeInfo.descriptor, file, protoType) : null;
 
     return {
         protoType,
         desc: typeInfo.descriptor ?? null,
-        fullType,
+        thing: fullType,
     }
 }

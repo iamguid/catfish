@@ -4,6 +4,7 @@ import { ProjectOptions } from "../../Project";
 import { PluginOptions } from "./plugin";
 import { getDescriptorFullImportName, snakeToCamel, upperCaseFirst } from "../../utils";
 import { fileNameBuilder } from "./resolver";
+import { ResolvedThing, ResolvedThingImport } from "../../Resolver";
 
 export interface FileContext {
     options: Options[]
@@ -15,8 +16,8 @@ export interface FileContext {
 export interface ServiceContext {
     options: Options[]
     serviceRawFullname: string
-    serviceDefinitionName: string
-    clientClassName: string
+    serviceDefinitionThing: ResolvedThingImport
+    clientClassThing: ResolvedThingImport
     methods: ServiceMethodContext[]
 }
 
@@ -32,8 +33,8 @@ export interface ServiceMethodContext {
 
 export interface TypeInfoContext {
     desc: BaseDescriptor | null
+    thing: ResolvedThingImport | null
     protoType: string
-    fullType: string | null
 }
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
@@ -49,8 +50,8 @@ export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, d
     return {
         options: file.options,
         serviceRawFullname: desc.fullname,
-        serviceDefinitionName: ctx.resolver.resolveTypeName('grpc.definition', desc, file),
-        clientClassName: ctx.resolver.resolveTypeName('grpc.client', desc, file),
+        serviceDefinitionThing: ctx.resolver.resolveOne('grpc.definition', desc, file),
+        clientClassThing: ctx.resolver.resolveOne('grpc.client', desc, file),
         methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
     }
 }
@@ -69,11 +70,11 @@ export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescrip
 
 export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
     const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? ctx.resolver.resolveFullTypeName(['model.class', 'model.enum'], typeInfo.descriptor, file, fileNameBuilder, protoType) : null;
+    const thing = typeInfo.descriptor ? ctx.resolver.resolveOne(['model.class', 'model.enum'], typeInfo.descriptor, file, protoType) : null;
 
     return {
         desc: typeInfo.descriptor ?? null,
         protoType,
-        fullType,
+        thing,
     }
 }

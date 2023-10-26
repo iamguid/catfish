@@ -17,6 +17,7 @@
     "@catfish/runtime": "*"
   },
   "devDependencies": {
+    "@tanstack/react-query": "^5.0.5",
     "@types/prettier": "2.7.3",
     "glob": "^10.3.10",
     "grpc-web": "1.4.2",

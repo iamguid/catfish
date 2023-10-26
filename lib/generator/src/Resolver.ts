@@ -1,17 +1,18 @@
 import path from "node:path";
 import crypto from "node:crypto";
 import { BaseDescriptor, FileDescriptor } from "@catfish/parser";
-import { filePathToPseudoNamespace } from "./utils";
 import { Import, ProjectContext } from "./ProjectContext";
 
 export interface ResolvedThing {
     id: string
+    fullname: string
     name: string
     desc: BaseDescriptor
     file: string
 }
 
 export interface ResolvedThingImport extends ResolvedThing {
+    fullImport: string
     importPath: string
     importName: string
 }
@@ -45,6 +46,7 @@ export class Resolver {
         const things = node[ResolverSymbol].get(thingProtofullname)!;
         const thing: ResolvedThing = {
             id: 'i' + crypto.createHash("md5").update(thingDesc.fileDescriptor.package + fileName_, "binary").digest("hex"),
+            fullname: `${thingDesc.namespace === '' ? '' : thingDesc.namespace + '.'}${thingName_}`,
             name: thingName_,
             desc: thingDesc,
             file: fileName_,
@@ -115,33 +117,28 @@ export class Resolver {
         return filteredTypes[0]
     }
 
-    resolveTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string, ignorePreffixInCurrentFile = true): string {
-        const resolvedType = this.resolveOne(namespace, thingDesc, file, protoType);
-        return resolvedType.name;
-    }
-
-    tryResolveTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string, ignorePreffixInCurrentFile = true): string | null {
+    tryResolveOne(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport | null {
         try {
-            return this.resolveTypeName(namespace, thingDesc, file, protoType);
+            return this.resolveOne(namespace, thingDesc, file, protoType)
         } catch {
-            return null;
+            return null
         }
     }
 
-    resolveFullTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true): string {
+    resolveRelativeTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true) {
         const fileName_ = typeof fileName === 'function' ? fileName(file, this.projectContext) : fileName
         const resolvedType = this.resolveOne(namespace, thingDesc, file, protoType);
 
         if (ignorePreffixInCurrentFile && resolvedType.file === fileName_) {
-            return resolvedType.name
+            return resolvedType.fullname
         } else {
-            return `${resolvedType.importName}.${resolvedType.name}`
+            return `${resolvedType.importName}.${resolvedType.fullname}`
         }
     }
 
-    tryResolveFullTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true): string | null {
+    tryResolveRelativeTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true) {
         try {
-            return this.resolveFullTypeName(namespace, thingDesc, file, fileName, protoType, ignorePreffixInCurrentFile)
+            return this.resolveRelativeTypeName(namespace, thingDesc, file, fileName, protoType ,ignorePreffixInCurrentFile)
         } catch {
             return null;
         }
@@ -182,6 +179,7 @@ export class Resolver {
 
         return {
             ...thing,
+            fullImport: `${thing.id}.${thing.fullname}`,
             importName: thing.id,
             importPath: pathPreffix + '/' + path.basename(thing.file),
         }

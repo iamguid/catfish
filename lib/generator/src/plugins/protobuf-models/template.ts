@@ -37,7 +37,7 @@ export const recursiveTemplate: RecursiveTemplate = (render, opts, ctx) => `
     ${render('modelClass', { message })}
 
     ${message.messages.length > 0 || message.enums.length > 0 ? `
-      export namespace ${message.className} {
+      export namespace ${message.classThing.name} {
         ${render('recursive', {
           messages: message.messages,
           enums: message.enums
@@ -49,7 +49,7 @@ export const recursiveTemplate: RecursiveTemplate = (render, opts, ctx) => `
 
 export const modelClassTemplate: ModelClassTemplate = (render, opts, ctx) => {
   return `
-    export class ${ctx.message.className} {
+    export class ${ctx.message.classThing.name} {
       ${render('modelClassFields', {
         message: ctx.message
       })}
@@ -65,7 +65,7 @@ export const modelClassTemplate: ModelClassTemplate = (render, opts, ctx) => {
       }).join('\n')}
 
       public get fields() {
-        return ${ctx.message.className}.fields
+        return ${ctx.message.classThing.name}.fields
       }
 
       ${render('modelClassCtor', {
@@ -90,31 +90,31 @@ export const modelClassTemplate: ModelClassTemplate = (render, opts, ctx) => {
 
       serialize(): Uint8Array | Buffer {
         const w = pjs.Writer.create();
-        return ${ctx.message.className}.encode(this, w).finish();
+        return ${ctx.message.classThing.name}.encode(this, w).finish();
       }
 
-      deserialize(buffer: Uint8Array | Buffer): ${ctx.message.className} {
+      deserialize(buffer: Uint8Array | Buffer): ${ctx.message.classThing.name} {
         const r = new pjs.Reader(buffer);
-        return ${ctx.message.className}.decode(this, r, r.len);
+        return ${ctx.message.classThing.name}.decode(this, r, r.len);
       }
 
-      toJSON(): ${ctx.message.jsonIfaceName} {
-        return ${ctx.message.className}.toJSON(this);
+      toJSON(): ${ctx.message.jsonIfaceThing.name} {
+        return ${ctx.message.classThing.name}.toJSON(this);
       }
 
-      fromJSON(obj: ${ctx.message.jsonIfaceName}): ${ctx.message.className} {
-        return ${ctx.message.className}.fromJSON(this, obj);
+      fromJSON(obj: ${ctx.message.jsonIfaceThing.name}): ${ctx.message.classThing.name} {
+        return ${ctx.message.classThing.name}.fromJSON(this, obj);
       }
 
-      clone(): ${ctx.message.className} {
-        return new ${ctx.message.className}(this);
+      clone(): ${ctx.message.classThing.name} {
+        return new ${ctx.message.classThing.name}(this);
       }
     }
   `;
 }
 
 export const jsonIfaceTemplate: JsonIfaceTemplate = (render, opts, ctx) => `
-  export interface ${ctx.message.jsonIfaceName} {
+  export interface ${ctx.message.jsonIfaceThing.name} {
     ${ctx.message.fields.map((field) => {
       if (isMapField(field)) {
         return `${field.name}: Record<${field.keyTypeInfo.jsonType}, ${field.valueTypeInfo.jsonType}>;`
@@ -139,7 +139,7 @@ export const enumTemplate: EnumTemplate = (render, opts, ctx) => `
 
 export const modelClassCtorTemplate: ModelClassCtorTemplate = (render, opts, ctx) => {
   return `
-    constructor(obj?: ${ctx.message.className}) {
+    constructor(obj?: ${ctx.message.classThing.name}) {
       if (!obj) return;
 
       ${ctx.message.fields.map((field) => {
@@ -203,12 +203,12 @@ export const modelClassFieldsTemplate: ModelClassFieldsTemplate = (render, opts,
 
 export const modelClassEncodeTemplate: ModelClassEncodeTemplate = (render, opts, ctx) => {
   return `
-    public static encode(m: ${ctx.message.className}, w: pjs.Writer): pjs.Writer {
+    public static encode(m: ${ctx.message.classThing.name}, w: pjs.Writer): pjs.Writer {
       ${ctx.message.fields.map(field => {
         if (isMapField(field)) {
             return `
               // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
-              ${ctx.message.className}.${field.encodeMethodName}(m.${field.name}, w);
+              ${ctx.message.classThing.name}.${field.encodeMethodName}(m.${field.name}, w);
             `
         }
 
@@ -318,7 +318,7 @@ export const modelClassEncodeMapTemplate: ModelClassEncodeMapTemplate = (render,
 
 export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts, ctx) => {
   return `
-    public static decode(m: ${ctx.message.className}, r: pjs.Reader, length: number): ${ctx.message.className} {
+    public static decode(m: ${ctx.message.classThing.name}, r: pjs.Reader, length: number): ${ctx.message.classThing.name} {
       const l = r.pos + length;
       while (r.pos < l) {
         const tag = r.uint32();
@@ -330,7 +330,7 @@ export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts,
                 // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
                 case ${field.tag}:
                   {
-                    const [k, v] = ${ctx.message.className}.${field.decodeMethodName}(r, r.uint32());
+                    const [k, v] = ${ctx.message.classThing.name}.${field.decodeMethodName}(r, r.uint32());
                     m.${field.name}.set(k, v)
                   }
                   continue;
@@ -401,7 +401,7 @@ export const modelClassDecodeTemplate: ModelClassDecodeTemplate = (render, opts,
 
 export const modelClassToJSONTemplate: ModelClassToJSONTemplate = (render, opts, ctx) => {
   return `
-    public static toJSON(m: ${ctx.message.className}): ${ctx.message.jsonIfaceName} {
+    public static toJSON(m: ${ctx.message.classThing.name}): ${ctx.message.jsonIfaceThing.name} {
       const obj = {};
 
       ${ctx.message.fields.map((field) => {
@@ -451,7 +451,7 @@ export const modelClassToJSONTemplate: ModelClassToJSONTemplate = (render, opts,
 
 export const modelClassFromJSONTemplate: ModelClassFromJSONTemplate = (render, opts, ctx) => {
   return `
-    public static fromJSON(m: ${ctx.message.className}, obj: ${ctx.message.jsonIfaceName}): ${ctx.message.className} {
+    public static fromJSON(m: ${ctx.message.classThing.name}, obj: ${ctx.message.jsonIfaceThing.name}): ${ctx.message.classThing.name} {
       ${ctx.message.fields.map((field) => {
         if (isMapField(field)) {
           return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`

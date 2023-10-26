@@ -32,7 +32,7 @@ export const servicesTemplate: ServicesTemplate = (render, opts, ctx) => {
 }
 
 export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, ctx) => `
-  export class ${ctx.service.rxjsClientClassName} extends ${ctx.service.grpcClientClassName} {
+  export class ${ctx.service.rxjsClientThing} extends ${ctx.service.grpcClientThing} {
     ${ctx.service.methods.map(method => method.serverStreaming 
       ? render('clientStubClassServerStreamingMethod', { method, service: ctx.service }) 
       : render('clientStubClassUnaryMethod', { method, service: ctx.service })).join('\n')}
@@ -41,18 +41,18 @@ export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, c
 
 export const clientStubClassUnaryMethodTemplate: ClientStubClassUnaryMethodTemplate = (render, opts, ctx) => `
   ${ctx.method.name}(
-    request: ${ctx.method.requestTypeInfo.fullType},
+    request: ${ctx.method.requestTypeInfo.thing!.fullImport},
     metadata: grpc.Metadata | null,
-  ): rxjs.Observable<${ctx.method.responseTypeInfo.fullType}> {
+  ): rxjs.Observable<${ctx.method.responseTypeInfo.thing!.fullImport}> {
     return rxjs.defer(() => rxjs.from(super.${ctx.method.name}(request, metadata)));
   }
 `;
 
 export const clientStubClassServerStreamingMethodTemplate: ClientStubClassServerStreamingMethodTemplate = (render, opts, ctx) => `
   ${ctx.method.name}(
-    request: ${ctx.method.requestTypeInfo.fullType},
+    request: ${ctx.method.requestTypeInfo.thing!.fullImport},
     metadata: grpc.Metadata | null,
-  ): rxjs.Observable<runtime.ClientReadableStreamEvent<${ctx.method.responseTypeInfo.fullType}>> {
+  ): rxjs.Observable<runtime.ClientReadableStreamEvent<${ctx.method.responseTypeInfo.thing!.fullImport}>> {
     return runtime.observableWrapClintReadableStream(super.${ctx.method.name}(request, metadata));
   }
 `;

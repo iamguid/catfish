@@ -32,22 +32,22 @@ export const servicesTemplate: ServicesTemplate = (render, opts, ctx) => {
 }
 
 export const serviceDefinitionTemplate: ServiceDefinitionTemplate = (render, opts, ctx) => `
-  export const ${ctx.service.serviceDefinitionName} = {
+  export const ${ctx.service.serviceDefinitionThing.name} = {
     ${ctx.service.methods.map(method => {
       return `${method.name}: new grpc.MethodDescriptor(
         "${method.path}",
         ${render('methodStreamType', { method })},
-        ${method.requestTypeInfo.fullType},
-        ${method.responseTypeInfo.fullType},
-        (message: ${method.requestTypeInfo.fullType}) => message.serialize(),
-        (bytes: Uint8Array) => new ${method.responseTypeInfo.fullType}().deserialize(bytes),
+        ${method.requestTypeInfo.thing!.fullImport},
+        ${method.responseTypeInfo.thing!.fullImport},
+        (message: ${method.requestTypeInfo.thing!.fullImport}) => message.serialize(),
+        (bytes: Uint8Array) => new ${method.responseTypeInfo.thing!.fullImport}().deserialize(bytes),
       ),`
     }).join('\n')}
   } as const
 `;
 
 export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, ctx) => `
-  export class ${ctx.service.clientClassName} {
+  export class ${ctx.service.clientClassThing.name} {
     private readonly client: grpc.AbstractClientBase;
     private readonly hostname: string;
     private readonly credentials?: null | { [index: string]: string; };
@@ -72,14 +72,14 @@ export const clientStubClassTemplate: ClientStubClassTemplate = (render, opts, c
 
 export const clientStubClassMethodTemplate: ClientStubClassMethodTemplate = (render, opts, ctx) => `
   ${ctx.method.name}(
-    request: ${ctx.method.requestTypeInfo.fullType},
+    request: ${ctx.method.requestTypeInfo.thing!.fullImport},
     metadata: grpc.Metadata | null,
-  ): ${ctx.method.serverStreaming ? `grpc.ClientReadableStream<${ctx.method.responseTypeInfo.fullType}>` : `Promise<${ctx.method.responseTypeInfo.fullType}>`} {
+  ): ${ctx.method.serverStreaming ? `grpc.ClientReadableStream<${ctx.method.responseTypeInfo.thing!.fullImport}>` : `Promise<${ctx.method.responseTypeInfo.thing!.fullImport}>`} {
     return this.client.${ctx.method.serverStreaming ? 'serverStreaming' : 'unaryCall'}(
       this.hostname + "${ctx.method.path}",
       request,
       metadata ?? {},
-      ${ctx.service.serviceDefinitionName}.${ctx.method.name},
+      ${ctx.service.serviceDefinitionThing.fullImport}.${ctx.method.name},
     );
   }
 `;
