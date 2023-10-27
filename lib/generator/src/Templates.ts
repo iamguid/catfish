@@ -1,13 +1,57 @@
-export type TemplatesRegistry = Record<string | number | symbol, TemplateFn<any, any, any>>;
-export type TemplateRenderFn<TTemplateRegistry extends TemplatesRegistry> = (name: keyof TTemplateRegistry, ctx: TTemplateRegistry[typeof name]) => string;
-export type TemplateFn<TTemplatesRegistry extends TemplatesRegistry, TOptions extends Record<string, any>, TCtx> = (render: TemplatesRenderer<TOptions, TTemplatesRegistry>['render'], opts: TOptions, ctx: TCtx) => string;
-export type ExtractCtx<TTemplatesRegistry extends TemplatesRegistry, TName extends keyof TTemplatesRegistry> = Parameters<TTemplatesRegistry[TName]>[2];
+import { FileDescriptor } from "@catfish/parser";
+import { Import, ProjectContext } from "./ProjectContext";
 
-export class TemplatesRenderer<TPluginOptions extends Record<string, any>, TTemplatesRegistry extends TemplatesRegistry> {
-  constructor(private opts: TPluginOptions, private registry: TTemplatesRegistry) {}
+export class TemplatesRegistry<
+  TTemplates,
+  TPluginOptions extends Record<string, any>,
+> {
+  private registry: Record<string, any> = {}
 
-  render = <TName extends keyof TTemplatesRegistry>(name: TName, ctx: ExtractCtx<TTemplatesRegistry, TName>): string => {
-    const template = this.registry[name];
-    return template(this.render, this.opts, ctx);
+  constructor(
+    private projectContext: ProjectContext,
+    private opts: TPluginOptions,
+  ) {}
+
+  def = (namespace: string) => {
+    return namespace;
+  }
+
+  use = (namespace: string) => {
+    return namespace;
+  }
+
+  renderHeader = (file: FileDescriptor) => {
+    const filePath = this.projectContext.getProtoFilePath(file);
+
+    return `
+      // @ts-nocheck
+      //
+      // Generated code by catfish
+      //
+      // DO NOT EDIT!
+      //
+      // package: ${file.package}
+      // file: ${filePath}
+    `
+  }
+
+  renderImports = (imports: Import[]) => 
+    imports.map(imprt => `import * as ${imprt.name} from "${imprt.path}";`).join('\n');
+
+  render = <TName extends keyof TTemplates>(name: TName, ctx: TTemplates[TName]): string => {
+    const template = this.registry[name as string];
+    return template(ctx, this.opts);
+  }
+
+  register = <TName extends keyof TTemplates>(
+    name: TName,
+    cb: (
+      ctx: TTemplates[TName],
+      use: (namespace: string) => string,
+      def: (namespace: string) => string,
+      opt: TPluginOptions
+    ) => string
+  ): void => {
+    this.registry[name as string] = cb
   }
 }

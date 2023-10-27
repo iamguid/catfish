@@ -16,9 +16,13 @@ export interface PluginOutput {
     files: PluginOutputFile[]
 }
 
-export type Plugin<TPluginOptions extends Record<string, any>, TTemplatesRegistry extends TemplatesRegistry> = (
+export type Plugin<
+    TPluginOptions extends Record<string, any>,
+    TPluginTemplatesType extends Record<string, any>,
+    TRegisterTemplates = (t: TemplatesRegistry<TPluginTemplatesType, TPluginOptions>) => void
+> = (
     projectContext: ProjectContext,
     projectOptions: ProjectOptions,
     pluginOptions?: TPluginOptions,
-    pluginTemplates?: TTemplatesRegistry,
+    registerPluginTemplates?: TRegisterTemplates,
 ) => PluginOutput;

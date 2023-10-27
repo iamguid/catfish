@@ -42,11 +42,12 @@ export class Project {
 
     resgister<
         TPluginOptions extends Record<string, any>,
-        TPluginTemplates extends TemplatesRegistry,
+        TPluginTemplatesType extends Record<string, any>,
+        TExtendedPluginTemplatesType extends TPluginTemplatesType,
     >(
-        plugin: Plugin<TPluginOptions, TPluginTemplates>,
+        plugin: Plugin<TPluginOptions, TPluginTemplatesType | TExtendedPluginTemplatesType>,
         options?: TPluginOptions,
-        templates?: TPluginTemplates,
+        templates?: (t: TemplatesRegistry<TExtendedPluginTemplatesType, TPluginOptions>) => void,
     ) {
         this.plugins.push([plugin, options, templates]);
         return this;

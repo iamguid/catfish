@@ -1,38 +1,64 @@
 import { Import } from "../../ProjectContext";
-import { TemplateFn, TemplatesRenderer } from "../../Templates";
-import { headerTemplate } from "../../templates/header.template";
-import { importsTemplate } from "../../templates/imports.template";
+import { TemplatesRegistry } from "../../Templates";
 import { FileContext, ServiceContext, ServiceMethodContext } from "./context";
 import { PluginOptions } from "./plugin";
-import { clientStubClassServerStreamingMethodTemplate, clientStubClassTemplate, clientStubClassUnaryMethodTemplate, mainTemplate, servicesTemplate } from "./template";
-
-export type PluginTamplateFn<TCtx> = TemplateFn<PluginTemplatesRegistry, PluginOptions, TCtx>
-export type MainTemplate = PluginTamplateFn<{ file: FileContext, imports: Import[] }>
-export type ServicesTemplate = PluginTamplateFn<{ services: ServiceContext[] }>
-export type ClientStubClassTemplate = PluginTamplateFn<{ service: ServiceContext }>
-export type ClientStubClassUnaryMethodTemplate = PluginTamplateFn<{ service: ServiceContext, method: ServiceMethodContext }>
-export type ClientStubClassServerStreamingMethodTemplate = PluginTamplateFn<{ service: ServiceContext, method: ServiceMethodContext }>
 
 export type PluginTemplatesRegistry = {
-  header: typeof headerTemplate,
-  imports: typeof importsTemplate,
-  main: MainTemplate,
-  services: ServicesTemplate,
-  clientStubClass: ClientStubClassTemplate,
-  clientStubClassUnaryMethod: ClientStubClassUnaryMethodTemplate,
-  clientStubClassServerStreamingMethod: ClientStubClassServerStreamingMethodTemplate,
+  main: { file: FileContext, imports: Import[] },
+  services: { services: ServiceContext[] },
+  clientStubClass: { service: ServiceContext },
+  clientStubClassUnaryMethod: { service: ServiceContext, method: ServiceMethodContext },
+  clientStubClassServerStreamingMethod: { service: ServiceContext, method: ServiceMethodContext },
 }
 
-export const pluginTemplatesRegistry: PluginTemplatesRegistry = {
-  header: headerTemplate,
-  imports: importsTemplate,
-  main: mainTemplate,
-  services: servicesTemplate,
-  clientStubClass: clientStubClassTemplate,
-  clientStubClassUnaryMethod: clientStubClassUnaryMethodTemplate,
-  clientStubClassServerStreamingMethod: clientStubClassServerStreamingMethodTemplate,
-}
+export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
+  t.register('main', ({ file, imports }) => `
+    ${t.renderHeader(file.desc)}
 
-export const buildTemplates = <TTemplatesRegistry extends PluginTemplatesRegistry>(opts: PluginOptions, registry: TTemplatesRegistry) => {
-  return new TemplatesRenderer(opts, registry)
+    ${t.renderImports(imports)}
+
+    import * as runtime from "@catfish/runtime"
+    import * as rxjs from 'rxjs';
+    import * as grpc from 'grpc-web';
+
+    ${t.render('services', { services: file.services })} 
+  `);
+
+  t.register('services', ({ services }) => {
+    let result = '';
+
+    for (const service of services) {
+      result += `// #region ${service.serviceRawFullname}`
+      result += t.render('clientStubClass', { service })
+      result += `// #endregion`
+    }
+
+    return result;
+  })
+
+  t.register('clientStubClass', ({ service }) => `
+    export class ${service.rxjsClientThing} extends ${service.grpcClientThing} {
+      ${service.methods.map(method => method.serverStreaming 
+        ? t.render('clientStubClassServerStreamingMethod', { method, service: service }) 
+        : t.render('clientStubClassUnaryMethod', { method, service: service })).join('\n')}
+    }
+  `);
+
+  t.register('clientStubClassUnaryMethod', ({ method }) => `
+    ${method.name}(
+      request: ${method.requestTypeInfo.thing!.fullImport},
+      metadata: grpc.Metadata | null,
+    ): rxjs.Observable<${method.responseTypeInfo.thing!.fullImport}> {
+      return rxjs.defer(() => rxjs.from(super.${method.name}(request, metadata)));
+    }
+  `);
+
+  t.register('clientStubClassServerStreamingMethod', ({ method }) => `
+    ${method.name}(
+      request: ${method.requestTypeInfo.thing!.fullImport},
+      metadata: grpc.Metadata | null,
+    ): rxjs.Observable<runtime.ClientReadableStreamEvent<${method.responseTypeInfo.thing!.fullImport}>> {
+      return runtime.observableWrapClintReadableStream(super.${method.name}(request, metadata));
+    }
+  `)
 }

@@ -6,7 +6,8 @@ import { findOption, snakeToCamel } from "../../utils";
 import { ResolvedThing, ResolvedThingImport } from "../../Resolver";
 
 export interface FileContext {
-    options: Options[],
+    desc: FileDescriptor
+    options: Options[]
     services: ServiceContext[]
     filePath: string
     package: string
@@ -55,6 +56,7 @@ export interface TypeInfoContext {
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
     return {
+        desc: file,
         options: file.options,
         services: file.services.map(s => buildServiceContext(ctx, file, s)),
         filePath: ctx.getProtoFilePath(file),

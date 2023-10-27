@@ -1,11 +1,12 @@
 import { MessageFieldDescriptor, FileDescriptor, MessageDescriptor, BaseDescriptor, Options, ServiceDescriptor, MethodDescriptor } from "@catfish/parser";
 import { ProjectContext } from "../../ProjectContext";
-import { findOption, getDescriptorFullImportName, getImportPath, getModuleImportName, snakeToCamel, upperCaseFirst } from "../../utils";
+import { findOption, snakeToCamel, upperCaseFirst } from "../../utils";
 import { ProjectOptions } from "../../Project";
-import { PluginOptions, fileNameBuilder } from "./plugin";
-import { ResolvedThing, ResolvedThingImport } from "../../Resolver";
+import { PluginOptions } from "./plugin";
+import { ResolvedThingImport } from "../../Resolver";
 
 export interface FileContext {
+    desc: FileDescriptor
     options: Options[]
     services: ServiceContext[]
     filePath: string
@@ -76,6 +77,7 @@ export interface TypeInfoContext {
 
 export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
     return {
+        desc: file,
         options: file.options,
         services: file.services.map(srv => buildServiceContext(ctx, file, srv)),
         filePath: ctx.getProtoFilePath(file),

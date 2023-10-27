@@ -1,5 +1,5 @@
 export * from "./plugin"
 export * from "./templates"
 export * as context from "./context"
-export * as template from "./template"
+export * as templates from "./templates"
 export * as utils from "./utils"
