@@ -31,7 +31,7 @@ const getImportId = (desc: BaseDescriptor) => {
         .digest("hex")
 }
 
-export class Resolver {
+export class ResolverV2 {
     private readonly registry: ResolverNode = { [ResolverSymbol]: new Map() }
 
     private captured: ResolvedThingImport[] = []
