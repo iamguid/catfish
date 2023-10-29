@@ -1,6 +1,8 @@
 import { BaseDescriptor, EnumDescriptor, EnumFieldDescriptor, FileDescriptor, MapFieldDescriptor, MessageDescriptor, MessageFieldDescriptor, MethodDescriptor, OneofDescriptor, ServiceDescriptor } from "@catfish/parser";
 import { Import, ProjectContext, TypeInfo } from "./ProjectContext";
 import { ResolvedThing, ResolvedThingImport } from "./ResolverV2";
+import { last } from "rxjs";
+import { MessageContext } from "./plugins/protobuf-models/context";
 
 export type OptionalKey<T, key> = T extends Record<any, any> ? T[key] : unknown
 
@@ -19,6 +21,30 @@ export type BasePluginContext = {
     readonly enums: { desc: EnumDescriptor }
     readonly enumfields: { enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor }
     readonly typeinfos: TypeInfo
+}
+
+export type PluginContextBuildedMessage<TPluginContext extends BasePluginContext> = TPluginContext['messages'] & {
+    fields: (
+        | (TPluginContext['messagefields'] & { typeInfo: TPluginContext['typeinfos'] })
+        | (TPluginContext['maps'] & { keyTypeInfo: TPluginContext['typeinfos'], valueTypeInfo: TPluginContext['typeinfos'] })
+        | (TPluginContext['oneofs'] & { fields: TPluginContext['messagefields'][] } )
+    )[]
+    messages: PluginContextBuildedMessage<TPluginContext>[],
+    enums: (TPluginContext['enums'] & {
+        fields: TPluginContext['enumfields'][]
+    })[]
+}
+
+export type PluginContextBuilded<TPluginContext extends BasePluginContext> = {
+    files: (TPluginContext['files'] & {
+        services: (TPluginContext['services'] & {
+            methods: (TPluginContext['methods'] & { requestTypeInfo: TPluginContext['typeinfos'], responseTypeInfo: TPluginContext['typeinfos'] })[]
+        })[],
+        messages: PluginContextBuildedMessage<TPluginContext>[],
+        enums: (TPluginContext['enums'] & {
+            fields: TPluginContext['enumfields'][]
+        })[]
+    })[],
 }
 
 export type BasePluginContextAny = {
@@ -41,13 +67,6 @@ export type BasePluginContextIOAny = {
 
 export type PluginContextResult<TPluginContext extends BasePluginContextIOAny> = {
     [key in keyof TPluginContext]: OptionalKey<TPluginContext[key], 'O'>[]
-}
-
-export type PluginContextChain<TPrev extends Partial<BasePluginContextIOAny>, TNext extends Partial<BasePluginContextIOAny>> = {
-    [key in keyof BasePluginContext]: {
-        I: OptionalKey<TPrev[key], 'O'>,
-        O: OptionalKey<TPrev[key], 'O'> & OptionalKey<TNext[key], 'O'>
-    }
 }
 
 export type PluginContextIO<TPluginContextI extends BasePluginContext, TPluginContextO extends BasePluginContext> = {
@@ -73,81 +92,46 @@ export type ContextsRegistryCbArguments<
     ctx: TPluginContextI[TName],
     prj: ProjectContext,
     file: FileDescriptor,
-    use: (namespace: string, desc: BaseDescriptor, thingName: string) => ResolvedThingImport,
-    def: (namespace: string, desc: BaseDescriptor) => Promise<ResolvedThing>,
+    def: (namespace: string, desc: BaseDescriptor, thingName: string) => ResolvedThing,
+    use: (namespace: string, desc: BaseDescriptor, protoType?: string) => Promise<ResolvedThingImport>,
     opt: TPluginOptions
 }
-
-export type ContextsRegistryCb<
-    TName extends keyof BasePluginContext,
-    TPluginOptions extends Record<string, any>,
-    TPluginContextI extends BasePluginContext,
-    TPluginContextO extends BasePluginContext,
-> = (
-    ctx: TPluginContextI[TName],
-    prj: ProjectContext,
-    file: FileDescriptor,
-    use: (namespace: string, desc: BaseDescriptor, thingName: string) => ResolvedThingImport,
-    def: (namespace: string, desc: BaseDescriptor) => Promise<ResolvedThing>,
-    opt: TPluginOptions
-) => Promise<TPluginContextO[TName]>
 
 export class ContextsRegistry<
     TPluginOptions extends Record<string, any>,
     TPluginContextI extends BasePluginContext = BasePluginContext,
     TPluginContextO extends BasePluginContext = BasePluginContext,
 > {
-    private registry: Record<string, ContextsRegistryCb<any, any, any, any>[]> = {}
+    private contextTransformerChains: Record<
+        keyof BasePluginContext,
+        ((args: ContextsRegistryCbArguments<keyof BasePluginContext, TPluginOptions, TPluginContextI>) => Promise<TPluginContextO>)[]
+    > = {
+        files: [],
+        services: [],
+        methods: [],
+        messages: [],
+        messagefields: [],
+        maps: [],
+        oneofs: [],
+        enums: [],
+        enumfields: [],
+        typeinfos: []
+    }
 
     constructor(
         private projectContext: ProjectContext,
         private file: FileDescriptor,
         private fileName: string,
         private opts: TPluginOptions,
-    ) {
-        this.buildBasePluginContext(this)
-    }
+    ) {}
 
     def = (namespace: string, desc: BaseDescriptor, thingName: string): ResolvedThing => {
         return this.projectContext.resolverV2.define(namespace, desc, thingName, this.fileName)
     }
 
-    use = async (namespace: string, desc: BaseDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
+    use = (namespace: string, desc: BaseDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
         return this.projectContext.resolverV2.resolveByNamespace(namespace, desc, this.file, protoType)
     }
-
-    // extend = <
-    //     TNextPluginContext,
-    //     TName extends keyof TPluginContext
-    // >(
-    //     name: TName,
-    //     cb: ContextsRegistryCb<TPluginOptions, TPluginContext, TName>
-    // ): ContextsRegistry<PluginContextChain<TPluginContext, TNextPluginContext>> => {
-    //     if (!this.registry[name as string]) {
-    //         this.registry[name as string] = []
-    //     }
-
-    //     this.registry[name as string].push(cb)
-
-    //     return this as ContextsRegistry<PluginContextChain<TPluginContext, TNextPluginContext>>
-    // }
-
-    // extend<
-    //     TName extends keyof BasePluginContext,
-    //     TNextPluginContext extends BasePluginContext = (TPluginContext & { test: string }),
-    // >(
-    //     this: ContextsRegistry<TPluginOptions, PluginContextChain<TPluginContext, TNextPluginContext>>,
-    //     name: TName,
-    //     cb: ContextsRegistryCb<TPluginOptions, PluginContextChain<TPluginContext, TNextPluginContext>, TName>
-    // ) {
-    //     if (!this.registry[name as string]) {
-    //         this.registry[name as string] = []
-    //     }
-
-    //     this.registry[name as string].push(cb)
-
-    //     return this;
-    // }
 
     extend<
         TCbOut extends TPluginContextO[TName],
@@ -157,63 +141,169 @@ export class ContextsRegistry<
         name: TName,
         cb: (args: ContextsRegistryCbArguments<TName, TPluginOptions, TPluginContextI>) => Promise<TCbOut>,
     ) {
-        // if (!this.registry[name as string]) {
-        //     this.registry[name as string] = []
-        // }
+        if (!this.contextTransformerChains[name]) {
+            this.contextTransformerChains[name] = []
+        }
 
-        // this.registry[name as string].push(cb)
+        this.contextTransformerChains[name].push(cb as any)
 
         return this as unknown as ContextsRegistry<TPluginOptions, TExtendedPluginContext, TPluginContextO & TExtendedPluginContext>;
     }
 
     build = <
-        TPluginContext extends BasePluginContextIOAny = PluginContextIO<TPluginContextI, TPluginContextO>,
-        TPluginContextResult extends BasePluginContextAny = PluginContextResult<TPluginContext>
-    > (): TPluginContextResult => {
+        TPluginContextBuilded extends PluginContextBuilded<TPluginContextO> = PluginContextBuilded<TPluginContextO>
+    >(): TPluginContextBuilded => {
         const projectFiles = this.projectContext.getFiles();
 
-        const files: TPluginContextResult['services'] = [];
-        const services: TPluginContextResult['services'] = [];
-        const methods: TPluginContextResult['methods'] = [];
-        const messages: TPluginContextResult['messages'] = [];
-        const messagefields: TPluginContextResult['messagefields'] = [];
-        const maps: TPluginContextResult['maps'] = [];
-        const oneofs: TPluginContextResult['oneofs'] = [];
-        const enums: TPluginContextResult['enums'] = [];
-        const enumfields: TPluginContextResult['enumfields'] = [];
-        const typeinfos: TPluginContextResult['typeinfos'] = [];
+        const buildMessage = (message: MessageDescriptor): TPluginContextBuilded['files'][0]['messages'][0] => ({
+            ...this.buildMessage(message),
+            fields: message.fields.map(fld => {
+                if (fld instanceof OneofDescriptor) {
+                    return {
+                        ...this.buildOneof(fld),
+                        fields: fld.fields.map(f => ({
+                            ...this.buildMessageField(message, f),
+                            typeInfo: this.buildTypeInfo(f.type)
+                        }))
+                    }
+                }
 
-        for (const prop in this.registry) {
-            const cbChanin = this.registry[prop]
+                if (fld instanceof MapFieldDescriptor) {
+                    return {
+                        ...this.buildMap(fld),
+                        keyTypeInfo: this.buildTypeInfo(fld.keyType),
+                        valueTypeInfo: this.buildTypeInfo(fld.valueType),
+                    }
+                }
 
-            // let lastResult = 
-            // for (const cb of cbChanin) {
-            //     cb()
-            // }
+                if (fld instanceof MessageFieldDescriptor) {
+                    return {
+                        ...this.buildMessageField(message, fld),
+                        typeInfo: this.buildTypeInfo(fld.type)
+                    }
+                }
 
-        }
+                throw new Error(`Cannot build message field '${fld.fullpath}' context`)
+            }),
+            messages: message.messages.map(msg => buildMessage(msg)),
+            enums: message.enums.map(enm => ({
+                ...this.buildEnum(enm),
+                fields: enm.fields.map(f => ({
+                    ...this.buildEnumField(enm, f)
+                }))
+            }))
+        })
 
-        return { files, services, methods, messages, messagefields, maps, oneofs, enums, enumfields, typeinfos } as TPluginContextResult
+        const result: TPluginContextBuilded['files'] = projectFiles.map(file => ({
+            ...this.buildFile(file),
+            services: file.services.map(service => ({
+                ...this.buildService(service),
+                methods: service.methods.map(method => ({
+                    ...this.buildMethod(method),
+                    requestTypeInfo: this.buildTypeInfo(method.inputMessageType),
+                    responseTypeInfo: this.buildTypeInfo(method.outputMessageType),
+                }))
+            })),
+            messages: file.messages.map(message => buildMessage(message)),
+            enums: file.enums.map(enm => ({
+                ...this.buildEnum(enm),
+                fields: enm.fields.map(f => ({
+                    ...this.buildEnumField(enm, f)
+                }))
+            }))
+        }))
+
+        return { files: result } as any
     }
 
-    // private buildBasePluginContext = (cr: ContextsRegistry<Record<string, any>, BasePluginContext>) => {
-    //     cr.extend('files', async (ctx, prj) => ({ desc: ctx, filePath: prj.getProtoFilePath(ctx) }))
-    //     cr.extend('services', async (ctx) => ({ desc: ctx }))
-    //     cr.extend('methods', async (ctx) => ({ desc: ctx }))
-    //     cr.extend('messages', async (ctx) => ({ desc: ctx }))
-    //     cr.extend('messagefields', async (ctx) => ({ msgDesc: ctx.msgDesc, msgFieldDesc: ctx.msgFieldDesc }))
-    //     cr.extend('maps', async (ctx) => ({ desc: ctx }))
-    //     cr.extend('oneofs', async (ctx) => ({ desc: ctx }))
-    //     cr.extend('enums', async (ctx) => ({ desc: ctx }))
-    //     cr.extend('enumfields', async (ctx) => ({ enmDesc: ctx.enmDesc, enmFieldDesc: ctx.enmFieldDesc }))
-    //     cr.extend('typeinfos', async (ctx, prj, file) => prj.getTypeInfo(file, ctx.type))
-    // }
+    private buildFile = (desc: FileDescriptor): BasePluginContext['files'] => {
+        const cbChanin = this.contextTransformerChains['files']
+        let lastResult: BasePluginContext['files'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildService = (desc: ServiceDescriptor) => {
+        const cbChanin = this.contextTransformerChains['services']
+        let lastResult: BasePluginContext['services'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildMethod = (desc: MethodDescriptor) => {
+        const cbChanin = this.contextTransformerChains['methods']
+        let lastResult: BasePluginContext['methods'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildMessage = (desc: MessageDescriptor) => {
+        const cbChanin = this.contextTransformerChains['messages']
+        let lastResult: BasePluginContext['messages'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildMessageField = (msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor) => {
+        const cbChanin = this.contextTransformerChains['messagefields']
+        let lastResult: BasePluginContext['messagefields'] = { msgDesc, msgFieldDesc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildMap = (desc: MapFieldDescriptor) => {
+        const cbChanin = this.contextTransformerChains['maps']
+        let lastResult: BasePluginContext['maps'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildOneof = (desc: OneofDescriptor) => {
+        const cbChanin = this.contextTransformerChains['oneofs']
+        let lastResult: BasePluginContext['oneofs'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildEnum = (desc: EnumDescriptor) => {
+        const cbChanin = this.contextTransformerChains['enums']
+        let lastResult: BasePluginContext['enums'] = { desc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildEnumField = (enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor) => {
+        const cbChanin = this.contextTransformerChains['enumfields']
+        let lastResult: BasePluginContext['enumfields'] = { enmDesc, enmFieldDesc }
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
+
+    private buildTypeInfo = (protoType: string) => {
+        const typeInfo = this.projectContext.getTypeInfo(this.file, protoType);
+        const cbChanin = this.contextTransformerChains['typeinfos']
+        let lastResult: BasePluginContext['typeinfos'] = typeInfo
+        for (const cb of cbChanin) {
+            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        }
+        return lastResult
+    }
 }
-
-// export type ExtendedPluignContext = PluginContextChain<BasePluginContext, {
-//     files: { I: BasePluginContext['files']['I'], O: { helloworld: string } }
-// }>
-
-// export const buildExtendedPluignContext = (cr: ContextsRegistry<Record<string, any>, ExtendedPluignContext>) => {
-//     cr.extend('files', async (ctx, prj) => ({ desc: ctx, filePath: prj.getProtoFilePath(ctx), helloworld: '' }))
-// }
