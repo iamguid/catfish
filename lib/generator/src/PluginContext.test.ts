@@ -13,18 +13,13 @@ describe("PluignContext", () => {
         const testProjectContext = new ProjectContext({ protoDirPath: 'none', outDirPath: 'none' });
         const testPluginContext = new ContextsRegistry(testProjectContext, {} as any, 'test', {});
 
-        type ExtendedContext = PluginContextO<BasePluginContext> & {
-            files: {
-                test: 'test'
-            }
-        }
-
         const context = testPluginContext
-            .extend<ExtendedContext>({
-                'files': async (ctx) => ({ ...ctx, test: 'teast' })
-            })
-            .build()
+            .extend('files', async ({ ctx }) => ({ ...ctx, test: 'test' }))
 
-        const firstFile = context.files[0].test
+        const context2 = context
+            .extend('files', async ({ ctx }) => ({ ...ctx, test2: 'test' }))
+
+        context2.build().files[0].test
+        context2.build().files[0].test2
     })
 })
