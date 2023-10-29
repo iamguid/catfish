@@ -1,8 +1,23 @@
 import { BaseDescriptor, EnumDescriptor, EnumFieldDescriptor, FileDescriptor, MapFieldDescriptor, MessageDescriptor, MessageFieldDescriptor, MethodDescriptor, OneofDescriptor, ServiceDescriptor } from "@catfish/parser";
-import { Import, ProjectContext, TypeInfo } from "./ProjectContext";
+import { ProjectContext, TypeInfo } from "./ProjectContext";
 import { ResolvedThing, ResolvedThingImport } from "./ResolverV2";
-import { last } from "rxjs";
-import { MessageContext } from "./plugins/protobuf-models/context";
+
+type ConvertFlat<TPluginContext extends BasePluginContext, TBuilded extends PluginContextBuilded<TPluginContext> = PluginContextBuilded<TPluginContext>> = {
+    'file': TBuilded['file'],
+    'file.service': TBuilded['file']['services'],
+    'file.service.method': TBuilded['file']['services'][0]['methods'][0],
+    'file.enum': TBuilded['file']['enums'][0],
+    'file.enum.field': TBuilded['file']['enums'][0]['fields'][0],
+    'file.message': TBuilded['file']['messages'][0],
+    'file.message.field': TPluginContext['messagefields'],
+    'file.message.map': TPluginContext['maps'],
+    'file.message.oneof': TPluginContext['oneofs'] & { fields: (TPluginContext['messagefields'])[] },
+    'file.message.oneof.field': TPluginContext['messagefields'],
+    'typeinfo': TPluginContext['typeinfos'],
+}
+
+export type ExtractPluginContextFlat<TContextsRegistry extends ContextsRegistry<any>> =
+    TContextsRegistry extends ContextsRegistry<infer T1, infer T2, infer TPluginContextO> ? ConvertFlat<TPluginContextO> : unknown;
 
 export type OptionalKey<T, key> = T extends Record<any, any> ? T[key] : unknown
 
@@ -13,11 +28,11 @@ export type ExtendByName<T, TExt, TName> = {
 export type BasePluginContext = {
     readonly files: { desc: FileDescriptor }
     readonly services: { desc: ServiceDescriptor }
-    readonly methods: { desc: MethodDescriptor }
+    readonly methods: { desc: MethodDescriptor, requestTypeInfo: TypeInfo, responseTypeInfo: TypeInfo }
     readonly messages: { desc: MessageDescriptor }
-    readonly messagefields: { msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor }
-    readonly maps: { desc: MapFieldDescriptor }
-    readonly oneofs: { desc: OneofDescriptor }
+    readonly messagefields: { type: 'field', msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor, typeInfo: TypeInfo }
+    readonly maps: { type: 'map', desc: MapFieldDescriptor, keyTypeInfo: TypeInfo, valueTypeInfo: TypeInfo }
+    readonly oneofs: { type: 'oneof', desc: OneofDescriptor }
     readonly enums: { desc: EnumDescriptor }
     readonly enumfields: { enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor }
     readonly typeinfos: TypeInfo
@@ -25,26 +40,26 @@ export type BasePluginContext = {
 
 export type PluginContextBuildedMessage<TPluginContext extends BasePluginContext> = TPluginContext['messages'] & {
     fields: (
-        | (TPluginContext['messagefields'] & { typeInfo: TPluginContext['typeinfos'] })
-        | (TPluginContext['maps'] & { keyTypeInfo: TPluginContext['typeinfos'], valueTypeInfo: TPluginContext['typeinfos'] })
-        | (TPluginContext['oneofs'] & { fields: TPluginContext['messagefields'][] } )
+        | (TPluginContext['messagefields'])
+        | (TPluginContext['maps'])
+        | (TPluginContext['oneofs'] & { fields: (TPluginContext['messagefields'])[] } )
     )[]
-    messages: PluginContextBuildedMessage<TPluginContext>[],
+    messages: (PluginContextBuildedMessage<TPluginContext>)[],
     enums: (TPluginContext['enums'] & {
-        fields: TPluginContext['enumfields'][]
+        fields: (TPluginContext['enumfields'])[]
     })[]
 }
 
 export type PluginContextBuilded<TPluginContext extends BasePluginContext> = {
-    files: (TPluginContext['files'] & {
+    file: (TPluginContext['files'] & {
         services: (TPluginContext['services'] & {
-            methods: (TPluginContext['methods'] & { requestTypeInfo: TPluginContext['typeinfos'], responseTypeInfo: TPluginContext['typeinfos'] })[]
+            methods: (TPluginContext['methods'])[]
         })[],
-        messages: PluginContextBuildedMessage<TPluginContext>[],
+        messages: (PluginContextBuildedMessage<TPluginContext>)[],
         enums: (TPluginContext['enums'] & {
-            fields: TPluginContext['enumfields'][]
+            fields: (TPluginContext['enumfields'])[]
         })[]
-    })[],
+    }),
 }
 
 export type BasePluginContextAny = {
@@ -104,7 +119,7 @@ export class ContextsRegistry<
 > {
     private contextTransformerChains: Record<
         keyof BasePluginContext,
-        ((args: ContextsRegistryCbArguments<keyof BasePluginContext, TPluginOptions, TPluginContextI>) => Promise<TPluginContextO>)[]
+        ((args: ContextsRegistryCbArguments<keyof BasePluginContext, TPluginOptions, any>) => Promise<any>)[]
     > = {
         files: [],
         services: [],
@@ -150,159 +165,137 @@ export class ContextsRegistry<
         return this as unknown as ContextsRegistry<TPluginOptions, TExtendedPluginContext, TPluginContextO & TExtendedPluginContext>;
     }
 
-    build = <
-        TPluginContextBuilded extends PluginContextBuilded<TPluginContextO> = PluginContextBuilded<TPluginContextO>
-    >(): TPluginContextBuilded => {
-        const projectFiles = this.projectContext.getFiles();
+    build = async <TPluginContextBuilded extends PluginContextBuilded<TPluginContextO> = PluginContextBuilded<TPluginContextO>>(): Promise<TPluginContextBuilded> => {
+        const buildField = async (message: MessageDescriptor, field: BaseDescriptor): Promise<TPluginContextBuilded['file']['messages'][0]['fields'][0]> => {
+            if (field instanceof OneofDescriptor) {
+                const oneofBaseCtx = await this.buildOneof(field);
+                const fields = await Promise.all(field.fields.map(async f => {
+                    return await this.buildMessageField(message, f);
+                }));
 
-        const buildMessage = (message: MessageDescriptor): TPluginContextBuilded['files'][0]['messages'][0] => ({
-            ...this.buildMessage(message),
-            fields: message.fields.map(fld => {
-                if (fld instanceof OneofDescriptor) {
-                    return {
-                        ...this.buildOneof(fld),
-                        fields: fld.fields.map(f => ({
-                            ...this.buildMessageField(message, f),
-                            typeInfo: this.buildTypeInfo(f.type)
-                        }))
-                    }
+                return { ...oneofBaseCtx, fields }
+            }
+
+            if (field instanceof MapFieldDescriptor) {
+                return await this.buildMap(field);
+            }
+
+            if (field instanceof MessageFieldDescriptor) {
+                return await this.buildMessageField(message, field)
+            }
+
+            throw new Error(`Cannot build message field '${field.fullpath}' context`)
+        }
+
+        const buildEnum = async (enm: EnumDescriptor) => {
+            const baseCtx = await this.buildEnum(enm)
+            const fields = await Promise.all(enm.fields.map(fld => this.buildEnumField(enm, fld)))
+
+            return {
+                ...baseCtx,
+                fields
+            }
+        }
+
+        const buildMessage = async (message: MessageDescriptor): Promise<TPluginContextBuilded['file']['messages'][0]> => {
+            const baseCtx = await this.buildMessage(message)
+            const enums = await Promise.all(message.enums.map(enm => buildEnum(enm)))
+            const fields = await Promise.all(message.fields.map(field => buildField(message, field)))
+            const messages = await Promise.all(message.messages.map(msg => buildMessage(msg)))
+
+            return {
+                ...baseCtx,
+                enums,
+                fields,
+                messages
+            }
+        }
+
+        const buildFile = async (file: FileDescriptor): Promise<TPluginContextBuilded['file']> => {
+            const baseCtx = await this.buildFile(file)
+            const enums = await Promise.all(file.enums.map(enm => buildEnum(enm)))
+            const messages = await Promise.all(file.messages.map(msg => buildMessage(msg)))
+            const services = await Promise.all(file.services.map(async (service) => {
+                const baseCtx = await this.buildService(service)
+                const methods = await Promise.all(service.methods.map((method) => this.buildMethod(method)))
+
+                return {
+                    ...baseCtx,
+                    methods
                 }
-
-                if (fld instanceof MapFieldDescriptor) {
-                    return {
-                        ...this.buildMap(fld),
-                        keyTypeInfo: this.buildTypeInfo(fld.keyType),
-                        valueTypeInfo: this.buildTypeInfo(fld.valueType),
-                    }
-                }
-
-                if (fld instanceof MessageFieldDescriptor) {
-                    return {
-                        ...this.buildMessageField(message, fld),
-                        typeInfo: this.buildTypeInfo(fld.type)
-                    }
-                }
-
-                throw new Error(`Cannot build message field '${fld.fullpath}' context`)
-            }),
-            messages: message.messages.map(msg => buildMessage(msg)),
-            enums: message.enums.map(enm => ({
-                ...this.buildEnum(enm),
-                fields: enm.fields.map(f => ({
-                    ...this.buildEnumField(enm, f)
-                }))
             }))
-        })
 
-        const result: TPluginContextBuilded['files'] = projectFiles.map(file => ({
-            ...this.buildFile(file),
-            services: file.services.map(service => ({
-                ...this.buildService(service),
-                methods: service.methods.map(method => ({
-                    ...this.buildMethod(method),
-                    requestTypeInfo: this.buildTypeInfo(method.inputMessageType),
-                    responseTypeInfo: this.buildTypeInfo(method.outputMessageType),
-                }))
-            })),
-            messages: file.messages.map(message => buildMessage(message)),
-            enums: file.enums.map(enm => ({
-                ...this.buildEnum(enm),
-                fields: enm.fields.map(f => ({
-                    ...this.buildEnumField(enm, f)
-                }))
-            }))
-        }))
+            return {
+                ...baseCtx,
+                enums,
+                messages,
+                services,
+            }
+        }
 
-        return { files: result } as any
+        return await buildFile(this.file) as any
     }
 
-    private buildFile = (desc: FileDescriptor): BasePluginContext['files'] => {
+    private buildFile = async (desc: FileDescriptor): Promise<BasePluginContext['files']> => {
         const cbChanin = this.contextTransformerChains['files']
-        let lastResult: BasePluginContext['files'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc }, cbChanin)
     }
 
-    private buildService = (desc: ServiceDescriptor) => {
+    private buildService = async (desc: ServiceDescriptor): Promise<BasePluginContext['services']> => {
         const cbChanin = this.contextTransformerChains['services']
-        let lastResult: BasePluginContext['services'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc }, cbChanin)
     }
 
-    private buildMethod = (desc: MethodDescriptor) => {
+    private buildMethod = async (desc: MethodDescriptor): Promise<BasePluginContext['methods']> => {
+        const requestTypeInfo = this.projectContext.getTypeInfo(this.file, desc.inputMessageType)
+        const responseTypeInfo = this.projectContext.getTypeInfo(this.file, desc.outputMessageType)
         const cbChanin = this.contextTransformerChains['methods']
-        let lastResult: BasePluginContext['methods'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc, requestTypeInfo, responseTypeInfo }, cbChanin)
     }
 
-    private buildMessage = (desc: MessageDescriptor) => {
+    private buildMessage = async (desc: MessageDescriptor): Promise<BasePluginContext['messages']> => {
         const cbChanin = this.contextTransformerChains['messages']
-        let lastResult: BasePluginContext['messages'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc }, cbChanin)
     }
 
-    private buildMessageField = (msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor) => {
+    private buildMessageField = async (msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor): Promise<BasePluginContext['messagefields']> => {
+        const typeInfo = this.projectContext.getTypeInfo(this.file, msgFieldDesc.type);
         const cbChanin = this.contextTransformerChains['messagefields']
-        let lastResult: BasePluginContext['messagefields'] = { msgDesc, msgFieldDesc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ msgDesc, type: 'field', msgFieldDesc, typeInfo }, cbChanin)
     }
 
-    private buildMap = (desc: MapFieldDescriptor) => {
+    private buildMap = async (desc: MapFieldDescriptor): Promise<BasePluginContext['maps']> => {
+        const keyTypeInfo = this.projectContext.getTypeInfo(this.file, desc.keyType)
+        const valueTypeInfo = this.projectContext.getTypeInfo(this.file, desc.valueType)
         const cbChanin = this.contextTransformerChains['maps']
-        let lastResult: BasePluginContext['maps'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc, type: 'map', keyTypeInfo, valueTypeInfo }, cbChanin)
     }
 
-    private buildOneof = (desc: OneofDescriptor) => {
+    private buildOneof = async (desc: OneofDescriptor): Promise<BasePluginContext['oneofs']> => {
         const cbChanin = this.contextTransformerChains['oneofs']
-        let lastResult: BasePluginContext['oneofs'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc, type: 'oneof' }, cbChanin)
     }
 
-    private buildEnum = (desc: EnumDescriptor) => {
+    private buildEnum = async (desc: EnumDescriptor): Promise<BasePluginContext['enums']> => {
         const cbChanin = this.contextTransformerChains['enums']
-        let lastResult: BasePluginContext['enums'] = { desc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ desc }, cbChanin)
     }
 
-    private buildEnumField = (enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor) => {
+    private buildEnumField = async (enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor): Promise<BasePluginContext['enumfields']> => {
         const cbChanin = this.contextTransformerChains['enumfields']
-        let lastResult: BasePluginContext['enumfields'] = { enmDesc, enmFieldDesc }
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
-        }
-        return lastResult
+        return this.executeAsyncMethodsChain({ enmDesc, enmFieldDesc }, cbChanin)
     }
 
-    private buildTypeInfo = (protoType: string) => {
+    private buildTypeInfo = async (protoType: string): Promise<BasePluginContext['typeinfos']> => {
         const typeInfo = this.projectContext.getTypeInfo(this.file, protoType);
         const cbChanin = this.contextTransformerChains['typeinfos']
-        let lastResult: BasePluginContext['typeinfos'] = typeInfo
-        for (const cb of cbChanin) {
-            lastResult = cb({ ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts }) as any
+        return this.executeAsyncMethodsChain({ typeInfo }, cbChanin)
+    }
+
+    private executeAsyncMethodsChain = async (intialResult: any, chain: ((...args: any[]) => Promise<any>)[]): Promise<any> => {
+        let lastResult = intialResult
+        for (const method of chain) {
+            lastResult = await method({ctx: lastResult as any, prj: this.projectContext, file: this.file, use: this.use, def: this.def, opt: this.opts})
         }
         return lastResult
     }

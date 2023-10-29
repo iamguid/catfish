@@ -1,27 +1,28 @@
+import { ExtractPluginContextFlat } from "../../PluginContext";
 import { Import } from "../../ProjectContext";
 import { TemplatesRegistry } from "../../Templates";
-import { EnumContext, FileContext, MapFieldContext, MessageContext, OneofContext, TypeInfoContext, isMapField, isMessageField, isOneof } from "./context";
+import { PluginContextFlatOut } from "./context";
 import { PluginOptions } from "./plugin";
 
 export type PluginTemplatesRegistry = {
-  main: { file: FileContext, imports: Import[] },
-  recursive: { messages: MessageContext[], enums: EnumContext[] },
-  modelClass: { message: MessageContext },
-  modelClassDecodeMap: { mapField: MapFieldContext },
-  modelClassEncodeMap: { mapField: MapFieldContext },
-  modelClassFields: { message: MessageContext },
-  modelClassCtor: { message: MessageContext },
-  modelClassEncode: { message: MessageContext },
-  modelClassDecode: { message: MessageContext },
-  modelClassToJSON: { message: MessageContext },
-  modelClassFromJSON: { message: MessageContext },
-  jsonIface: { message: MessageContext },
-  decodeField: { typeInfo: TypeInfoContext, variable?: string },
-  encodeField: { typeInfo: TypeInfoContext, writer: string, variable: string },
-  fromJsonValue: { typeInfo: TypeInfoContext, variable: string },
-  toJsonValue: { typeInfo: TypeInfoContext, variable: string },
-  cloneField: { typeInfo: TypeInfoContext, variable: string },
-  enum: { enm: EnumContext },
+  main: { file: PluginContextFlatOut['file'], imports: Import[] },
+  recursive: { messages: PluginContextFlatOut['file.message'][], enums: PluginContextFlatOut['file.enum'][] },
+  modelClass: { message: PluginContextFlatOut['file.message'] },
+  modelClassDecodeMap: { mapField: PluginContextFlatOut['file.message.field'] },
+  modelClassEncodeMap: { mapField: PluginContextFlatOut['file.message.field'] },
+  modelClassFields: { message: PluginContextFlatOut['file.message'] },
+  modelClassCtor: { message: PluginContextFlatOut['file.message'] },
+  modelClassEncode: { message: PluginContextFlatOut['file.message'] },
+  modelClassDecode: { message: PluginContextFlatOut['file.message'] },
+  modelClassToJSON: { message: PluginContextFlatOut['file.message'] },
+  modelClassFromJSON: { message: PluginContextFlatOut['file.message'] },
+  jsonIface: { message: PluginContextFlatOut['file.message'] },
+  decodeField: { typeInfo: PluginContextFlatOut['typeinfo'], variable?: string },
+  encodeField: { typeInfo: PluginContextFlatOut['typeinfo'], writer: string, variable: string },
+  fromJsonValue: { typeInfo: PluginContextFlatOut['typeinfo'], variable: string },
+  toJsonValue: { typeInfo: PluginContextFlatOut['typeinfo'], variable: string },
+  cloneField: { typeInfo: PluginContextFlatOut['typeinfo'], variable: string },
+  enum: { enm: PluginContextFlatOut['file.enum'] },
 }
 
 export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
@@ -39,32 +40,37 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     })}
   `)
 
-  t.register('recursive', ({ messages, enums }) => `
-    ${messages.map((message) => `
-      ${enums.map((enm) => t.render('enum', { enm })).join('\n')}
+  t.register('recursive', ({ messages, enums }) => {
+    return messages.map((message) => {
+      const oneofs = message.fields.filter(f => f.type === 'map') as PluginContextFlatOut['file.message.oneof'][]
 
-      ${(message.fields.filter(f => isOneof(f)) as OneofContext[]).map(f => {
-        return `type ${f.tsTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`
-      })}
+      return `
+        ${ enums.map((enm) => t.render('enum', { enm })).join('\n') }
 
-      ${(message.fields.filter(f => isOneof(f)) as OneofContext[]).map(f => {
-        return `type ${f.jsonTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`
-      })}
+        ${oneofs.map(oneof => `type ${oneof.tsType.name} = ${oneof.fields.map(f => `{ ${f.fieldName}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`)}
 
-      ${t.render('jsonIface', { message })}
+        ${
+        (message.fields.filter(f => isOneof(f)) as OneofContext[]).map(f => {
+          return `type ${f.jsonTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`
+        })
+      }
 
-      ${t.render('modelClass', { message })}
+        ${ t.render('jsonIface', { message }) }
 
-      ${message.messages.length > 0 || message.enums.length > 0 ? `
-        export namespace ${message.classThing.name} {
-          ${t.render('recursive', {
+        ${ t.render('modelClass', { message }) }
+
+        ${
+          message.messages.length > 0 || message.enums.length > 0 ? `
+            export namespace ${message.classThing.name} {
+              ${t.render('recursive', {
             messages: message.messages,
             enums: message.enums
           })}
+            }
+          ` : ''
         }
-      ` : ''}
-    `).join('\n')}
-  `)
+    }).join('\n')}
+  }
 
 
   t.register('modelClass', ({ message }) => {

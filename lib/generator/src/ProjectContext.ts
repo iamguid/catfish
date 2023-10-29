@@ -7,6 +7,7 @@ import { ProjectOptions } from './Project';
 import { googleWellKnownTypesToProtoFilesMap } from './wellKnownTypes';
 import { Resolver } from './Resolver';
 import { ResolverV2 } from './ResolverV2';
+import { TypeMarker, getTypeMarker } from './utils';
 
 export interface Import {
     name: string
@@ -15,6 +16,7 @@ export interface Import {
 
 export interface TypeInfo {
     protoType: string
+    typeMarker: TypeMarker
     descriptor?: BaseDescriptor
 }
 
@@ -171,7 +173,8 @@ export class ProjectContext {
 
         return {
             protoType,
-            descriptor: resolvedType ?? undefined
+            typeMarker: getTypeMarker(protoType, resolvedType ?? undefined),
+            descriptor: resolvedType ?? undefined,
         }
     }
 }

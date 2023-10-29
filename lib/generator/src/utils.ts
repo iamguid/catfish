@@ -1,4 +1,4 @@
-import { BaseDescriptor, FileDescriptor, Option, Options } from "@catfish/parser";
+import { BaseDescriptor, EnumDescriptor, FileDescriptor, Option, Options } from "@catfish/parser";
 import { Import, ProjectContext } from "./ProjectContext";
 import { ResolvedThing, ResolvedThingImport, Resolver } from "./Resolver";
 
@@ -217,4 +217,39 @@ export const getOption = (opts: Options, path: string): Option => {
   }
 
   return current;
+}
+
+export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
+export const getTypeMarker = (protoType: string, descriptor: BaseDescriptor | undefined): TypeMarker => {
+  switch (protoType) {
+    case "float":
+    case 'double':
+    case "bool":
+    case "int32":
+    case "uint32":
+    case "sint32":
+    case "fixed32":
+    case "sfixed32":
+      return 'FixedSmall';
+    case "int64":
+    case "uint64":
+    case "sint64":
+    case "fixed64":
+    case "sfixed64":
+      return 'FixedBig';
+    case "string":
+      return "String";
+    case "bytes":
+      return 'Bytes';
+    default:
+      if (descriptor) {
+        if (descriptor instanceof EnumDescriptor) {
+          return "Enum";
+        } else {
+          return "Message"
+        }
+      }
+
+      throw new Error(`Invalid type info ${protoType}`)
+  }
 }

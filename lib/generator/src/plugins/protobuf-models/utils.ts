@@ -1,7 +1,5 @@
-import { BaseDescriptor, EnumDescriptor, FileDescriptor } from "@catfish/parser";
-import { TypeInfoContext, TypeMarker } from "./context";
-import { ProjectContext, Import, TypeInfo } from '../../ProjectContext';
-import { filePathToPseudoNamespace, replaceProtoSuffix } from "../../utils";
+import { EnumDescriptor } from "@catfish/parser";
+import { TypeInfo } from '../../ProjectContext';
 
 export const getScalarDefaultValue = (typeInfo: TypeInfo) => {
   switch (typeInfo.protoType) {
@@ -103,36 +101,6 @@ export const getJsonTypeByTypeInfo = (typeInfo: TypeInfo) => {
         return "string";
       } else {
         return null;
-      }
-  }
-}
-
-export const getTypeMarkerByTypeInfo = (typeInfo: TypeInfo): TypeMarker => {
-  switch (typeInfo.protoType) {
-    case "float":
-    case 'double':
-    case "bool":
-    case "int32":
-    case "uint32":
-    case "sint32":
-    case "fixed32":
-    case "sfixed32":
-      return 'FixedSmall';
-    case "int64":
-    case "uint64":
-    case "sint64":
-    case "fixed64":
-    case "sfixed64":
-      return 'FixedBig';
-    case "string":
-      return "String";
-    case "bytes":
-      return 'Bytes';
-    default:
-      if (typeInfo.descriptor instanceof EnumDescriptor) {
-        return "Enum";
-      } else {
-        return "Message"
       }
   }
 }

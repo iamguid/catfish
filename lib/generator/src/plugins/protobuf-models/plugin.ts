@@ -1,40 +1,45 @@
-import { Plugin, PluginOutputFile } from '../../Plugin';
-import { TemplatesRegistry } from '../../Templates';
-import { buildFileContext } from './context';
-import { fileNameBuilder, registerFileTypes } from "./resolver";
-import { PluginTemplatesRegistry, registerPluginTemplates } from './templates';
+import { FileDescriptor } from "@catfish/parser";
+import { PluginOutputFile } from "../../Plugin";
+import { ProjectContext } from "../../ProjectContext";
+import { TemplatesRegistry } from "../../Templates";
+import { replaceProtoSuffix } from "../../utils";
+import { buildFileContext } from "../grpc-web/context";
+import { PluginTemplatesRegistry, registerPluginTemplates } from "./templates";
+import { ProjectOptions } from "../../Project";
+import { ContextsRegistry } from "../../PluginContext";
+
+export const fileNameBuilder = (file: FileDescriptor, ctx: ProjectContext) => replaceProtoSuffix(ctx.getProtoFilePath(file), 'models.ts');
 
 export interface PluginOptions {}
 
-export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry> = (projectContext, projectOptions, pluginOptions, registerTemplates) => {
+export const plugin = async (projectContext: ProjectContext, projectOptions: ProjectOptions, pluginOptions: PluginOptions) => {
     const result: PluginOutputFile[] = []
 
-    pluginOptions = pluginOptions ?? {};
-    registerTemplates = registerTemplates ?? registerPluginTemplates
+    const pluginOptions_ = pluginOptions ?? {};
+    const registerTemplates_ = registerPluginTemplates
 
-    // Templates
-    const templatesRegistry = new TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>(projectContext, pluginOptions)
-    registerTemplates(templatesRegistry)
+    // Build templates registry
+    const templatesRegistry = new TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>(projectContext, pluginOptions_)
+    registerTemplates_(templatesRegistry)
 
     const files = projectContext.getFiles();
 
-    // Register files types
     for (const file of files) {
-        registerFileTypes(projectContext, file, projectOptions, pluginOptions)
-    }
+        // Build context
+        const contextsRegistry = new ContextsRegistry(projectContext, file, fileNameBuilder(file, projectContext), pluginOptions_)
 
-    for (const file of files) {
         // Capture usages
         const stopCapture = projectContext.resolver.capture()
-        const fileContext = buildFileContext(projectContext, file, projectOptions, pluginOptions)
+        // TODO: fix async capture
+        const fileContext = await contextsRegistry.build()
         const usedThings = stopCapture();
 
         // Render file template
-        const resultFilePath = fileNameBuilder(file, projectContext);
-        const imports = projectContext.resolver.getImports(usedThings, file, resultFilePath)
-        const resultFileContent = templatesRegistry.render('main', { file: fileContext, imports });
+        // const resultFilePath = fileNameBuilder(file, projectContext);
+        // const imports = projectContext.resolver.getImports(usedThings, file, resultFilePath)
+        // const resultFileContent = templatesRegistry.render('main', { file: fileContext, imports });
 
-        result.push({ path: resultFilePath, content: resultFileContent });
+        // result.push({ path: resultFilePath, content: resultFileContent });
     }
 
     return { files: result }

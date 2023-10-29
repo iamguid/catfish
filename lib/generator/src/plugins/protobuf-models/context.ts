@@ -1,207 +1,56 @@
-import { EnumDescriptor, MessageFieldDescriptor, EnumFieldDescriptor, MapFieldDescriptor, FileDescriptor, MessageDescriptor, OneofDescriptor, BaseDescriptor, Options } from "@catfish/parser";
-import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getTypeMarkerByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getTag } from "./utils";
-import { ProjectOptions } from "../../Project";
-import { ProjectContext, TypeInfo } from "../../ProjectContext";
-import { snakeToCamel, upperCaseFirst } from "../../utils";
+import { EnumDescriptor, MessageFieldDescriptor } from "@catfish/parser";
+import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getWireTypeByTypeInfo, getPjsFnNameByTypeInfo, getScalarDefaultValue, getTag } from "./utils";
+import { TypeInfo } from "../../ProjectContext";
+import { TypeMarker, snakeToCamel, upperCaseFirst } from "../../utils";
 import { PluginOptions } from "./plugin";
-import { fileNameBuilder } from "./resolver";
-import { ResolvedThing } from "../../Resolver";
+import { ResolvedThingImport } from "../../ResolverV2";
+import { ContextsRegistry, ExtractPluginContextFlat, PluginContextBuilded } from "../../PluginContext";
 
-export type TypeMarker = "FixedSmall" | "FixedBig" | "Bytes" | "String" | "Message" | "Enum";
+export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
 
-export interface FileContext {
-    options: Options[],
-    desc: FileDescriptor,
-    enums: EnumContext[]
-    messages: MessageContext[]
-    filePath: string
-    package: string
-}
+const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
+    return registry
+        .extend('messages', async ({ ctx, def }) => ({
+            ...ctx,
+            classThing: def('model.class', ctx.desc, `${ctx.desc.name}`),
+            jsonIfaceThing: def('model.class', ctx.desc, `${ctx.desc.name}JSON`),
+        }))
+        .extend('messagefields', async ({ ctx }) => ({
+            ...ctx,
+            fieldName: snakeToCamel(ctx.msgFieldDesc.name),
+            fieldTag: getTag(ctx.msgFieldDesc.fieldNumber, ctx.msgFieldDesc.repeated ? 2 : getWireTypeByTypeInfo(ctx.typeInfo))
+        }))
+        .extend('oneofs', async ({ ctx, def }) => ({
+            ...ctx,
+            enumName: snakeToCamel(ctx.desc.name),
+            tsType: def('model.oneof.type', ctx.desc, `${snakeToCamel(ctx.desc.name)}OneofJSONType`),
+            jsonType: def('model.oneof.jsonType', ctx.desc, `${snakeToCamel(ctx.desc.name)}OneofType`),
+        }))
+        .extend('maps', async ({ ctx }) => ({
+            ...ctx,
+            encodeMethodName: `encode${upperCaseFirst(snakeToCamel(ctx.desc.name))}`,
+            decodeMethodName: `decode${upperCaseFirst(snakeToCamel(ctx.desc.name))}`,
+            name: snakeToCamel(ctx.desc.name),
+            tag: getTag(ctx.desc.fieldNumber, 2),
+            keyTag: getTag(1, getWireTypeByTypeInfo(ctx.keyTypeInfo)),
+            valueTag: getTag(2, getWireTypeByTypeInfo(ctx.valueTypeInfo)),
+        }))
+        .extend('typeinfos', async ({ ctx, use }) => {
+            const enumThing: ResolvedThingImport | null = await (ctx.descriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsTypeThing: ResolvedThingImport | null = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const jsonTypeThing: ResolvedThingImport | null = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.fullname ?? '';
+            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.fullname ?? '';
 
-export interface EnumContext {
-    fields: EnumFieldContext[]
-    name: string
-}
-
-export interface EnumFieldContext {
-    options: Options[],
-    name: string
-    value: number
-}
-
-export interface MessageContext {
-    options: Options[],
-    fields: (MapFieldContext | MessageFieldContext | OneofContext)[]
-    enums: EnumContext[]
-    messages: MessageContext[]
-    classThing: ResolvedThing
-    jsonIfaceThing: ResolvedThing
-}
-
-export interface MessageFieldContext {
-    options: Options[],
-    type: "MessageField"
-    typeInfo: TypeInfoContext
-    rawName: string
-    name: string
-    number: number
-    tag: number
-    repeated: boolean
-    optional: boolean
-}
-
-export interface MapFieldContext {
-    options: Options[],
-    type: "MapField"
-    keyTypeInfo: TypeInfoContext
-    valueTypeInfo: TypeInfoContext
-    encodeMethodName: string
-    decodeMethodName: string
-    rawName: string
-    name: string
-    number: number
-    tag: number
-    keyTag: number
-    valueTag: number
-}
-
-export interface OneofContext {
-    type: "Oneof"
-    fields: MessageFieldContext[]
-    name: string
-    tsTypeName: string
-    jsonTypeName: string
-}
-
-export interface TypeInfoContext {
-    protoType: string
-    defaultValue: string
-    desc: BaseDescriptor | null
-    pjsFn: string
-    enumType: string | null
-    tsType: string
-    jsonType: string
-    typeMarker: TypeMarker
-}
-
-export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
-    return {
-        options: file.options,
-        desc: file,
-        enums: file.enums.map(enm => buildEnumContext(ctx, file, enm)),
-        messages: file.messages.map(msg => buildMessageContext(ctx, file, msg)),
-        filePath: ctx.getProtoFilePath(file),
-        package: file.package,
-    }
-}
-
-export const buildEnumContext = (ctx: ProjectContext, file: FileDescriptor, desc: EnumDescriptor): EnumContext => {
-    return {
-        fields: desc.fields.map(f => buildEnumFieldContext(ctx, file, f)),
-        name: desc.name
-    }
-}
-
-export const buildEnumFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: EnumFieldDescriptor): EnumFieldContext => {
-    return {
-        options: desc.options,
-        name: desc.fieldName,
-        value: desc.fieldValue,
-    }
-}
-
-export const buildMessageContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageDescriptor): MessageContext => {
-    return {
-        options: desc.options,
-        classThing: ctx.resolver.resolveOne('model.class', desc, file),
-        jsonIfaceThing: ctx.resolver.resolveOne('model.jsonIface', desc, file),
-        fields: desc.fields.map(f => buildFieldContext(ctx, file, f)),
-        enums: desc.enums.map(e => buildEnumContext(ctx, file, e)),
-        messages: desc.messages.map(m => buildMessageContext(ctx, file, m)),
-    }
-}
-
-export const buildMessageFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageFieldDescriptor): MessageFieldContext => {
-    const typeInfo = buildTypeInfoContext(ctx, file, desc.type);
-
-    return {
-        type: "MessageField",
-        options: desc.options,
-        typeInfo: buildTypeInfoContext(ctx, file, desc.type),
-        rawName: desc.name,
-        name: snakeToCamel(desc.name),
-        number: desc.fieldNumber,
-        tag: getTag(desc.fieldNumber, desc.repeated ? 2 : getWireTypeByTypeInfo(typeInfo)),
-        repeated: desc.repeated,
-        optional: desc.optional,
-    }
-}
-
-export const buildOneofContext = (ctx: ProjectContext, file: FileDescriptor, desc: OneofDescriptor): OneofContext => {
-    return {
-        type: "Oneof",
-        fields: desc.fields.map(f => buildMessageFieldContext(ctx, file, f)),
-        name: snakeToCamel(desc.name),
-        tsTypeName: ctx.resolver.resolveRelativeTypeName('model.oneof.type', desc, file, fileNameBuilder),
-        jsonTypeName: ctx.resolver.resolveRelativeTypeName('model.oneof.jsonType', desc, file, fileNameBuilder),
-    }
-}
-
-export const buildMapFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: MapFieldDescriptor): MapFieldContext => {
-    const keyTypeInfo = buildTypeInfoContext(ctx, file, desc.keyType);
-    const valueTypeInfo = buildTypeInfoContext(ctx, file, desc.valueType);
-
-    return {
-        type: "MapField",
-        options: desc.options,
-        keyTypeInfo,
-        valueTypeInfo,
-        encodeMethodName: `encode${upperCaseFirst(snakeToCamel(desc.name))}`,
-        decodeMethodName: `decode${upperCaseFirst(snakeToCamel(desc.name))}`,
-        rawName: desc.name,
-        name: snakeToCamel(desc.name),
-        number: desc.fieldNumber,
-        tag: getTag(desc.fieldNumber, 2),
-        keyTag: getTag(1, getWireTypeByTypeInfo(keyTypeInfo)),
-        valueTag: getTag(2, getWireTypeByTypeInfo(valueTypeInfo)),
-    }
-}
-
-export const buildFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: BaseDescriptor) => {
-    if (desc instanceof MessageFieldDescriptor) {
-        return buildMessageFieldContext(ctx, file, desc)
-    }
-
-    if (desc instanceof OneofDescriptor) {
-        return buildOneofContext(ctx, file, desc)
-    }
-
-    if (desc instanceof MapFieldDescriptor) {
-        return buildMapFieldContext(ctx, file, desc)
-    }
-
-    throw new Error("Invalid descriptor")
-}
-
-export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
-    const typeInfo = ctx.getTypeInfo(file, protoType);
-    const enumType: string | null = typeInfo.descriptor ? ctx.resolver.tryResolveRelativeTypeName('model.enum', typeInfo.descriptor, file, fileNameBuilder, protoType) ?? null : null;
-    const tsFullType: string | null = typeInfo.descriptor ? ctx.resolver.tryResolveRelativeTypeName('model.class', typeInfo.descriptor, file, fileNameBuilder, protoType) ?? null : null;
-    const jsonFullType: string | null = typeInfo.descriptor ? ctx.resolver.tryResolveRelativeTypeName('model.jsonIface', typeInfo.descriptor, file, fileNameBuilder, protoType) ?? null : null;
-    const tsType = getTsTypeByTypeInfo(typeInfo) ?? tsFullType ?? '';
-    const jsonType = getJsonTypeByTypeInfo(typeInfo) ?? jsonFullType ?? '';
-    const typeMarker = getTypeMarkerByTypeInfo(typeInfo);
-
-    return {
-        protoType,
-        desc: typeInfo.descriptor ?? null,
-        defaultValue: getDefaultValue(typeInfo, tsType, typeMarker, protoType),
-        pjsFn: getPjsFnNameByTypeInfo(typeInfo),
-        tsType,
-        jsonType,
-        enumType,
-        typeMarker,
-    }
+            return {
+                ...ctx,
+                defaultValue: getDefaultValue(ctx, tsType, ctx.typeMarker, ctx.protoType),
+                pjsFn: getPjsFnNameByTypeInfo(ctx),
+                tsType,
+                jsonType,
+                enumType: enumThing?.fullname,
+            }
+        })
 }
 
 export const getDefaultValue = (typeInfo: TypeInfo, tsType: string, typeMarker: TypeMarker, fullType: string | null) => {
@@ -225,16 +74,4 @@ export const getDefaultValue = (typeInfo: TypeInfo, tsType: string, typeMarker: 
     }
 
     throw new Error(`Cannot get default value for ${typeMarker} ${typeInfo.protoType}`)
-}
-
-export function isMessageField(obj: any): obj is MessageFieldContext {
-    return obj?.type === "MessageField"
-}
-
-export function isOneof(obj: any): obj is OneofContext {
-    return obj?.type === "Oneof"
-}
-
-export function isMapField(obj: any): obj is MapFieldContext {
-    return obj?.type === "MapField"
 }
