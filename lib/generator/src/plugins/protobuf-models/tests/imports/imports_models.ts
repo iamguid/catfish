@@ -7,18 +7,18 @@
 // package: test
 // file: imports.proto
 
-import * as i7f8a424dbc5d7d83c66270fff9d04b0b from "./importme/importme_models.ts";
+import * as i7c00b4b13ee0caa808348981faf33357 from "./importme/importme_models.ts";
 
 import * as pjs from "protobufjs/minimal";
 import * as runtime from "@catfish/runtime";
 
 export interface TestMessageJSON {
-  fImported: i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMeJSON;
+  fImported: i7c00b4b13ee0caa808348981faf33357.ImportMeJSON;
 }
 
 export class TestMessage {
-  fImported: i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe =
-    new i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe();
+  fImported: i7c00b4b13ee0caa808348981faf33357.ImportMe =
+    new i7c00b4b13ee0caa808348981faf33357.ImportMe();
 
   public static fields = ["fImported"];
 
@@ -30,7 +30,7 @@ export class TestMessage {
     if (!obj) return;
 
     if (obj.fImported !== undefined) {
-      this.fImported = new i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe(
+      this.fImported = new i7c00b4b13ee0caa808348981faf33357.ImportMe(
         obj.fImported
       );
     }
@@ -40,7 +40,7 @@ export class TestMessage {
     // ImportMe f_imported = 1
     if (m.fImported !== undefined) {
       w.uint32(10);
-      i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe.encode(
+      i7c00b4b13ee0caa808348981faf33357.ImportMe.encode(
         m.fImported,
         w.fork()
       ).ldelim();
@@ -60,8 +60,8 @@ export class TestMessage {
       switch (tag) {
         // ImportMe f_imported = 1
         case 10:
-          m.fImported = i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe.decode(
-            new i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe(),
+          m.fImported = i7c00b4b13ee0caa808348981faf33357.ImportMe.decode(
+            new i7c00b4b13ee0caa808348981faf33357.ImportMe(),
             r,
             r.uint32()
           );
@@ -85,7 +85,7 @@ export class TestMessage {
   }
 
   public static fromJSON(m: TestMessage, obj: TestMessageJSON): TestMessage {
-    m.fImported = new i7f8a424dbc5d7d83c66270fff9d04b0b.ImportMe().fromJSON(
+    m.fImported = new i7c00b4b13ee0caa808348981faf33357.ImportMe().fromJSON(
       obj.fImported
     );
 

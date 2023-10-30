@@ -26,12 +26,11 @@ export class Project {
         return this;
     }
 
-    // TODO: make async
-    generate() {
+    async generate() {
         fs.mkdirSync(this.options.outDirPath, { recursive: true })
 
         for (const [plugin, pluginOptions, templates] of this.plugins) {
-            const result = plugin(this.context, this.options, pluginOptions, templates);
+            const result = await plugin(this.context, this.options, pluginOptions, templates);
 
             for (const file of result.files) {
                 const prettiedContent = prettier.format(file.content, { parser: 'typescript' })

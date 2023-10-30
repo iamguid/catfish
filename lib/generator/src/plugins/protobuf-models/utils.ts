@@ -23,7 +23,7 @@ export const getScalarDefaultValue = (typeInfo: TypeInfo) => {
 }
 
 // Based on https://github.com/protobufjs/protobuf.js/blob/master/src/types.js#L37
-export const getWireTypeByTypeInfo = (typeInfo: TypeInfoContext): number => {
+export const getWireTypeByTypeInfo = (typeInfo: TypeInfo): number => {
   switch (typeInfo.protoType) {
     case "int32":
     case "uint32":
@@ -45,7 +45,7 @@ export const getWireTypeByTypeInfo = (typeInfo: TypeInfoContext): number => {
     case "sfixed32":
       return 5;
     default:
-      if (typeInfo.desc instanceof EnumDescriptor) {
+      if (typeInfo.descriptor instanceof EnumDescriptor) {
         return 0;
       } else {
         return 2;

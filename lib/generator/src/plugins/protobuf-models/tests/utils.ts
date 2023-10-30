@@ -17,13 +17,13 @@ export const loadProtoFileByProtobufjs = (protoFilePath: string, typePath: strin
     }
 }
 
-export const generateModels = (path: string) => {
+export const generateModels = async (path: string) => {
     const project = new Project({
         protoDirPath: path,
         outDirPath: path,
     });
 
-    project
+    await project
         .load()
         .resgister(ProtobufModelsPlugin.plugin)
         .generate();

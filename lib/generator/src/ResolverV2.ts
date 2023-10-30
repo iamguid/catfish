@@ -17,6 +17,13 @@ export interface ResolvedThingImport extends ResolvedThing {
     importName: string
 }
 
+export interface IResolverV2 {
+    define(namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing
+    resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
+    resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
+    getImports(resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[]
+}
+
 export const ResolverSymbol = Symbol('resolver');
 
 export type ResolverNode = {
@@ -31,11 +38,8 @@ const getImportId = (desc: BaseDescriptor) => {
         .digest("hex")
 }
 
-export class ResolverV2 {
+export class ResolverV2 implements IResolverV2 {
     private readonly registry: ResolverNode = { [ResolverSymbol]: new Map() }
-
-    private captured: ResolvedThingImport[] = []
-    private isCaptured = false;
 
     private thingResolveTimeoutsMap: Map<string, NodeJS.Timeout[]> = new Map(); // key - thing fullname
 
@@ -64,6 +68,10 @@ export class ResolverV2 {
 
         things.push(thing)
 
+        if (!this.thingResolveTimeoutsMap.has(thing.importId)) {
+            this.thingResolveTimeoutsMap.set(thing.importId, [])
+        } 
+        
         // Recall resolving tasks
         const timeouts = this.thingResolveTimeoutsMap.get(thing.importId)!
         for (const timeout of timeouts) {
@@ -105,10 +113,6 @@ export class ResolverV2 {
                         // Remove task
                         const tasks = this.thingResolveTimeoutsMap.get(thingImportId)!
                         this.thingResolveTimeoutsMap.set(thingImportId, tasks.filter(t => t === checkThingTask))
-
-                        if (this.isCaptured) {
-                            this.captured.push(foundResolvedThingImport)
-                        }
 
                         resolve(foundResolvedThingImport);
                     }
@@ -173,18 +177,43 @@ export class ResolverV2 {
         return currentNode
     }
 
-    capture(): () => ResolvedThingImport[] {
-        this.isCaptured = true;
+    getCaptureContext(): IResolverV2 & { stopCapture(): ResolvedThingImport[] } {
+        const captured: ResolvedThingImport[] = []
 
-        return () => {
-            this.isCaptured = false;
-            const result = this.captured;
-            this.captured = [];
+        const define = (namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing => {
+            return this.define(namespace, thingDesc, thingName, fileName)
+        }
+
+        const resolveByNode = async (node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
+            const result = await this.resolveByNode(node, thingDesc, file, protoType)
+            captured.push(result)
             return result;
+        }
+
+        const resolveByNamespace = async (namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
+            const result = await this.resolveByNamespace(namespace, thingDesc, file, protoType)
+            captured.push(result)
+            return result;
+        }
+
+        const getImports = (resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[] => {
+            return this.getImports(resolvedThings, file, fileName)
+        }
+
+        const stopCapture = (): ResolvedThingImport[] => {
+            return captured;
+        }
+
+        return {
+            define,
+            resolveByNode,
+            resolveByNamespace,
+            getImports,
+            stopCapture
         }
     }
 
-    getResolvedThingImport(thing: ResolvedThing, file: FileDescriptor): ResolvedThingImport {
+    private getResolvedThingImport(thing: ResolvedThing, file: FileDescriptor): ResolvedThingImport {
         const targetPath = path.dirname(this.projectContext.getProtoFilePath(thing.desc.fileDescriptor))
         const sourcePath = path.dirname(this.projectContext.getProtoFilePath(file))
         const pathPreffix = getPathPreffix(sourcePath, targetPath)

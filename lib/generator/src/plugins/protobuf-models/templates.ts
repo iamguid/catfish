@@ -8,8 +8,8 @@ export type PluginTemplatesRegistry = {
   main: { file: PluginContextFlatOut['file'], imports: Import[] },
   recursive: { messages: PluginContextFlatOut['file.message'][], enums: PluginContextFlatOut['file.enum'][] },
   modelClass: { message: PluginContextFlatOut['file.message'] },
-  modelClassDecodeMap: { mapField: PluginContextFlatOut['file.message.field'] },
-  modelClassEncodeMap: { mapField: PluginContextFlatOut['file.message.field'] },
+  modelClassDecodeMap: { mapField: PluginContextFlatOut['file.message.map'] },
+  modelClassEncodeMap: { mapField: PluginContextFlatOut['file.message.map'] },
   modelClassFields: { message: PluginContextFlatOut['file.message'] },
   modelClassCtor: { message: PluginContextFlatOut['file.message'] },
   modelClassEncode: { message: PluginContextFlatOut['file.message'] },
@@ -47,42 +47,35 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
       return `
         ${ enums.map((enm) => t.render('enum', { enm })).join('\n') }
 
-        ${oneofs.map(oneof => `type ${oneof.tsType.name} = ${oneof.fields.map(f => `{ ${f.fieldName}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`)}
+        ${oneofs.map(oneof => `type ${oneof.typeThing.name} = ${oneof.fields.map(f => `{ ${f.fieldName}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`)}
 
-        ${
-        (message.fields.filter(f => isOneof(f)) as OneofContext[]).map(f => {
-          return `type ${f.jsonTypeName} = ${f.fields.map(f => `{ ${f.name}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`
-        })
-      }
+        ${oneofs.map(f => `type ${f.jsonTypeThing.name} = ${f.fields.map(f => `{ ${f.fieldName}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`)}
 
-        ${ t.render('jsonIface', { message }) }
+        ${t.render('jsonIface', { message })}
 
-        ${ t.render('modelClass', { message }) }
+        ${t.render('modelClass', { message })}
 
-        ${
-          message.messages.length > 0 || message.enums.length > 0 ? `
-            export namespace ${message.classThing.name} {
-              ${t.render('recursive', {
-            messages: message.messages,
-            enums: message.enums
-          })}
-            }
-          ` : ''
-        }
-    }).join('\n')}
-  }
+        ${(message.messages.length > 0 || message.enums.length > 0) ? `
+          export namespace ${message.classThing.name} {
+            ${t.render('recursive', { messages: message.messages, enums: message.enums })}
+          }
+        ` : ''}
+    `}).join('\n')
+  })
 
 
   t.register('modelClass', ({ message }) => {
+    const maps = message.fields.filter(f => f.type === 'map') as PluginContextFlatOut['file.message.map'][]
+
     return `
       export class ${message.classThing.name} {
         ${t.render('modelClassFields', { message })}
   
-        public static fields = [${message.fields.map(f => `'${f.name}'`).join(",")}]
+        public static fields = [${message.fields.map(f => `'${f.fieldName}'`).join(",")}]
   
-        ${(message.fields.filter(f => isMapField(f)) as MapFieldContext[]).map(mapField => t.render('modelClassEncodeMap', { mapField })).join('\n')}
+        ${maps.map(mapField => t.render('modelClassEncodeMap', { mapField })).join('\n')}
   
-        ${(message.fields.filter(f => isMapField(f)) as MapFieldContext[]).map(mapField => t.render('modelClassDecodeMap', { mapField })).join('\n')}
+        ${maps.map(mapField => t.render('modelClassDecodeMap', { mapField })).join('\n')}
   
         public get fields() {
           return ${message.classThing.name}.fields
@@ -126,24 +119,24 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   t.register('jsonIface', ({ message }) => `
     export interface ${message.jsonIfaceThing.name} {
       ${message.fields.map((field) => {
-        if (isMapField(field)) {
-          return `${field.name}: Record<${field.keyTypeInfo.jsonType}, ${field.valueTypeInfo.jsonType}>;`
+        if (field.type === 'map') {
+          return `${field.fieldName}: Record<${field.keyTypeInfo.jsonType}, ${field.valueTypeInfo.jsonType}>;`
         }
 
-        if (isOneof(field)) {
-          return `${field.name}?: ${field.jsonTypeName} = undefined;`
+        if (field.type === 'oneof') {
+          return `${field.fieldName}?: ${field.jsonTypeThing.fullname} = undefined;`
         }
   
-        if (isMessageField(field)) {
-          return `${field.name}${field.optional ? '?' : ''}: ${field.typeInfo.jsonType}${field.repeated ? '[]' : ''}${field.optional ? ' | undefined' : ''};`
+        if (field.type === 'field') {
+          return `${field.fieldName}${field.msgFieldDesc.optional ? '?' : ''}: ${field.typeInfo.jsonType}${field.msgFieldDesc.repeated ? '[]' : ''}${field.msgFieldDesc.optional ? ' | undefined' : ''};`
         }
       }).join('\n')}
     }
   `);
 
   t.register('enum', ({ enm }) => `
-    export enum ${enm.name} {
-      ${enm.fields.map((field) => `${field.name} = ${field.value},`).join('\n')}
+    export enum ${enm.desc.name} {
+      ${enm.fields.map((field) => `${field.enmDesc.name} = ${field.enmDesc.index},`).join('\n')}
     }
   `);
 
@@ -153,23 +146,23 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
         if (!obj) return;
   
         ${message.fields.map((field) => {
-          return `if (obj.${field.name} !== undefined) {
+          return `if (obj.${field.fieldName} !== undefined) {
             ${(() => {
-              if (isMapField(field)) {
+              if (field.type === 'map') {
                 return `
-                  const entries = Array.from(obj.${field.name}.entries());
+                  const entries = Array.from(obj.${field.fieldName}.entries());
                   const copy = entries.map(([key, val]) => [key, ${t.render('cloneField', { typeInfo: field.valueTypeInfo, variable: 'val' })}]);
-                  this.${field.name} = new Map(copy);
+                  this.${field.fieldName} = new Map(copy);
                 `
               }
   
-              if (isOneof(field)) {
+              if (field.type === 'oneof') {
                 return `
                   switch (true) {
                     ${field.fields.map(f => {
                       return `
-                        case (obj.${field.name}.${f.name} !== undefined):
-                          this.${field.name} = { ${f.name}: ${t.render('cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.name}.${f.name}` })} };
+                        case (obj.${field.fieldName}.${f.fieldName} !== undefined):
+                          this.${field.fieldName} = { ${f.fieldName}: ${t.render('cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.fieldName}.${f.fieldName}` })} };
                           break;
                       `
                     }).join('\n')}
@@ -177,12 +170,12 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
                 `
               }
   
-              if (isMessageField(field)) {
-                if (field.repeated) {
-                  return `this.${field.name} =  obj.${field.name}.map(val => ${t.render('cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
+              if (field.type === 'field') {
+                if (field.msgFieldDesc.repeated) {
+                  return `this.${field.fieldName} =  obj.${field.fieldName}.map(val => ${t.render('cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
                 }
   
-                return `this.${field.name} = ${t.render('cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.name}` })};`
+                return `this.${field.fieldName} = ${t.render('cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.fieldName}` })};`
               }
             })()}
           }`
@@ -194,20 +187,20 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
 
   t.register('modelClassFields', ({ message }) => {
     return message.fields.map((field) => {
-      if (isMapField(field)) {
-        return `${field.name}: Map<${field.keyTypeInfo.tsType}, ${field.valueTypeInfo.tsType}> = new Map();`
+      if (field.type === 'map') {
+        return `${field.fieldName}: Map<${field.keyTypeInfo.tsType}, ${field.valueTypeInfo.tsType}> = new Map();`
       }
   
-      if (isOneof(field)) {
-        return `${field.name}?: ${field.tsTypeName} = undefined;`
+      if (field.type === 'oneof') {
+        return `${field.fieldName}?: ${field.typeThing.fullname} = undefined;`
       }
   
-      if (isMessageField(field)) {
-          if (field.repeated) {
-            return `${field.name}: (${field.typeInfo.tsType})[]${field.optional ? ' | undefined' : ''} = ${field.optional ? 'undefined' : '[]'};`
+      if (field.type === 'field') {
+          if (field.msgFieldDesc.repeated) {
+            return `${field.fieldName}: (${field.typeInfo.tsType})[]${field.msgFieldDesc.optional ? ' | undefined' : ''} = ${field.msgFieldDesc.optional ? 'undefined' : '[]'};`
           }
   
-          return `${field.name}: ${field.typeInfo.tsType}${field.optional ? ' | undefined' : ''} = ${field.optional ? 'undefined' : field.typeInfo.defaultValue};`
+          return `${field.fieldName}: ${field.typeInfo.tsType}${field.msgFieldDesc.optional ? ' | undefined' : ''} = ${field.msgFieldDesc.optional ? 'undefined' : field.typeInfo.defaultValue};`
       }
     }).join('\n')
   })
@@ -216,22 +209,22 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     return `
       public static encode(m: ${message.classThing.name}, w: pjs.Writer): pjs.Writer {
         ${message.fields.map(field => {
-          if (isMapField(field)) {
+          if (field.type === 'map') {
               return `
-                // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
-                ${message.classThing.name}.${field.encodeMethodName}(m.${field.name}, w);
+                // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.desc.name} = ${field.desc.fieldNumber}
+                ${message.classThing.name}.${field.encodeMethodName}(m.${field.fieldName}, w);
               `
           }
   
-          if (isOneof(field)) {
+          if (field.type === 'oneof') {
             return `
               // oneof
               switch (true) {
                 ${field.fields.map(f => {
                   return `
-                    case (m.${field.name}?.${f.name} !== undefined):
-                      w.uint32(${f.tag});
-                      ${t.render('encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.name}.${f.name}` })}
+                    case (m.${field.fieldName}?.${f.fieldName} !== undefined):
+                      w.uint32(${f.fieldTag});
+                      ${t.render('encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.fieldName}.${f.fieldName}` })}
                       break;
                   `
                 }).join('\n')}
@@ -239,18 +232,18 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
             `
           }
   
-          if (isMessageField(field)) {
-            if (field.repeated) {
+          if (field.type === 'field') {
+            if (field.msgFieldDesc.repeated) {
               switch (field.typeInfo.typeMarker) {
                 case "FixedSmall":
                 case "FixedBig":
                 case "Enum":
                   return `
-                    // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-                    if (m.${field.name}.length > 0) {
-                      w.uint32(${field.tag});
-                      w.uint32(m.${field.name}.length);
-                      for (let item of m.${field.name}) {
+                    // repeated ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
+                    if (m.${field.fieldName}.length > 0) {
+                      w.uint32(${field.fieldTag});
+                      w.uint32(m.${field.fieldName}.length);
+                      for (let item of m.${field.fieldName}) {
                         ${t.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
                       }
                     }
@@ -259,10 +252,10 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
                 case "Bytes":
                 case "Message":
                   return `
-                    // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-                    if (m.${field.name}.length > 0) {
-                      for (let item of m.${field.name}) {
-                        w.uint32(${field.tag});
+                    // repeated ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
+                    if (m.${field.fieldName}.length > 0) {
+                      for (let item of m.${field.fieldName}) {
+                        w.uint32(${field.fieldTag});
                         ${t.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
                       }
                     }
@@ -271,10 +264,10 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
             }
   
             return `
-              // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-              if (m.${field.name} !== undefined) {
-                w.uint32(${field.tag});
-                ${t.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.name}` })}
+              // ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
+              if (m.${field.fieldName} !== undefined) {
+                w.uint32(${field.fieldTag});
+                ${t.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.fieldName}` })}
               }
             `
           }
@@ -286,7 +279,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   })
 
   t.register('modelClassDecodeMap', ({ mapField }) => `
-    // map<${mapField.keyTypeInfo.protoType}, ${mapField.valueTypeInfo.protoType}> ${mapField.rawName} = ${mapField.number}
+    // map<${mapField.keyTypeInfo.protoType}, ${mapField.valueTypeInfo.protoType}> ${mapField.desc.name} = ${mapField.desc.fieldNumber}
     public static ${mapField.decodeMethodName}(r: pjs.Reader, length: number): [${mapField.keyTypeInfo.tsType}, ${mapField.valueTypeInfo.tsType}] {
       const l = r.pos + length;
       let k;
@@ -308,7 +301,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   `)
 
   t.register('modelClassEncodeMap', ({ mapField }) => `
-    // map<${mapField.keyTypeInfo.protoType}, ${mapField.valueTypeInfo.protoType}> ${mapField.rawName} = ${mapField.number}
+    // map<${mapField.keyTypeInfo.protoType}, ${mapField.valueTypeInfo.protoType}> ${mapField.desc.name} = ${mapField.desc.fieldNumber}
     public static ${mapField.encodeMethodName}(m: Map<${mapField.keyTypeInfo.tsType}, ${mapField.valueTypeInfo.tsType}>, w: pjs.Writer): pjs.Writer {
       for (const [key, val] of m) {
         w.uint32(${mapField.tag});
@@ -331,44 +324,44 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
         switch (tag) {
           ${message.fields.map(field => {
 
-            if (isMapField(field)) {
+            if (field.type === 'map') {
               return `
-                // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.rawName} = ${field.number}
+                // map<${field.keyTypeInfo.protoType}, ${field.valueTypeInfo.protoType}> ${field.desc.name} = ${field.desc.fieldNumber}
                 case ${field.tag}:
                   {
                     const [k, v] = ${message.classThing.name}.${field.decodeMethodName}(r, r.uint32());
-                    m.${field.name}.set(k, v)
+                    m.${field.fieldName}.set(k, v)
                   }
                   continue;
               `
             }
     
-            if (isOneof(field)) {
+            if (field.type === 'oneof') {
               return `
-                // oneof ${field.name} begin
+                // oneof ${field.fieldName} begin
                 ${field.fields.map(f => {
                   return `
-                    case ${f.tag}:
-                      m.${field.name} = { ${f.name}: ${t.render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.tsType}()` })} };
+                    case ${f.fieldTag}:
+                      m.${field.fieldName} = { ${f.fieldName}: ${t.render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.tsType}()` })} };
                       break;
                   `
                 }).join('\n')}
-                // oneof ${field.name} end
+                // oneof ${field.fieldName} end
               `
             }
     
-            if (isMessageField(field)) {
-              if (field.repeated) {
+            if (field.type === 'field') {
+              if (field.msgFieldDesc.repeated) {
                 switch (field.typeInfo.typeMarker) {
                   case "FixedSmall":
                   case "FixedBig":
                   case "Enum":
                     return `
-                      // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-                      case ${field.tag}: {
+                      // repeated ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
+                      case ${field.fieldTag}: {
                         const l = r.uint32();
                         for (let i = 0; i < l; i++) {
-                          m.${field.name}.push(${t.render('decodeField', { typeInfo: field.typeInfo })})
+                          m.${field.fieldName}.push(${t.render('decodeField', { typeInfo: field.typeInfo })})
                         }
                         continue;
                       }
@@ -377,18 +370,18 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
                   case "Bytes":
                   case "Message":
                     return `
-                      // repeated ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-                      case ${field.tag}:
-                        m.${field.name}.push(${t.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })})
+                      // repeated ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
+                      case ${field.fieldTag}:
+                        m.${field.fieldName}.push(${t.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })})
                         continue;
                     `
                 }
               }
 
               return `
-                // ${field.typeInfo.protoType} ${field.rawName} = ${field.number}
-                case ${field.tag}:
-                  m.${field.name} = ${t.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })}
+                // ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
+                case ${field.fieldTag}:
+                  m.${field.fieldName} = ${t.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })}
                   continue;
               `
             }
@@ -409,18 +402,18 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
       const obj = {};
 
       ${message.fields.map((field) => {
-        if (isMapField(field)) {
-          return `obj['${field.name}'] = runtime.convertMapToRecord(m.${field.name}, (val) => ${t.render('toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+        if (field.type === 'map') {
+          return `obj['${field.fieldName}'] = runtime.convertMapToRecord(m.${field.fieldName}, (val) => ${t.render('toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
         }
 
-        if (isOneof(field)) {
+        if (field.type === 'oneof') {
           return `
-            // oneof ${field.name}
+            // oneof ${field.fieldName}
             switch (true) {
               ${field.fields.map(f => {
                 return `
-                  case (m.${field.name}?.${f.name} !== undefined):
-                    obj['${field.name}'] = { ${f.name}: ${t.render('toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.name}.${f.name}` })} };
+                  case (m.${field.fieldName}?.${f.fieldName} !== undefined):
+                    obj['${field.fieldName}'] = { ${f.fieldName}: ${t.render('toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.fieldName}.${f.fieldName}` })} };
                     break;
                 `
               }).join('\n')}
@@ -428,19 +421,19 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
           `
         }
 
-        if (isMessageField(field)) {
-          if (field.repeated) {
-            return `obj['${field.name}'] = m.${field.name}.map(val => ${t.render('toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
+        if (field.type === 'field') {
+          if (field.msgFieldDesc.repeated) {
+            return `obj['${field.fieldName}'] = m.${field.fieldName}.map(val => ${t.render('toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
           }
 
           let result = ''
-          if (field.optional) {
-            result += `if (m.${field.name} !== undefined) {`
+          if (field.msgFieldDesc.optional) {
+            result += `if (m.${field.fieldName} !== undefined) {`
           }
 
-          result += `obj['${field.name}'] = ${t.render('toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.name}` })};`
+          result += `obj['${field.fieldName}'] = ${t.render('toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.fieldName}` })};`
 
-          if (field.optional) {
+          if (field.msgFieldDesc.optional) {
             result += `}`
           }
 
@@ -456,19 +449,19 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     return `
       public static fromJSON(m: ${message.classThing.name}, obj: ${message.jsonIfaceThing.name}): ${message.classThing.name} {
         ${message.fields.map((field) => {
-          if (isMapField(field)) {
-            return `m.${field.name} = runtime.convertRecordToMap(obj.${field.name}, (val) => ${t.render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+          if (field.type === 'map') {
+            return `m.${field.fieldName} = runtime.convertRecordToMap(obj.${field.fieldName}, (val) => ${t.render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
           }
   
-          if (isOneof(field)) {
+          if (field.type === 'oneof') {
             return `
-              // oneof ${field.name}
-              m.${field.name} = (() => {
+              // oneof ${field.fieldName}
+              m.${field.fieldName} = (() => {
                 switch (true) {
                   ${field.fields.map(f => {
                     return `
-                      case (obj.${field.name}?.${f.name} !== undefined):
-                        return { ${f.name}: ${t.render('fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.name}?.${f.name}` })} }
+                      case (obj.${field.fieldName}?.${f.fieldName} !== undefined):
+                        return { ${f.fieldName}: ${t.render('fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.fieldName}?.${f.fieldName}` })} }
                     `
                   }).join('\n')}
                 }
@@ -476,19 +469,19 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
             `
           }
   
-          if (isMessageField(field)) {
-            if (field.repeated) {
-              return `m.${field.name} = obj.${field.name}.map((val) => ${t.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
+          if (field.type === 'field') {
+            if (field.msgFieldDesc.repeated) {
+              return `m.${field.fieldName} = obj.${field.fieldName}.map((val) => ${t.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
             }
   
             let result = ''
-            if (field.optional) {
-              result += `if (obj.${field.name} !== undefined) {`
+            if (field.msgFieldDesc.optional) {
+              result += `if (obj.${field.fieldName} !== undefined) {`
             }
   
-            result += `m.${field.name} = ${t.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.name}` })}`
+            result += `m.${field.fieldName} = ${t.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.fieldName}` })}`
   
-            if (field.optional) {
+            if (field.msgFieldDesc.optional) {
               result += `}`
             }
   

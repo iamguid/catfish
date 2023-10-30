@@ -37,5 +37,5 @@ export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry> = (projectCo
         result.push({ path: resultFilePath, content: resultFileContent });
     }
 
-    return { files: result }
+    return Promise.resolve({ files: result })
 }

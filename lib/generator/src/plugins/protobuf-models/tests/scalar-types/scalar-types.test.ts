@@ -1,7 +1,7 @@
 import path from "node:path";
 import * as pjs from "protobufjs";
 import { ScalarTypes, ScalarTypesJSON } from "./scalar-types_models";
-import { generateModels, loadProtoFileByProtobufjs } from "../utils";
+import { loadProtoFileByProtobufjs } from "../utils";
 
 const FILLED_MESSAGE_JSON: ScalarTypesJSON = {
     fInt32: 1,

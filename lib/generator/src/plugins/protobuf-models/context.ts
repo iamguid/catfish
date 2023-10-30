@@ -8,39 +8,50 @@ import { ContextsRegistry, ExtractPluginContextFlat, PluginContextBuilded } from
 
 export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
 
-const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
+export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
     return registry
         .extend('messages', async ({ ctx, def }) => ({
             ...ctx,
             classThing: def('model.class', ctx.desc, `${ctx.desc.name}`),
-            jsonIfaceThing: def('model.class', ctx.desc, `${ctx.desc.name}JSON`),
+            jsonIfaceThing: def('model.jsonIface', ctx.desc, `${ctx.desc.name}JSON`),
         }))
-        .extend('messagefields', async ({ ctx }) => ({
+        .extend('enums', async ({ ctx, def }) => ({
             ...ctx,
-            fieldName: snakeToCamel(ctx.msgFieldDesc.name),
-            fieldTag: getTag(ctx.msgFieldDesc.fieldNumber, ctx.msgFieldDesc.repeated ? 2 : getWireTypeByTypeInfo(ctx.typeInfo))
+            enmType: def('model.enum', ctx.desc, ctx.desc.name)
         }))
+        .extend('messagefields', async ({ ctx, use }) => {
+            const fieldThing = await (ctx.typeInfo.descriptor ? use(['model.class', 'model.enum'], ctx.typeInfo.descriptor) : Promise.resolve(null))
+
+            return {
+                ...ctx,
+                fieldThing,
+                fieldName: snakeToCamel(ctx.msgFieldDesc.name),
+                fieldTag: getTag(ctx.msgFieldDesc.fieldNumber, ctx.msgFieldDesc.repeated ? 2 : getWireTypeByTypeInfo(ctx.typeInfo))
+            }
+        })
         .extend('oneofs', async ({ ctx, def }) => ({
             ...ctx,
-            enumName: snakeToCamel(ctx.desc.name),
-            tsType: def('model.oneof.type', ctx.desc, `${snakeToCamel(ctx.desc.name)}OneofJSONType`),
-            jsonType: def('model.oneof.jsonType', ctx.desc, `${snakeToCamel(ctx.desc.name)}OneofType`),
+            fieldName: snakeToCamel(ctx.desc.name),
+            typeThing: def('model.oneof.type', ctx.desc, `${snakeToCamel(ctx.desc.name)}OneofJSONType`),
+            jsonTypeThing: def('model.oneof.jsonType', ctx.desc, `${snakeToCamel(ctx.desc.name)}OneofType`),
         }))
-        .extend('maps', async ({ ctx }) => ({
+        .extend('maps', async ({ ctx, use }) => ({
             ...ctx,
+            fieldName: snakeToCamel(ctx.desc.name),
             encodeMethodName: `encode${upperCaseFirst(snakeToCamel(ctx.desc.name))}`,
             decodeMethodName: `decode${upperCaseFirst(snakeToCamel(ctx.desc.name))}`,
-            name: snakeToCamel(ctx.desc.name),
+            keyThing: await use(['model.class', 'model.enum'], ctx.desc, ctx.desc.keyType),
+            valueThing: await use(['model.class', 'model.enum'], ctx.desc, ctx.desc.valueType),
             tag: getTag(ctx.desc.fieldNumber, 2),
             keyTag: getTag(1, getWireTypeByTypeInfo(ctx.keyTypeInfo)),
             valueTag: getTag(2, getWireTypeByTypeInfo(ctx.valueTypeInfo)),
         }))
         .extend('typeinfos', async ({ ctx, use }) => {
-            const enumThing: ResolvedThingImport | null = await (ctx.descriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const enumThing: ResolvedThingImport | null = await (ctx.descriptor && ctx.descriptor instanceof EnumDescriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
             const tsTypeThing: ResolvedThingImport | null = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
             const jsonTypeThing: ResolvedThingImport | null = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.fullname ?? '';
-            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.fullname ?? '';
+            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.fullImport ?? '';
+            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.fullImport ?? '';
 
             return {
                 ...ctx,
@@ -48,7 +59,7 @@ const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
                 pjsFn: getPjsFnNameByTypeInfo(ctx),
                 tsType,
                 jsonType,
-                enumType: enumThing?.fullname,
+                enumType: enumThing?.fullImport,
             }
         })
 }

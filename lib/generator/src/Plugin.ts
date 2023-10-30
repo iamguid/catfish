@@ -25,4 +25,4 @@ export type Plugin<
     projectOptions: ProjectOptions,
     pluginOptions?: TPluginOptions,
     registerPluginTemplates?: TRegisterTemplates,
-) => PluginOutput;
+) => Promise<PluginOutput>;
