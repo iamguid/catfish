@@ -26,23 +26,29 @@ export interface IResolverV2 {
 }
 
 export const ResolverSymbol = Symbol('resolver');
+export const NodeNameSymbol = Symbol('nodename');
 
 export type ResolverNode = {
     [node: string]: ResolverNode,
     [ResolverSymbol]: Map<string, ResolvedThing[]>,
+    [NodeNameSymbol]: string,
 }
 
-const getImportId = (desc: BaseDescriptor) => {
+const getImportId = (namespace: string) => {
     return 'i' + crypto
         .createHash("md5")
-        .update(desc.fullname, "binary")
+        .update(getNamespaceScope(namespace), "binary")
         .digest("hex")
 }
 
-export class ResolverV2 implements IResolverV2 {
-    private readonly registry: ResolverNode = { [ResolverSymbol]: new Map() }
+const getNamespaceScope = (namespace: string) => {
+    return namespace.split('.')[0]!
+}
 
-    private thingResolveTimeoutsMap: Map<string, NodeJS.Timeout[]> = new Map(); // key - thing fullname
+export class ResolverV2 implements IResolverV2 {
+    private readonly registry: ResolverNode = { [ResolverSymbol]: new Map(), [NodeNameSymbol]: '' }
+
+    private thingResolveTimeoutsMap: Map<string, NodeJS.Timeout[]> = new Map(); // key - import id
 
     constructor(private readonly projectContext: ProjectContext) {}
 
@@ -60,7 +66,7 @@ export class ResolverV2 implements IResolverV2 {
 
         const things = node[ResolverSymbol].get(thingProtofullname)!;
         const thing: ResolvedThing = {
-            importId: getImportId(thingDesc),
+            importId: getImportId(namespace),
             fullname: thingFullname,
             name: thingName_,
             desc: thingDesc,
@@ -84,7 +90,7 @@ export class ResolverV2 implements IResolverV2 {
 
     async resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> {
         const resultType = protoType ?? thingDesc.fullname;
-        const thingImportId = getImportId(thingDesc);
+        const thingImportId = getImportId(node[NodeNameSymbol]);
 
         return new Promise<ResolvedThingImport>((resolve, reject) => {
             let isResolved = false;
@@ -154,13 +160,15 @@ export class ResolverV2 implements IResolverV2 {
 
     findNode(namespace: string): ResolverNode {
         const stack = namespace.split('.');
+        const traversedNodes = [];
 
         let currentNode = this.registry;
         while (stack.length > 0) {
             const nodeName = stack.shift()!;
+            traversedNodes.push(nodeName);
 
             if (typeof currentNode[nodeName] === 'undefined') {
-                currentNode[nodeName] = { [ResolverSymbol]: new Map() }
+                currentNode[nodeName] = { [ResolverSymbol]: new Map(), [NodeNameSymbol]: traversedNodes.join('.') }
             }
 
             currentNode = currentNode[nodeName]

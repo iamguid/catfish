@@ -1,128 +1,91 @@
-import { MessageFieldDescriptor, FileDescriptor, MessageDescriptor, BaseDescriptor, Options, ServiceDescriptor, MethodDescriptor } from "@catfish/parser";
-import { ProjectContext } from "../../ProjectContext";
-import { findOption, snakeToCamel, upperCaseFirst } from "../../utils";
-import { ProjectOptions } from "../../Project";
+import { MessageFieldDescriptor, MessageDescriptor, BaseDescriptor } from "@catfish/parser";
+import { ProjectContext, TypeInfo } from "../../ProjectContext";
+import { findOption, snakeToCamel } from "../../utils";
 import { PluginOptions } from "./plugin";
-import { ResolvedThingImport } from "../../Resolver";
+import { BasePluginContext, ContextsRegistry, ContextsRegistryCbArguments, ExtractPluginContextFlat, ExtractPluginContextI } from "../../PluginContext";
 
-export interface FileContext {
-    desc: FileDescriptor
-    options: Options[]
-    services: ServiceContext[]
-    filePath: string
-    package: string
+export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
+export type PluginContextI = ExtractPluginContextI<ReturnType<typeof buildPluginContext>>;
+
+export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
+    return registry
+        .extend('typeinfos', async ({ ctx }) => ({
+            ...ctx,
+            name: snakeToCamel(ctx.descriptor?.name ?? ''),
+        }))
+        .extend('services', async ({ ctx, use }) => ({
+            ...ctx,
+            rxjsClientThing: await use('grpcrxjs.client', ctx.desc),
+            grpcClientThing: await use('grpc.client', ctx.desc),
+        }))
+        .extend('methods', async ({ ctx }) => {
+            const paginatedMethodOption = findOption(ctx.methodDesc.options, 'catfish.mtd_paginated');
+            const type = paginatedMethodOption ? 'paginated' : 'basic';
+
+            if (type === 'basic') {
+                return { ...ctx, type }
+            }
+
+            return {
+                ...ctx,
+                type,
+                createRxjsPaginatorName: `create${snakeToCamel(ctx.methodDesc.name)}RxjsPaginator`,
+                createAsyncPaginatorName: `create${snakeToCamel(ctx.methodDesc.name)}AsyncPaginator`,
+            }
+        })
+        .extend('requests', async ({ ctx, use, type }) => {
+            const paginatedMethodOption = findOption(ctx.methodDesc.options, 'catfish.mtd_paginated');
+            const t = paginatedMethodOption ? 'paginated' : 'basic';
+
+            if (t === 'basic') {
+                return { ...ctx, type: t }
+            }
+
+            const request = validateRequest(ctx.requestTypeInfo)
+            const messageTypeThing = await use('model.class', ctx.requestTypeInfo.descriptor!)
+            const messageJSONTypeThing = await use('model.jsonIface', ctx.requestTypeInfo.descriptor!)
+
+            return {
+                ...ctx,
+                type: t,
+                parametersTypeName: `${ctx.methodDesc.name}Parameters`,
+                messageTypeThing, 
+                messageJSONTypeThing,
+                pageTokenFieldTypeInfo: type(request.pageTokenFieldDesc.type),
+                pageSizeFieldTypeInfo: type(request.pageSizeFieldDesc.type),
+            }
+        })
+        .extend('responses', async ({ ctx, use, type }) => {
+            const paginatedMethodOption = findOption(ctx.methodDesc.options, 'catfish.mtd_paginated');
+            const t = paginatedMethodOption ? 'paginated' : 'basic';
+
+            if (t === 'basic') {
+                return { ...ctx, type: t }
+            }
+
+            const response = validateResponse(ctx.responseTypeInfo)
+            const messageTypeThing = await use('model.class', ctx.responseTypeInfo.descriptor!)
+            const messageJSONTypeThing = await use('model.jsonIface', ctx.responseTypeInfo.descriptor!)
+            const dataFieldTypeThing = await use('model.class', response.dataFieldDesc)
+
+            return {
+                ...ctx,
+                type: t,
+                messageTypeThing,
+                messageJSONTypeThing,
+                dataFieldTypeInfo: type(response.dataFieldDesc.type),
+                dataFieldTypeThing,
+                nextPageTokenFieldTypeInfo: type(response.nextPageTokenFieldDesc.type)
+            }
+        })
 }
 
-export interface ServiceContext {
-    options: Options[]
-    rxjsClientThing: ResolvedThingImport
-    grpcClientThing: ResolvedThingImport
-    methods: ServiceMethodContext[]
-}
-
-export interface ServiceMethodContext {
-    options: Options[]
-    name: string
-    createRxjsPaginatorName: string
-    createAsyncPaginatorName: string
-    clientStreaming: boolean
-    serverStreaming: boolean
-    request: RequestMessageContext
-    response: ResponseMessageContext
-    requestTypeInfo: TypeInfoContext
-    responseTypeInfo: TypeInfoContext
-}
-
-export interface EnumContext {
-    fields: EnumFieldContext[]
-    name: string
-}
-
-export interface EnumFieldContext {
-    options: Options[]
-    name: string
-    value: number
-}
-
-export interface MessageContext {
-    options: Options[]
-    name: string
-}
-
-export interface MessageFieldContext {
-    options: Options[],
-    typeInfo: TypeInfoContext,
-    rawName: string
-    name: string
-}
-
-export interface RequestMessageContext extends MessageContext {
-    pageSizeField: MessageFieldContext
-    pageTokenField: MessageFieldContext
-    requestJsonIfaceThing: ResolvedThingImport
-    requestTypeInfo: TypeInfoContext
-    requestParametersTypeName: string
-}
-
-export interface ResponseMessageContext extends MessageContext {
-    dataField: MessageFieldContext
-    nextPageTokenField: MessageFieldContext
-}
-
-export interface TypeInfoContext {
-    desc: BaseDescriptor | null
-    thing: ResolvedThingImport | null
-    protoType: string
-}
-
-export const buildFileContext = (ctx: ProjectContext, file: FileDescriptor, projectOptions: ProjectOptions, pluginOptions?: PluginOptions): FileContext => {
-    return {
-        desc: file,
-        options: file.options,
-        services: file.services.map(srv => buildServiceContext(ctx, file, srv)),
-        filePath: ctx.getProtoFilePath(file),
-        package: file.package,
-    }
-}
-
-export const buildServiceContext = (ctx: ProjectContext, file: FileDescriptor, desc: ServiceDescriptor): ServiceContext => {
-    const rxjsClientThing = ctx.resolver.resolveOne('grpcrxjs.client', desc, file);
-    const grpcClientThing = ctx.resolver.resolveOne('grpc.client', desc, file);
-
-    return {
-        options: desc.options,
-        rxjsClientThing,
-        grpcClientThing,
-        methods: desc.methods.map(m => buildServiceMethodContext(ctx, file, desc, m)),
-    }
-}
-
-export const buildServiceMethodContext = (ctx: ProjectContext, file: FileDescriptor, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): ServiceMethodContext => {
-    const requestTypeInfo = buildTypeInfoContext(ctx, file, methodDesc.inputMessageType);
-    const responseTypeInfo = buildTypeInfoContext(ctx, file, methodDesc.outputMessageType);
-    
-    return {
-        options: methodDesc.options,
-        name: snakeToCamel(methodDesc.name),
-        createRxjsPaginatorName: `create${snakeToCamel(methodDesc.name)}RxjsPaginator`,
-        createAsyncPaginatorName: `create${snakeToCamel(methodDesc.name)}AsyncPaginator`,
-        clientStreaming: methodDesc.isClientStreaming,
-        serverStreaming: methodDesc.isServerStreaming,
-        request: buildRequestMessageContext(ctx, file, requestTypeInfo),
-        response: buildResponseMessageContext(ctx, file, responseTypeInfo),
-        requestTypeInfo,
-        responseTypeInfo,
-    }
-}
-
-export const buildRequestMessageContext = (ctx: ProjectContext, file: FileDescriptor, requestTypeInfo: TypeInfoContext): RequestMessageContext => {
-    const desc = requestTypeInfo.desc as MessageDescriptor;
-
-    if (!(desc instanceof MessageDescriptor)) {
+const validateRequest = (typeInfo: TypeInfo) => {
+    if (!(typeInfo.descriptor instanceof MessageDescriptor)) {
         throw new Error(`Pagination RPC Request should be message`)
     }
 
-    const pageSizeFieldDesc = desc.fields
+    const pageSizeFieldDesc = typeInfo.descriptor.fields
         .filter(field => field instanceof MessageFieldDescriptor)
         .find((field) => {
             const f = field as MessageFieldDescriptor;
@@ -132,14 +95,14 @@ export const buildRequestMessageContext = (ctx: ProjectContext, file: FileDescri
         }) as MessageFieldDescriptor;
 
     if (!pageSizeFieldDesc) {
-        throw new Error(`Cannot find 'page_size' field or 'catfish.fld_page_size' option in message ${desc.fullpath}`)
+        throw new Error(`Cannot find 'page_size' field or 'catfish.fld_page_size' option in message ${typeInfo.descriptor.fullpath}`)
     }
 
     if (!(pageSizeFieldDesc instanceof MessageFieldDescriptor)) {
         throw new Error(`Pagination RPC request page token field should be message field`)
     }
     
-    const pageTokenFieldDesc = desc.fields
+    const pageTokenFieldDesc = typeInfo.descriptor.fields
         .filter(field => field instanceof MessageFieldDescriptor)
         .find((field) => {
             const f = field as MessageFieldDescriptor;
@@ -149,7 +112,7 @@ export const buildRequestMessageContext = (ctx: ProjectContext, file: FileDescri
         }) as MessageFieldDescriptor;
 
     if (!pageTokenFieldDesc) {
-        throw new Error(`Cannot find 'page_token' field or 'catfish.fld_page_token' option in message ${desc.fullpath}`)
+        throw new Error(`Cannot find 'page_token' field or 'catfish.fld_page_token' option in message ${typeInfo.descriptor.fullpath}`)
     }
 
     if (!(pageTokenFieldDesc instanceof MessageFieldDescriptor)) {
@@ -157,24 +120,17 @@ export const buildRequestMessageContext = (ctx: ProjectContext, file: FileDescri
     }
 
     return {
-        options: desc.options,
-        name: desc.name,
-        requestTypeInfo: buildTypeInfoContext(ctx, file, desc.fullname),
-        requestJsonIfaceThing: ctx.resolver.resolveOne('model.jsonIface', desc, file),
-        requestParametersTypeName: `${desc.name}Parameters`,
-        pageSizeField: buildMessageFieldContext(ctx, file, pageSizeFieldDesc),
-        pageTokenField: buildMessageFieldContext(ctx, file, pageTokenFieldDesc),
+        pageSizeFieldDesc,
+        pageTokenFieldDesc,
     }
 }
 
-export const buildResponseMessageContext = (ctx: ProjectContext, file: FileDescriptor, responseTypeInfo: TypeInfoContext): ResponseMessageContext => {
-    const desc = responseTypeInfo.desc as MessageDescriptor;
-
-    if (!(desc instanceof MessageDescriptor)) {
+const validateResponse = (typeInfo: TypeInfo) => {
+    if (!(typeInfo.descriptor instanceof MessageDescriptor)) {
         throw new Error(`Pagination RPC response should be message`)
     }
 
-    const dataFieldDesc = desc.fields
+    const dataFieldDesc = typeInfo.descriptor.fields
         .filter(field => field instanceof MessageFieldDescriptor)
         .find((field) => {
             const f = field as MessageFieldDescriptor;
@@ -184,14 +140,14 @@ export const buildResponseMessageContext = (ctx: ProjectContext, file: FileDescr
         }) as MessageFieldDescriptor;
 
     if (!dataFieldDesc) {
-        throw new Error(`Cannot find 'page_data' field or 'catfish.fld_page_data' option in message ${desc.fullpath}`)
+        throw new Error(`Cannot find 'page_data' field or 'catfish.fld_page_data' option in message ${typeInfo.descriptor.fullpath}`)
     }
 
     if (!(dataFieldDesc instanceof MessageFieldDescriptor)) {
         throw new Error(`Pagination RPC response page data field should be message field`)
     }
     
-    const nextPageTokenFieldDesc = desc.fields
+    const nextPageTokenFieldDesc = typeInfo.descriptor.fields
         .filter(field => field instanceof MessageFieldDescriptor)
         .find((field) => {
             const f = field as MessageFieldDescriptor;
@@ -201,7 +157,7 @@ export const buildResponseMessageContext = (ctx: ProjectContext, file: FileDescr
         }) as MessageFieldDescriptor;
 
     if (!nextPageTokenFieldDesc) {
-        throw new Error(`Cannot find 'next_page_token' field or 'catfish.fld_next_page_token' option in message ${desc.fullpath}`)
+        throw new Error(`Cannot find 'next_page_token' field or 'catfish.fld_next_page_token' option in message ${typeInfo.descriptor.fullpath}`)
     }
 
     if (!(nextPageTokenFieldDesc instanceof MessageFieldDescriptor)) {
@@ -209,29 +165,7 @@ export const buildResponseMessageContext = (ctx: ProjectContext, file: FileDescr
     }
 
     return {
-        options: desc.options,
-        name: desc.name,
-        dataField: buildMessageFieldContext(ctx, file, dataFieldDesc),
-        nextPageTokenField: buildMessageFieldContext(ctx, file, nextPageTokenFieldDesc),
-    }
-}
-
-export const buildMessageFieldContext = (ctx: ProjectContext, file: FileDescriptor, desc: MessageFieldDescriptor): MessageFieldContext => {
-    return {
-        options: desc.options,
-        typeInfo: buildTypeInfoContext(ctx, file, desc.type),
-        rawName: desc.name,
-        name: snakeToCamel(desc.name),
-    }
-}
-
-export const buildTypeInfoContext = (ctx: ProjectContext, file: FileDescriptor, protoType: string): TypeInfoContext => {
-    const typeInfo = ctx.getTypeInfo(file, protoType);
-    const fullType = typeInfo.descriptor ? ctx.resolver.resolveOne(['model.class', 'model.enum'], typeInfo.descriptor, file, protoType) : null;
-
-    return {
-        protoType,
-        desc: typeInfo.descriptor ?? null,
-        thing: fullType,
+        dataFieldDesc,
+        nextPageTokenFieldDesc,
     }
 }

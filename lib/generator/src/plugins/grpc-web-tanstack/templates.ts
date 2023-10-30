@@ -63,7 +63,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     if (method.type === 'mutation') {
       return `
         ${method.useMutationMethodName}(): rq.UseMutationOptions<
-          ${method.responseTypeInfo.thing!.usagename},
+          ${method.response.responseTypeInfo.thing!.usagename},
           grpc.RpcError,
         >
       `
@@ -77,7 +77,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
       return `
         ${service.grpcClientThing.usagename}.prototype.${method.useMutationMethodName} = function (
           this: ${service.grpcClientThing.usagename},
-          request: ${method.requestTypeInfo.thing!.usagename}
+          request: ${method.request.requestTypeInfo.thing!.usagename}
         ) {
           return {
             mutatorFn: () => this.${method.methodDesc.name}(request),
@@ -93,9 +93,9 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     if (method.type === 'query') {
       return `
         ${method.useQueryMethodName}(): rq.UseQueryOptions<
-          () => Promise<${method.responseTypeInfo.thing!.usagename}>,
+          () => Promise<${method.response.responseTypeInfo.thing!.usagename}>,
           grpc.RpcError,
-          ${method.responseTypeInfo.thing!.usagename},
+          ${method.response.responseTypeInfo.thing!.usagename},
           ['${method.dataFieldJsonThing.usagename}', ${method.dataFieldJsonThing.usagename}]
         >
       `
@@ -109,7 +109,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
       return `
         ${service.grpcClientThing.usagename}.prototype.${method.useQueryMethodName} = function (
           this: ${service.grpcClientThing.usagename},
-          request: ${method.requestTypeInfo.thing!.usagename}
+          request: ${method.request.requestTypeInfo.thing!.usagename}
         ) {
           return {
             queryKey: ['${method.dataFieldJsonThing!.usagename}', request.toJSON()],

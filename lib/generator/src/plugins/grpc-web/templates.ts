@@ -43,10 +43,10 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
         return `${method.methodDesc.name}: new grpc.MethodDescriptor(
           "${method.path}",
           ${t.render('methodStreamType', { method })},
-          ${method.requestTypeInfo.thing!.usagename},
-          ${method.responseTypeInfo.thing!.usagename},
-          (message: ${method.requestTypeInfo.thing!.usagename}) => message.serialize(),
-          (bytes: Uint8Array) => new ${method.responseTypeInfo.thing!.usagename}().deserialize(bytes),
+          ${method.request.requestTypeInfo.thing!.usagename},
+          ${method.response.responseTypeInfo.thing!.usagename},
+          (message: ${method.request.requestTypeInfo.thing!.usagename}) => message.serialize(),
+          (bytes: Uint8Array) => new ${method.response.responseTypeInfo.thing!.usagename}().deserialize(bytes),
         ),`
       }).join('\n')}
     } as const
@@ -78,9 +78,9 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
 
   t.register('clientStubClassMethod', ({ service, method }) => `
     ${method.methodName}(
-      request: ${method.requestTypeInfo.thing!.usagename},
+      request: ${method.request.requestTypeInfo.thing!.usagename},
       metadata: grpc.Metadata | null,
-    ): ${method.methodDesc.isServerStreaming ? `grpc.ClientReadableStream<${method.responseTypeInfo.thing!.usagename}>` : `Promise<${method.responseTypeInfo.thing!.usagename}>`} {
+    ): ${method.methodDesc.isServerStreaming ? `grpc.ClientReadableStream<${method.response.responseTypeInfo.thing!.usagename}>` : `Promise<${method.response.responseTypeInfo.thing!.usagename}>`} {
       return this.client.${method.methodDesc.isServerStreaming ? 'serverStreaming' : 'unaryCall'}(
         this.hostname + "${method.path}",
         request,

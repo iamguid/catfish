@@ -46,18 +46,18 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
 
   t.register('clientStubClassUnaryMethod', ({ method }) => `
     ${method.methodDesc.name}(
-      request: ${method.requestTypeInfo.thing!.usagename},
+      request: ${method.request.requestTypeInfo.thing!.usagename},
       metadata: grpc.Metadata | null,
-    ): rxjs.Observable<${method.responseTypeInfo.thing!.usagename}> {
+    ): rxjs.Observable<${method.response.responseTypeInfo.thing!.usagename}> {
       return rxjs.defer(() => rxjs.from(super.${method.methodDesc.name}(request, metadata)));
     }
   `);
 
   t.register('clientStubClassServerStreamingMethod', ({ method }) => `
     ${method.methodDesc.name}(
-      request: ${method.requestTypeInfo.thing!.usagename},
+      request: ${method.request.requestTypeInfo.thing!.usagename},
       metadata: grpc.Metadata | null,
-    ): rxjs.Observable<runtime.ClientReadableStreamEvent<${method.responseTypeInfo.thing!.usagename}>> {
+    ): rxjs.Observable<runtime.ClientReadableStreamEvent<${method.response.responseTypeInfo.thing!.usagename}>> {
       return runtime.observableWrapClintReadableStream(super.${method.methodDesc.name}(request, metadata));
     }
   `)

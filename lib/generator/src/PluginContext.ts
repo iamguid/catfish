@@ -6,6 +6,8 @@ type ConvertFlat<TPluginContext extends BasePluginContext, TBuilded extends Plug
     'file': TBuilded,
     'file.service': TBuilded['services'][0],
     'file.service.method': TBuilded['services'][0]['methods'][0],
+    'file.service.method.request': TBuilded['services'][0]['methods'][0]['request'],
+    'file.service.method.response': TBuilded['services'][0]['methods'][0]['response'],
     'file.enum': TBuilded['enums'][0],
     'file.enum.field': TBuilded['enums'][0]['fields'][0],
     'file.message': TBuilded['messages'][0],
@@ -19,6 +21,12 @@ type ConvertFlat<TPluginContext extends BasePluginContext, TBuilded extends Plug
 export type ExtractPluginContextFlat<TContextsRegistry extends ContextsRegistry<any>> =
     TContextsRegistry extends ContextsRegistry<infer T1, infer T2, infer TPluginContextO> ? ConvertFlat<TPluginContextO> : unknown;
 
+export type ExtractPluginContextO<TContextsRegistry extends ContextsRegistry<any>> =
+    TContextsRegistry extends ContextsRegistry<infer T1, infer T2, infer TPluginContextO> ? TPluginContextO : unknown;
+
+export type ExtractPluginContextI<TContextsRegistry extends ContextsRegistry<any>> =
+    TContextsRegistry extends ContextsRegistry<infer T1, infer TPluginContextI, infer T2> ? TPluginContextI : unknown;
+
 export type OptionalKey<T, key> = T extends Record<any, any> ? T[key] : unknown
 
 export type ExtendByName<T, TExt, TName> = {
@@ -28,7 +36,9 @@ export type ExtendByName<T, TExt, TName> = {
 export type BasePluginContext<TTypeInfo = TypeInfo> = {
     readonly files: { desc: FileDescriptor }
     readonly services: { desc: ServiceDescriptor }
-    readonly methods: { serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor, requestTypeInfo: TTypeInfo, responseTypeInfo: TTypeInfo }
+    readonly methods: { serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor }
+    readonly requests: { serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor, requestTypeInfo: TTypeInfo }
+    readonly responses: { serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor, responseTypeInfo: TTypeInfo }
     readonly messages: { desc: MessageDescriptor }
     readonly messagefields: { type: 'field', typeInfo: TTypeInfo, msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor }
     readonly maps: { type: 'map', keyTypeInfo: TTypeInfo, valueTypeInfo: TTypeInfo, desc: MapFieldDescriptor }
@@ -52,7 +62,7 @@ export type PluginContextBuildedMessage<TPluginContext extends BasePluginContext
 
 export type PluginContextBuilded<TPluginContext extends BasePluginContext> = TPluginContext['files'] & {
     services: (TPluginContext['services'] & {
-        methods: (TPluginContext['methods'] & { requestTypeInfo: TPluginContext['typeinfos'], responseTypeInfo: TPluginContext['typeinfos'] })[]
+        methods: (TPluginContext['methods'] & { request: (TPluginContext['requests'] & { requestTypeInfo: TPluginContext['typeinfos'] }), response: (TPluginContext['responses'] & { responseTypeInfo: TPluginContext['typeinfos'] }) })[]
     })[],
     messages: (PluginContextBuildedMessage<TPluginContext>)[],
     enums: (TPluginContext['enums'] & {
@@ -100,13 +110,14 @@ export type PluginContextI<TPluginContext extends BasePluginContextIOAny> = {
 export type ContextsRegistryCbArguments<
     TName extends keyof BasePluginContext,
     TPluginOptions extends Record<string, any>,
-    TPluginContextI extends BasePluginContext,
+    TPluginContext extends BasePluginContext,
 > = { 
-    ctx: TPluginContextI[TName],
+    ctx: TPluginContext[TName],
     prj: ProjectContext,
     file: FileDescriptor,
     def: (namespace: string, desc: BaseDescriptor, thingName: string) => ResolvedThing,
     use: (namespace: string | string[], desc: BaseDescriptor, protoType?: string) => Promise<ResolvedThingImport & { usagename: string }>,
+    type: (protoType: string) => TPluginContext['typeinfos'],
     opt: TPluginOptions
 }
 
@@ -122,6 +133,8 @@ export class ContextsRegistry<
         files: [],
         services: [],
         methods: [],
+        requests: [],
+        responses: [],
         messages: [],
         messagefields: [],
         maps: [],
@@ -203,19 +216,31 @@ export class ContextsRegistry<
             }
         }
 
+        const buildService = async (service: ServiceDescriptor): Promise<TPluginContextBuilded['services'][0]> => {
+            const baseCtx = await this.buildService(resolver_, service)
+            const methods = await Promise.all(service.methods.map(async (method) => {
+                const baseCtx = await this.buildMethod(resolver_, service, method)
+                const request = await this.buildRequest(resolver_, service, method)
+                const response = await this.buildResponse(resolver_, service, method)
+
+                return {
+                    ...baseCtx,
+                    request,
+                    response,
+                }
+            }))
+
+            return {
+                ...baseCtx,
+                methods
+            }
+        }
+
         const buildFile = async (file: FileDescriptor): Promise<TPluginContextBuilded> => {
             const baseCtx = await this.buildFile(resolver_, file)
             const enums = await Promise.all(file.enums.map(enm => buildEnum(enm)))
             const messages = await Promise.all(file.messages.map(msg => buildMessage(msg)))
-            const services = await Promise.all(file.services.map(async (service) => {
-                const baseCtx = await this.buildService(resolver_, service)
-                const methods = await Promise.all(service.methods.map((method) => this.buildMethod(resolver_, service, method)))
-
-                return {
-                    ...baseCtx,
-                    methods
-                }
-            }))
+            const services = await Promise.all(file.services.map((service) => buildService(service)))
 
             return {
                 ...baseCtx,
@@ -239,10 +264,20 @@ export class ContextsRegistry<
     }
 
     private buildMethod = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BasePluginContext['methods']> => {
-        const requestTypeInfo = await this.buildTypeInfo(resolver, methodDesc.inputMessageType)
-        const responseTypeInfo = await this.buildTypeInfo(resolver, methodDesc.outputMessageType)
         const cbChanin = this.contextTransformerChains['methods']
-        return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc, requestTypeInfo, responseTypeInfo }, cbChanin)
+        return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc }, cbChanin)
+    }
+
+    private buildRequest = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BasePluginContext['requests']> => {
+        const requestTypeInfo = await this.buildTypeInfo(resolver, methodDesc.inputMessageType)
+        const cbChanin = this.contextTransformerChains['requests']
+        return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc, requestTypeInfo }, cbChanin)
+    }
+
+    private buildResponse = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BasePluginContext['responses']> => {
+        const responseTypeInfo = await this.buildTypeInfo(resolver, methodDesc.outputMessageType)
+        const cbChanin = this.contextTransformerChains['responses']
+        return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc, responseTypeInfo }, cbChanin)
     }
 
     private buildMessage = async (resolver: IResolverV2, desc: MessageDescriptor): Promise<BasePluginContext['messages']> => {
@@ -297,9 +332,13 @@ export class ContextsRegistry<
             }
         }
 
+        const type = (protoType: string) => {
+            return this.buildTypeInfo(resolver, protoType)
+        }
+
         let lastResult = intialResult
         for (const method of chain) {
-            lastResult = await method({ctx: lastResult as any, prj: this.projectContext, file: this.file, use, def, opt: this.opts})
+            lastResult = await method({ctx: lastResult as any, prj: this.projectContext, file: this.file, use, def, type, opt: this.opts})
         }
         return lastResult
     }
