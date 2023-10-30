@@ -1,16 +1,16 @@
 import { PluginOptions } from "./plugin";
 import { Import } from "../../ProjectContext";
 import { TemplatesRegistry } from "../../Templates";
-import { FileContext, ServiceContext, UseMutationMethodContext, UseQueryMethodContext, isUseMutationMethod, isUseQueryMethod } from "./context";
+import { PluginContextFlatOut } from "./context";
 
 export type PluginTemplatesRegistry = {
-  main: { file: FileContext, imports: Import[] },
-  extensions: { file: FileContext },
-  extensionsTanStack: { service: ServiceContext },
-  useMutatorIfaceMethod: { method: UseMutationMethodContext },
-  useMutatorMethod: { service: ServiceContext, method: UseMutationMethodContext },
-  useQueryIfaceMethod: { method: UseQueryMethodContext },
-  useQueryMethod: { service: ServiceContext, method: UseQueryMethodContext },
+  main: { file: PluginContextFlatOut['file'], imports: Import[] },
+  extensions: { file: PluginContextFlatOut['file'] },
+  extensionsTanStack: { service: PluginContextFlatOut['file.service'] },
+  useMutatorIfaceMethod: { method: PluginContextFlatOut['file.service.method'] },
+  useMutatorMethod: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
+  useQueryIfaceMethod: { method: PluginContextFlatOut['file.service.method'] },
+  useQueryMethod: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
 }
 
 export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
@@ -34,14 +34,14 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   })
 
   t.register('extensionsTanStack', ({ service }) => `
-    declare module '${service.grpcClientImportPath}' {
-      export interface ${service.grpcClientName} {
+    declare module '${service.grpcClientThing.importpath}' {
+      export interface ${service.grpcClientThing.name} {
         ${service.methods.map(method => {
-          if (isUseMutationMethod(method)) {
+          if (method.type === 'mutation') {
             return t.render('useMutatorIfaceMethod', { method })
           }
 
-          if (isUseQueryMethod(method)) {
+          if (method.type === 'query') {
             return t.render('useQueryIfaceMethod', { method })
           }
         }).join('')}
@@ -49,53 +49,76 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     }
 
     ${service.methods.map(method => {
-      if (isUseMutationMethod(method)) {
+      if (method.type === 'mutation') {
         return t.render('useMutatorMethod', { service, method })
       }
 
-      if (isUseQueryMethod(method)) {
+      if (method.type === 'query') {
         return t.render('useQueryMethod', { service, method })
       }
     }).join('\n')}
   `)
 
-  t.register('useMutatorIfaceMethod', ({ method }) => `
-    ${method.useMutationMethodName}(): rq.UseMutationOptions<
-      ${method.responseTypeInfo.thing!.fullImport},
-      grpc.RpcError,
-    >
-  `)
-
-  t.register('useMutatorMethod', ({ service, method }) => `
-    ${service.grpcClientFullName}.prototype.${method.useMutationMethodName} = function (
-      this: ${service.grpcClientFullName},
-      request: ${method.requestTypeInfo.thing!.fullImport}
-    ) {
-      return {
-        mutatorFn: () => this.${method.name}(request),
-      }
+  t.register('useMutatorIfaceMethod', ({ method }) => {
+    if (method.type === 'mutation') {
+      return `
+        ${method.useMutationMethodName}(): rq.UseMutationOptions<
+          ${method.responseTypeInfo.thing!.usagename},
+          grpc.RpcError,
+        >
+      `
     }
-  `)
 
-  t.register('useQueryIfaceMethod', ({ method }) => `
-    ${method.useQueryMethodName}(): rq.UseQueryOptions<
-      () => Promise<${method.responseTypeInfo.thing!.fullImport}>,
-      grpc.RpcError,
-      ${method.responseTypeInfo.thing!.fullImport},
-      ['${method.responseTypeInfo.dataFieldTypeInfo.thing!.fullImport}', ${method.responseTypeInfo.dataFieldJsonIfaceThing.fullImport}]
-    >
-  `)
+    throw new Error('Invalid method type')
+  })
 
-  t.register('useQueryMethod', ({ service, method }) => `
-    ${service.grpcClientFullName}.prototype.${method.useQueryMethodName} = function (
-      this: ${service.grpcClientFullName},
-      request: ${method.requestTypeInfo.thing!.fullImport}
-    ) {
-      return {
-        queryKey: ['${method.responseTypeInfo.dataFieldTypeInfo.thing!.fullImport}', request.toJSON()],
-        queryFn: () => this.${method.name}(request),
-      }
+  t.register('useMutatorMethod', ({ service, method }) => {
+    if (method.type === 'mutation') {
+      return `
+        ${service.grpcClientThing.usagename}.prototype.${method.useMutationMethodName} = function (
+          this: ${service.grpcClientThing.usagename},
+          request: ${method.requestTypeInfo.thing!.usagename}
+        ) {
+          return {
+            mutatorFn: () => this.${method.methodDesc.name}(request),
+          }
+        }
+      `
     }
-  `)
+
+    throw new Error('Invalid method type')
+  })
+
+  t.register('useQueryIfaceMethod', ({ method }) => {
+    if (method.type === 'query') {
+      return `
+        ${method.useQueryMethodName}(): rq.UseQueryOptions<
+          () => Promise<${method.responseTypeInfo.thing!.usagename}>,
+          grpc.RpcError,
+          ${method.responseTypeInfo.thing!.usagename},
+          ['${method.dataFieldJsonThing.usagename}', ${method.dataFieldJsonThing.usagename}]
+        >
+      `
+    }
+
+    throw new Error('Invalid method type')
+  })
+
+  t.register('useQueryMethod', ({ service, method }) => {
+    if (method.type === 'query') {
+      return `
+        ${service.grpcClientThing.usagename}.prototype.${method.useQueryMethodName} = function (
+          this: ${service.grpcClientThing.usagename},
+          request: ${method.requestTypeInfo.thing!.usagename}
+        ) {
+          return {
+            queryKey: ['${method.dataFieldJsonThing!.usagename}', request.toJSON()],
+            queryFn: () => this.${method.methodDesc.name}(request),
+          }
+        }
+      `
+    }
+
+    throw new Error('Invalid method type')
+  })
 }
-

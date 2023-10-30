@@ -7,27 +7,27 @@
 // package: simple_service
 // file: simple-rpc.proto
 
-import * as i46be985838c89d4a9ef4547b05f7a8f6 from "././simple-rpc_grpc.ts";
-import * as i304a882bba12abcf5b0b1d2f7051afc3 from "././simple-rpc_models.ts";
+import * as i3fb9f3d4baf4195cef6bfd3adcb13b9e from "././simple-rpc_grpc.ts";
+import * as i05f5fe8fe1733385e835a2d7c0a21127 from "././simple-rpc_models.ts";
 
 import * as runtime from "@catfish/runtime";
 import * as rxjs from "rxjs";
 import * as grpc from "grpc-web";
 
-// #region SimpleService
-export class SimpleServiceRxjsClient extends i46be985838c89d4a9ef4547b05f7a8f6.SimpleServiceClient {
+// #region simple_service.SimpleService
+export class SimpleServiceRxjsClient extends i3fb9f3d4baf4195cef6bfd3adcb13b9e.SimpleServiceClient {
   UnaryMethod(
-    request: i304a882bba12abcf5b0b1d2f7051afc3.SimpleMessage,
+    request: i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
     metadata: grpc.Metadata | null
-  ): rxjs.Observable<i304a882bba12abcf5b0b1d2f7051afc3.SimpleMessage> {
+  ): rxjs.Observable<i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage> {
     return rxjs.defer(() => rxjs.from(super.UnaryMethod(request, metadata)));
   }
 
   ServerStreamMethod(
-    request: i304a882bba12abcf5b0b1d2f7051afc3.SimpleMessage,
+    request: i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
     metadata: grpc.Metadata | null
   ): rxjs.Observable<
-    runtime.ClientReadableStreamEvent<i304a882bba12abcf5b0b1d2f7051afc3.SimpleMessage>
+    runtime.ClientReadableStreamEvent<i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage>
   > {
     return runtime.observableWrapClintReadableStream(
       super.ServerStreamMethod(request, metadata)

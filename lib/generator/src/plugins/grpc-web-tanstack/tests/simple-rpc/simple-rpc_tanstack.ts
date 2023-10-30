@@ -7,8 +7,8 @@
 // package: simple_service
 // file: simple-rpc.proto
 
-import * as i46be985838c89d4a9ef4547b05f7a8f6 from "././simple-rpc_grpc.ts";
-import * as i304a882bba12abcf5b0b1d2f7051afc3 from "././simple-rpc_models.ts";
+import * as ia78d92959178c10548ba2e8d3fe6da45 from "././simple-rpc_models.ts";
+import * as i3fb9f3d4baf4195cef6bfd3adcb13b9e from "././simple-rpc_grpc.ts";
 
 import * as grpc from "grpc-web";
 import * as rq from "@tanstack/react-query";
@@ -17,40 +17,40 @@ import * as rq from "@tanstack/react-query";
 declare module "././simple-rpc_grpc.ts" {
   export interface SimpleServiceClient {
     getGetMethodQueryOpts(): rq.UseQueryOptions<
-      () => Promise<i304a882bba12abcf5b0b1d2f7051afc3.SimpleResponse>,
+      () => Promise<i9bae6523ad98b3546b03faecd5208f79.SimpleResponse>,
       grpc.RpcError,
-      i304a882bba12abcf5b0b1d2f7051afc3.SimpleResponse,
+      i9bae6523ad98b3546b03faecd5208f79.SimpleResponse,
       [
-        "i304a882bba12abcf5b0b1d2f7051afc3.SimpleResponse.SomeData",
-        i304a882bba12abcf5b0b1d2f7051afc3.SimpleResponse.SomeDataJSON
+        "ia78d92959178c10548ba2e8d3fe6da45.SimpleResponse.SomeDataJSON",
+        ia78d92959178c10548ba2e8d3fe6da45.SimpleResponse.SomeDataJSON
       ]
     >;
 
     getUpdateMethodMutationOpts(): rq.UseMutationOptions<
-      i304a882bba12abcf5b0b1d2f7051afc3.SimpleResponse,
+      i9bae6523ad98b3546b03faecd5208f79.SimpleResponse,
       grpc.RpcError
     >;
   }
 }
 
-i46be985838c89d4a9ef4547b05f7a8f6.SimpleServiceClient.prototype.getGetMethodQueryOpts =
+i3fb9f3d4baf4195cef6bfd3adcb13b9e.SimpleServiceClient.prototype.getGetMethodQueryOpts =
   function (
-    this: i46be985838c89d4a9ef4547b05f7a8f6.SimpleServiceClient,
-    request: i304a882bba12abcf5b0b1d2f7051afc3.SimpleRequest
+    this: i3fb9f3d4baf4195cef6bfd3adcb13b9e.SimpleServiceClient,
+    request: ia03f17ff9f0af504dbba959c3d73bd62.SimpleRequest
   ) {
     return {
       queryKey: [
-        "i304a882bba12abcf5b0b1d2f7051afc3.SimpleResponse.SomeData",
+        "ia78d92959178c10548ba2e8d3fe6da45.SimpleResponse.SomeDataJSON",
         request.toJSON(),
       ],
       queryFn: () => this.GetMethod(request),
     };
   };
 
-i46be985838c89d4a9ef4547b05f7a8f6.SimpleServiceClient.prototype.getUpdateMethodMutationOpts =
+i3fb9f3d4baf4195cef6bfd3adcb13b9e.SimpleServiceClient.prototype.getUpdateMethodMutationOpts =
   function (
-    this: i46be985838c89d4a9ef4547b05f7a8f6.SimpleServiceClient,
-    request: i304a882bba12abcf5b0b1d2f7051afc3.SimpleRequest
+    this: i3fb9f3d4baf4195cef6bfd3adcb13b9e.SimpleServiceClient,
+    request: ia03f17ff9f0af504dbba959c3d73bd62.SimpleRequest
   ) {
     return {
       mutatorFn: () => this.UpdateMethod(request),

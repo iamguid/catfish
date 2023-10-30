@@ -12,9 +12,9 @@ export interface ResolvedThing {
 }
 
 export interface ResolvedThingImport extends ResolvedThing {
-    fullImport: string
-    importPath: string
-    importName: string
+    fullimport: string
+    importpath: string
+    importname: string
 }
 
 export interface IResolverV2 {
@@ -22,6 +22,7 @@ export interface IResolverV2 {
     resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
     resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
     getImports(resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[]
+    getRelativeTypeName(thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string
 }
 
 export const ResolverSymbol = Symbol('resolver');
@@ -92,7 +93,7 @@ export class ResolverV2 implements IResolverV2 {
                 if (!isResolved) {
                     reject(new Error(`Cannot resolve type ${resultType}`))
                 }
-            }, 100)
+            }, 5000)
 
             const checkThingTask = setTimeout(() => {
                 const things = node[ResolverSymbol].get(resultType)
@@ -141,22 +142,13 @@ export class ResolverV2 implements IResolverV2 {
         return this.resolveByNode(node, thingDesc, file, protoType);
     }
 
-    async resolveRelativeTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true): Promise<string> {
+    getRelativeTypeName(thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string {
         const fileName_ = typeof fileName === 'function' ? fileName(file, this.projectContext) : fileName
-        const resolvedType = await this.resolveByNamespace(namespace, thingDesc, file, protoType);
 
-        if (ignorePreffixInCurrentFile && resolvedType.file === fileName_) {
-            return resolvedType.fullname
+        if (thing.file === fileName_) {
+            return thing.fullname
         } else {
-            return `${resolvedType.importName}.${resolvedType.fullname}`
-        }
-    }
-
-    async tryResolveRelativeTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true): Promise<string | null> {
-        try {
-            return await this.resolveRelativeTypeName(namespace, thingDesc, file, fileName, protoType ,ignorePreffixInCurrentFile)
-        } catch {
-            return Promise.resolve(null);
+            return thing.fullimport
         }
     }
 
@@ -200,6 +192,10 @@ export class ResolverV2 implements IResolverV2 {
             return this.getImports(resolvedThings, file, fileName)
         }
 
+        const getRelativeTypeName = (thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string => {
+            return this.getRelativeTypeName(thing, file, fileName)
+        }
+
         const stopCapture = (): ResolvedThingImport[] => {
             return captured;
         }
@@ -209,6 +205,7 @@ export class ResolverV2 implements IResolverV2 {
             resolveByNode,
             resolveByNamespace,
             getImports,
+            getRelativeTypeName,
             stopCapture
         }
     }
@@ -220,9 +217,9 @@ export class ResolverV2 implements IResolverV2 {
 
         return {
             ...thing,
-            fullImport: `${thing.importId}.${thing.fullname}`,
-            importName: thing.importId,
-            importPath: pathPreffix + '/' + path.basename(thing.file),
+            fullimport: `${thing.importId}.${thing.fullname}`,
+            importname: thing.importId,
+            importpath: pathPreffix + '/' + path.basename(thing.file),
         }
     }
 
@@ -233,8 +230,8 @@ export class ResolverV2 implements IResolverV2 {
         for (const thing of resolvedThings) {
             if (!imports.has(thing.file) && thing.file !== fileName_) {
                 imports.set(thing.file, {
-                    name: thing.importName,
-                    path: thing.importPath,
+                    name: thing.importname,
+                    path: thing.importpath,
                 })
             }
         }

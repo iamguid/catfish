@@ -3,10 +3,18 @@ syntax = "proto3";
 package simple_service;
 
 service SimpleService {
-  rpc UnaryMethod(SimpleMessage) returns (SimpleMessage);
-  rpc ServerStreamMethod(SimpleMessage) returns (stream SimpleMessage);
+  rpc UnaryMethod(SimpleRequest) returns (SimpleResponse);
+  rpc ServerStreamMethod(SimpleRequest) returns (stream SimpleResponse);
 }
 
-message SimpleMessage {
+message SimpleRequest {
   int32 f_int32 = 1;
+}
+
+message SimpleResponse {
+  message Data {
+    string test = 1;
+  }
+
+  Data data = 1;
 }

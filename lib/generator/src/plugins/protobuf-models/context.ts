@@ -47,11 +47,11 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
             valueTag: getTag(2, getWireTypeByTypeInfo(ctx.valueTypeInfo)),
         }))
         .extend('typeinfos', async ({ ctx, use }) => {
-            const enumThing: ResolvedThingImport | null = await (ctx.descriptor && ctx.descriptor instanceof EnumDescriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const tsTypeThing: ResolvedThingImport | null = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const jsonTypeThing: ResolvedThingImport | null = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.fullImport ?? '';
-            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.fullImport ?? '';
+            const enumThing = await (ctx.descriptor && ctx.descriptor instanceof EnumDescriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsTypeThing = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const jsonTypeThing = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.usagename ?? '';
+            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.usagename ?? '';
 
             return {
                 ...ctx,
@@ -59,7 +59,7 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
                 pjsFn: getPjsFnNameByTypeInfo(ctx),
                 tsType,
                 jsonType,
-                enumType: enumThing?.fullImport,
+                enumType: enumThing?.usagename,
             }
         })
 }

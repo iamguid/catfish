@@ -4,7 +4,7 @@ import { IResolverV2, ResolvedThing, ResolvedThingImport } from "./ResolverV2";
 
 type ConvertFlat<TPluginContext extends BasePluginContext, TBuilded extends PluginContextBuilded<TPluginContext> = PluginContextBuilded<TPluginContext>> = {
     'file': TBuilded,
-    'file.service': TBuilded['services'],
+    'file.service': TBuilded['services'][0],
     'file.service.method': TBuilded['services'][0]['methods'][0],
     'file.enum': TBuilded['enums'][0],
     'file.enum.field': TBuilded['enums'][0]['fields'][0],
@@ -28,7 +28,7 @@ export type ExtendByName<T, TExt, TName> = {
 export type BasePluginContext<TTypeInfo = TypeInfo> = {
     readonly files: { desc: FileDescriptor }
     readonly services: { desc: ServiceDescriptor }
-    readonly methods: { desc: MethodDescriptor, requestTypeInfo: TTypeInfo, responseTypeInfo: TTypeInfo }
+    readonly methods: { serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor, requestTypeInfo: TTypeInfo, responseTypeInfo: TTypeInfo }
     readonly messages: { desc: MessageDescriptor }
     readonly messagefields: { type: 'field', typeInfo: TTypeInfo, msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor }
     readonly maps: { type: 'map', keyTypeInfo: TTypeInfo, valueTypeInfo: TTypeInfo, desc: MapFieldDescriptor }
@@ -106,7 +106,7 @@ export type ContextsRegistryCbArguments<
     prj: ProjectContext,
     file: FileDescriptor,
     def: (namespace: string, desc: BaseDescriptor, thingName: string) => ResolvedThing,
-    use: (namespace: string | string[], desc: BaseDescriptor, protoType?: string) => Promise<ResolvedThingImport>,
+    use: (namespace: string | string[], desc: BaseDescriptor, protoType?: string) => Promise<ResolvedThingImport & { usagename: string }>,
     opt: TPluginOptions
 }
 
@@ -191,15 +191,15 @@ export class ContextsRegistry<
 
         const buildMessage = async (message: MessageDescriptor): Promise<TPluginContextBuilded['messages'][0]> => {
             const baseCtx = await this.buildMessage(resolver_, message)
+            const messages = await Promise.all(message.messages.map(msg => buildMessage(msg)))
             const enums = await Promise.all(message.enums.map(enm => buildEnum(enm)))
             const fields = await Promise.all(message.fields.map(field => buildField(message, field)))
-            const messages = await Promise.all(message.messages.map(msg => buildMessage(msg)))
 
             return {
                 ...baseCtx,
+                messages,
                 enums,
                 fields,
-                messages
             }
         }
 
@@ -209,7 +209,7 @@ export class ContextsRegistry<
             const messages = await Promise.all(file.messages.map(msg => buildMessage(msg)))
             const services = await Promise.all(file.services.map(async (service) => {
                 const baseCtx = await this.buildService(resolver_, service)
-                const methods = await Promise.all(service.methods.map((method) => this.buildMethod(resolver_, method)))
+                const methods = await Promise.all(service.methods.map((method) => this.buildMethod(resolver_, service, method)))
 
                 return {
                     ...baseCtx,
@@ -238,11 +238,11 @@ export class ContextsRegistry<
         return this.executeAsyncMethodsChain(resolver, { desc }, cbChanin)
     }
 
-    private buildMethod = async (resolver: IResolverV2, desc: MethodDescriptor): Promise<BasePluginContext['methods']> => {
-        const requestTypeInfo = await this.buildTypeInfo(resolver, desc.inputMessageType)
-        const responseTypeInfo = await this.buildTypeInfo(resolver, desc.outputMessageType)
+    private buildMethod = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BasePluginContext['methods']> => {
+        const requestTypeInfo = await this.buildTypeInfo(resolver, methodDesc.inputMessageType)
+        const responseTypeInfo = await this.buildTypeInfo(resolver, methodDesc.outputMessageType)
         const cbChanin = this.contextTransformerChains['methods']
-        return this.executeAsyncMethodsChain(resolver, { desc, requestTypeInfo, responseTypeInfo }, cbChanin)
+        return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc, requestTypeInfo, responseTypeInfo }, cbChanin)
     }
 
     private buildMessage = async (resolver: IResolverV2, desc: MessageDescriptor): Promise<BasePluginContext['messages']> => {
@@ -289,8 +289,12 @@ export class ContextsRegistry<
             return resolver.define(namespace, desc, thingName, this.fileName)
         }
     
-        const use = (namespace: string | string[], desc: BaseDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
-            return resolver.resolveByNamespace(namespace, desc, this.file, protoType)
+        const use = async (namespace: string | string[], desc: BaseDescriptor, protoType?: string): Promise<ResolvedThingImport & { usagename: string }> => {
+            const thing = await resolver.resolveByNamespace(namespace, desc, this.file, protoType)
+            return {
+                ...thing,
+                usagename: resolver.getRelativeTypeName(thing, this.file, this.fileName)
+            }
         }
 
         let lastResult = intialResult

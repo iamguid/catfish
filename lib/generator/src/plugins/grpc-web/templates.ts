@@ -1,15 +1,15 @@
 import { Import } from "../../ProjectContext";
 import { TemplatesRegistry } from "../../Templates";
-import { FileContext, ServiceContext, ServiceMethodContext } from "./context";
+import { PluginContextFlatOut } from "./context";
 import { PluginOptions } from "./plugin";
 
 export type PluginTemplatesRegistry = {
-  main: { file: FileContext, imports: Import[] },
-  services: { services: ServiceContext[] },
-  serviceDefinition: { service: ServiceContext },
-  clientStubClass: { service: ServiceContext },
-  clientStubClassMethod: { service: ServiceContext, method: ServiceMethodContext },
-  methodStreamType: { method: ServiceMethodContext },
+  main: { file: PluginContextFlatOut['file'], imports: Import[] },
+  services: { services: PluginContextFlatOut['file.service'][] },
+  serviceDefinition: { service: PluginContextFlatOut['file.service'] },
+  clientStubClass: { service: PluginContextFlatOut['file.service'] },
+  clientStubClassMethod: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
+  methodStreamType: { method: PluginContextFlatOut['file.service.method'] },
 }
 
 export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
@@ -28,7 +28,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
     let result = '';
 
     for (const service of services) {
-      result += `// #region ${service.serviceRawFullname}`
+      result += `// #region ${service.desc.fullpath}`
       result += t.render('serviceDefinition', { service })
       result += t.render('clientStubClass', { service })
       result += `// #endregion`
@@ -40,13 +40,13 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   t.register('serviceDefinition', ({ service }) => `
     export const ${service.serviceDefinitionThing.name} = {
       ${service.methods.map(method => {
-        return `${method.name}: new grpc.MethodDescriptor(
+        return `${method.methodDesc.name}: new grpc.MethodDescriptor(
           "${method.path}",
           ${t.render('methodStreamType', { method })},
-          ${method.requestTypeInfo.thing!.fullImport},
-          ${method.responseTypeInfo.thing!.fullImport},
-          (message: ${method.requestTypeInfo.thing!.fullImport}) => message.serialize(),
-          (bytes: Uint8Array) => new ${method.responseTypeInfo.thing!.fullImport}().deserialize(bytes),
+          ${method.requestTypeInfo.thing!.usagename},
+          ${method.responseTypeInfo.thing!.usagename},
+          (message: ${method.requestTypeInfo.thing!.usagename}) => message.serialize(),
+          (bytes: Uint8Array) => new ${method.responseTypeInfo.thing!.usagename}().deserialize(bytes),
         ),`
       }).join('\n')}
     } as const
@@ -77,21 +77,21 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   `);
 
   t.register('clientStubClassMethod', ({ service, method }) => `
-    ${method.name}(
-      request: ${method.requestTypeInfo.thing!.fullImport},
+    ${method.methodName}(
+      request: ${method.requestTypeInfo.thing!.usagename},
       metadata: grpc.Metadata | null,
-    ): ${method.serverStreaming ? `grpc.ClientReadableStream<${method.responseTypeInfo.thing!.fullImport}>` : `Promise<${method.responseTypeInfo.thing!.fullImport}>`} {
-      return this.client.${method.serverStreaming ? 'serverStreaming' : 'unaryCall'}(
+    ): ${method.methodDesc.isServerStreaming ? `grpc.ClientReadableStream<${method.responseTypeInfo.thing!.usagename}>` : `Promise<${method.responseTypeInfo.thing!.usagename}>`} {
+      return this.client.${method.methodDesc.isServerStreaming ? 'serverStreaming' : 'unaryCall'}(
         this.hostname + "${method.path}",
         request,
         metadata ?? {},
-        ${service.serviceDefinitionThing.fullImport}.${method.name},
+        ${service.serviceDefinitionThing!.fullname}.${method.methodName},
       );
     }
   `);
 
   t.register('methodStreamType', ({ method }) => {
-    if (method.serverStreaming) {
+    if (method.methodDesc.isServerStreaming) {
       return 'grpc.MethodType.SERVER_STREAMING'
     }
 

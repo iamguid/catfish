@@ -3,7 +3,6 @@ import { PluginOutputFile } from "../../Plugin";
 import { ProjectContext } from "../../ProjectContext";
 import { TemplatesRegistry } from "../../Templates";
 import { replaceProtoSuffix } from "../../utils";
-import { buildFileContext } from "../grpc-web/context";
 import { PluginTemplatesRegistry, registerPluginTemplates } from "./templates";
 import { ProjectOptions } from "../../Project";
 import { ContextsRegistry } from "../../PluginContext";
