@@ -6,7 +6,6 @@ import { walkByFiles } from "./fswalker"
 import { ProjectOptions } from './Project';
 import { googleWellKnownTypesToProtoFilesMap } from './wellKnownTypes';
 import { Resolver } from './Resolver';
-import { ResolverV2 } from './ResolverV2';
 import { TypeMarker, getTypeMarker } from './utils';
 
 export interface Import {
@@ -31,11 +30,9 @@ export class ProjectContext {
     private readonly dependencies = new Map<FileDescriptor, Dependency[]>;
 
     public readonly resolver: Resolver;
-    public readonly resolverV2: ResolverV2;
     
     constructor(private readonly config: ProjectOptions) {
         this.resolver = new Resolver(this);
-        this.resolverV2 = new ResolverV2(this);
     }
 
     // TODO: Make async

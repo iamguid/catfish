@@ -31,13 +31,13 @@ export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry, PluginContex
         const context = buildContext_(contextsRegistry);
 
         // Capture usages
-        const captureContext = projectContext.resolverV2.getCaptureContext()
+        const captureContext = projectContext.resolver.getCaptureContext()
         const fileContext = await context.build(captureContext)
         const usedThings = captureContext.stopCapture();
 
         // Render file template
         const resultFilePath = fileNameBuilder(file, projectContext);
-        const imports = projectContext.resolverV2.getImports(usedThings, file, resultFilePath)
+        const imports = projectContext.resolver.getImports(usedThings, file, resultFilePath)
         const resultFileContent = templatesRegistry.render('main', { file: fileContext, imports });
 
         result.push({ path: resultFilePath, content: resultFileContent });

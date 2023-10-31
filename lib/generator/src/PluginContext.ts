@@ -1,6 +1,6 @@
 import { BaseDescriptor, EnumDescriptor, EnumFieldDescriptor, FileDescriptor, MapFieldDescriptor, MessageDescriptor, MessageFieldDescriptor, MethodDescriptor, OneofDescriptor, ServiceDescriptor } from "@catfish/parser";
 import { ProjectContext, TypeInfo } from "./ProjectContext";
-import { IResolverV2, ResolvedThing, ResolvedThingImport } from "./ResolverV2";
+import { IResolver, ResolvedThing, ResolvedThingImport } from "./Resolver";
 
 export type ContextBuilder<
     TPluginOptions extends Record<string, any>,
@@ -141,8 +141,8 @@ export class ContextsRegistry<
         return this as unknown as ContextsRegistry<TPluginOptions, TContextDefinition & TContextDefinitionNext>;
     }
 
-    build = async <TContextBuildResult extends ContextBuildResult<TContextDefinition> = ContextBuildResult<TContextDefinition>>(resolver?: IResolverV2): Promise<TContextBuildResult> => {
-        const resolver_ = resolver ?? this.projectContext.resolverV2;
+    build = async <TContextBuildResult extends ContextBuildResult<TContextDefinition> = ContextBuildResult<TContextDefinition>>(resolver?: IResolver): Promise<TContextBuildResult> => {
+        const resolver_ = resolver ?? this.projectContext.resolver;
 
         const buildField = async (message: MessageDescriptor, field: BaseDescriptor): Promise<TContextBuildResult['messages'][0]['fields'][0]> => {
             if (field instanceof OneofDescriptor) {
@@ -226,73 +226,73 @@ export class ContextsRegistry<
         return await buildFile(this.file) as any
     }
 
-    private buildFile = async (resolver: IResolverV2, desc: FileDescriptor): Promise<BaseContextDefinition['files']> => {
+    private buildFile = async (resolver: IResolver, desc: FileDescriptor): Promise<BaseContextDefinition['files']> => {
         const cbChanin = this.contextTransformerChains['files']
         return this.executeAsyncMethodsChain(resolver, { desc }, cbChanin)
     }
 
-    private buildService = async (resolver: IResolverV2, desc: ServiceDescriptor): Promise<BaseContextDefinition['services']> => {
+    private buildService = async (resolver: IResolver, desc: ServiceDescriptor): Promise<BaseContextDefinition['services']> => {
         const cbChanin = this.contextTransformerChains['services']
         return this.executeAsyncMethodsChain(resolver, { desc }, cbChanin)
     }
 
-    private buildMethod = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BaseContextDefinition['methods']> => {
+    private buildMethod = async (resolver: IResolver, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BaseContextDefinition['methods']> => {
         const cbChanin = this.contextTransformerChains['methods']
         return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc }, cbChanin)
     }
 
-    private buildRequest = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BaseContextDefinition['requests']> => {
+    private buildRequest = async (resolver: IResolver, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BaseContextDefinition['requests']> => {
         const requestTypeInfo = await this.buildTypeInfo(resolver, methodDesc.inputMessageType)
         const cbChanin = this.contextTransformerChains['requests']
         return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc, requestTypeInfo }, cbChanin)
     }
 
-    private buildResponse = async (resolver: IResolverV2, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BaseContextDefinition['responses']> => {
+    private buildResponse = async (resolver: IResolver, serviceDesc: ServiceDescriptor, methodDesc: MethodDescriptor): Promise<BaseContextDefinition['responses']> => {
         const responseTypeInfo = await this.buildTypeInfo(resolver, methodDesc.outputMessageType)
         const cbChanin = this.contextTransformerChains['responses']
         return this.executeAsyncMethodsChain(resolver, { serviceDesc, methodDesc, responseTypeInfo }, cbChanin)
     }
 
-    private buildMessage = async (resolver: IResolverV2, desc: MessageDescriptor): Promise<BaseContextDefinition['messages']> => {
+    private buildMessage = async (resolver: IResolver, desc: MessageDescriptor): Promise<BaseContextDefinition['messages']> => {
         const cbChanin = this.contextTransformerChains['messages']
         return this.executeAsyncMethodsChain(resolver, { desc }, cbChanin)
     }
 
-    private buildMessageField = async (resolver: IResolverV2, msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor): Promise<BaseContextDefinition['messagefields']> => {
+    private buildMessageField = async (resolver: IResolver, msgDesc: MessageDescriptor, msgFieldDesc: MessageFieldDescriptor): Promise<BaseContextDefinition['messagefields']> => {
         const typeInfo = await this.buildTypeInfo(resolver, msgFieldDesc.type);
         const cbChanin = this.contextTransformerChains['messagefields']
         return this.executeAsyncMethodsChain(resolver, { msgDesc, type: 'field', msgFieldDesc, typeInfo }, cbChanin)
     }
 
-    private buildMap = async (resolver: IResolverV2, desc: MapFieldDescriptor): Promise<BaseContextDefinition['maps']> => {
+    private buildMap = async (resolver: IResolver, desc: MapFieldDescriptor): Promise<BaseContextDefinition['maps']> => {
         const keyTypeInfo = await this.buildTypeInfo(resolver, desc.keyType);
         const valueTypeInfo = await this.buildTypeInfo(resolver, desc.valueType);
         const cbChanin = this.contextTransformerChains['maps']
         return this.executeAsyncMethodsChain(resolver, { desc, type: 'map', keyTypeInfo, valueTypeInfo }, cbChanin)
     }
 
-    private buildOneof = async (resolver: IResolverV2, desc: OneofDescriptor): Promise<BaseContextDefinition['oneofs']> => {
+    private buildOneof = async (resolver: IResolver, desc: OneofDescriptor): Promise<BaseContextDefinition['oneofs']> => {
         const cbChanin = this.contextTransformerChains['oneofs']
         return this.executeAsyncMethodsChain(resolver, { desc, type: 'oneof' }, cbChanin)
     }
 
-    private buildEnum = async (resolver: IResolverV2, desc: EnumDescriptor): Promise<BaseContextDefinition['enums']> => {
+    private buildEnum = async (resolver: IResolver, desc: EnumDescriptor): Promise<BaseContextDefinition['enums']> => {
         const cbChanin = this.contextTransformerChains['enums']
         return this.executeAsyncMethodsChain(resolver, { desc }, cbChanin)
     }
 
-    private buildEnumField = async (resolver: IResolverV2, enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor): Promise<BaseContextDefinition['enumfields']> => {
+    private buildEnumField = async (resolver: IResolver, enmDesc: EnumDescriptor, enmFieldDesc: EnumFieldDescriptor): Promise<BaseContextDefinition['enumfields']> => {
         const cbChanin = this.contextTransformerChains['enumfields']
         return this.executeAsyncMethodsChain(resolver, { enmDesc, enmFieldDesc }, cbChanin)
     }
 
-    private buildTypeInfo = async (resolver: IResolverV2, protoType: string): Promise<BaseContextDefinition['typeinfos']> => {
+    private buildTypeInfo = async (resolver: IResolver, protoType: string): Promise<BaseContextDefinition['typeinfos']> => {
         const typeInfo = this.projectContext.getTypeInfo(this.file, protoType);
         const cbChanin = this.contextTransformerChains['typeinfos']
         return this.executeAsyncMethodsChain(resolver, typeInfo, cbChanin)
     }
 
-    private executeAsyncMethodsChain = async (resolver: IResolverV2, intialResult: any, chain: ((...args: any[]) => Promise<any>)[]): Promise<any> => {
+    private executeAsyncMethodsChain = async (resolver: IResolver, intialResult: any, chain: ((...args: any[]) => Promise<any>)[]): Promise<any> => {
         const def = (namespace: string, desc: BaseDescriptor, thingName: string): ResolvedThing => {
             return resolver.define(namespace, desc, thingName, this.fileName)
         }

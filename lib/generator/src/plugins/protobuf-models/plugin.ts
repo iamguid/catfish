@@ -37,14 +37,14 @@ export const plugin: Plugin<PluginOptions, PluginTemplates, PluginContextDefinit
         const context = contextBuilder_(contextsRegistry);
 
         // Capture usages
-        const captureContext = projectContext.resolverV2.getCaptureContext()
+        const captureContext = projectContext.resolver.getCaptureContext()
         // TODO: fix as any
         const fileContext = await (context as any).build(captureContext)
         const usedThings = captureContext.stopCapture();
 
         // Render file template
         const resultFilePath = fileNameBuilder(file, projectContext);
-        const imports = projectContext.resolverV2.getImports(usedThings, file, resultFilePath)
+        const imports = projectContext.resolver.getImports(usedThings, file, resultFilePath)
         const resultFileContent = templatesRegistry.render('main', { file: fileContext, imports });
 
         result.push({ path: resultFilePath, content: resultFileContent });

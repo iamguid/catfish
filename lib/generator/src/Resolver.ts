@@ -4,7 +4,7 @@ import { BaseDescriptor, FileDescriptor } from "@catfish/parser";
 import { Import, ProjectContext } from "./ProjectContext";
 
 export interface ResolvedThing {
-    id: string
+    importId: string
     fullname: string
     name: string
     desc: BaseDescriptor
@@ -12,30 +12,53 @@ export interface ResolvedThing {
 }
 
 export interface ResolvedThingImport extends ResolvedThing {
-    fullImport: string
-    importPath: string
-    importName: string
+    fullimport: string
+    importpath: string
+    importname: string
+}
+
+export interface IResolver {
+    define(namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing
+    resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
+    tryResolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null>
+    resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
+    tryResolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null>
+    getImports(resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[]
+    getRelativeTypeName(thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string
 }
 
 export const ResolverSymbol = Symbol('resolver');
+export const NodeNameSymbol = Symbol('nodename');
 
 export type ResolverNode = {
     [node: string]: ResolverNode,
     [ResolverSymbol]: Map<string, ResolvedThing[]>,
+    [NodeNameSymbol]: string,
 }
 
-export class Resolver {
-    private readonly registry: ResolverNode = { [ResolverSymbol]: new Map() }
+const getImportId = (namespace: string) => {
+    return 'i' + crypto
+        .createHash("md5")
+        .update(getNamespaceScope(namespace), "binary")
+        .digest("hex")
+}
 
-    private captured: ResolvedThingImport[] = []
-    private isCaptured = false;
+const getNamespaceScope = (namespace: string) => {
+    return namespace.split('.')[0]!
+}
+
+export class Resolver implements IResolver {
+    private readonly registry: ResolverNode = { [ResolverSymbol]: new Map(), [NodeNameSymbol]: '' }
+
+    private thingResolveTimeoutsMap: Map<string, NodeJS.Timeout[]> = new Map(); // key - import id
 
     constructor(private readonly projectContext: ProjectContext) {}
 
-    register(namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing {
+    define(namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing {
         const thingProtofullname = thingDesc.fullname;
         const thingName_ = typeof thingName === 'function' ? thingName(thingDesc) : thingName;
         const fileName_ = typeof fileName === 'function' ? fileName(thingDesc.fileDescriptor, this.projectContext) : fileName;
+        const thingFullname = `${thingDesc.namespace === '' ? '' : thingDesc.namespace + '.'}${thingName_}`;
 
         const node = this.findNode(namespace);
 
@@ -45,8 +68,8 @@ export class Resolver {
 
         const things = node[ResolverSymbol].get(thingProtofullname)!;
         const thing: ResolvedThing = {
-            id: 'i' + crypto.createHash("md5").update(thingDesc.fileDescriptor.package + fileName_, "binary").digest("hex"),
-            fullname: `${thingDesc.namespace === '' ? '' : thingDesc.namespace + '.'}${thingName_}`,
+            importId: getImportId(namespace),
+            fullname: thingFullname,
             name: thingName_,
             desc: thingDesc,
             file: fileName_,
@@ -54,105 +77,122 @@ export class Resolver {
 
         things.push(thing)
 
+        if (!this.thingResolveTimeoutsMap.has(thing.importId)) {
+            this.thingResolveTimeoutsMap.set(thing.importId, [])
+        } 
+        
+        // Recall resolving tasks
+        const timeouts = this.thingResolveTimeoutsMap.get(thing.importId)!
+        for (const timeout of timeouts) {
+            timeout.refresh(); 
+        }
+
         return thing;
     }
 
-    resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport[] {
-        const result: ResolvedThingImport[] = [];
+    async resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> {
+        const resultType = protoType ?? thingDesc.fullname;
+        const thingImportId = getImportId(node[NodeNameSymbol]);
 
-        const stack: ResolverNode[] = [];
-        stack.push(node)
+        return new Promise<ResolvedThingImport>((resolve, reject) => {
+            let isResolved = false;
 
-        while (stack.length > 0) {
-            const currentNode = stack.pop()!
-            const resolvers = currentNode[ResolverSymbol].get(protoType ?? thingDesc.fullname)
-
-            if (resolvers && resolvers.length) {
-                for (const thing of resolvers) {
-                    const resolvedThingImport = this.getResolvedThingImport(thing, file);
-                    result.push(resolvedThingImport)
+            const errorTimeoutTimer = setTimeout(() => {
+                if (!isResolved) {
+                    reject(new Error(`Cannot resolve type ${resultType}`))
                 }
+            }, 100)
+
+            const checkThingTask = setTimeout(() => {
+                const things = node[ResolverSymbol].get(resultType)
+
+                if (things && things.length > 0) {
+                    const filteredThings = things.filter(t => t.desc === thingDesc)
+
+                    if (filteredThings.length > 1) {
+                        reject(new Error(`Found many types (${things.map(t => t.fullname).join(', ')})`))
+                    }
+
+                    if (filteredThings.length === 1) {
+                        isResolved = true;
+                        errorTimeoutTimer.unref()
+
+                        const foundResolvedThingImport = this.getResolvedThingImport(filteredThings[0], file)
+
+                        // Remove task
+                        const tasks = this.thingResolveTimeoutsMap.get(thingImportId)!
+                        this.thingResolveTimeoutsMap.set(thingImportId, tasks.filter(t => t === checkThingTask))
+
+                        resolve(foundResolvedThingImport);
+                    }
+                }
+            })
+
+            // Add task
+            if (!this.thingResolveTimeoutsMap.has(thingImportId)) {
+                this.thingResolveTimeoutsMap.set(thingImportId, [])
             }
 
-            stack.push(...Object.getOwnPropertyNames(currentNode).map(prop => currentNode[prop]))
-        }
-
-        if (this.isCaptured) {
-            this.captured.push(...result);
-        }
-
-        return result;
+            const tasks = this.thingResolveTimeoutsMap.get(thingImportId)!
+            tasks.push(checkThingTask)
+        })
     }
 
-    resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport[] {
-        const resolved: ResolvedThingImport[] = [];
-
-        if (Array.isArray(namespace)) {
-            for (const ns of namespace) {
-                const node = this.findNode(ns);
-                const part = this.resolveByNode(node, thingDesc, file, protoType);
-                resolved.push(...part)
-            }
-        } else {
-            const node = this.findNode(namespace);
-            const part = this.resolveByNode(node, thingDesc, file, protoType);
-            resolved.push(...part)
-        }
-
-        return resolved;
-    }
-
-    resolveOne(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport {
-        const resolvedTypes = this.resolveByNamespace(namespace, thingDesc, file, protoType)
-        const filteredTypes = resolvedTypes.filter(t => t.desc === thingDesc)
-
-        if (filteredTypes.length === 0) {
-            throw new Error(`Cannot resolve type ${protoType}`)
-        }
-
-        if (filteredTypes.length !== 1) {
-            throw new Error(`Found many types (${filteredTypes.map(t => t.name).join(', ')})`)
-        }
-
-        return filteredTypes[0]
-    }
-
-    tryResolveOne(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): ResolvedThingImport | null {
+    async tryResolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> {
         try {
-            return this.resolveOne(namespace, thingDesc, file, protoType)
+            return await this.resolveByNode(node, thingDesc, file, protoType);
         } catch {
             return null
         }
     }
 
-    resolveRelativeTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true) {
-        const fileName_ = typeof fileName === 'function' ? fileName(file, this.projectContext) : fileName
-        const resolvedType = this.resolveOne(namespace, thingDesc, file, protoType);
+    async resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> {
+        if (Array.isArray(namespace)) {
+            for (const ns of namespace) {
+                const node = this.findNode(ns);
+                const result = await this.tryResolveByNode(node, thingDesc, file, protoType);
 
-        if (ignorePreffixInCurrentFile && resolvedType.file === fileName_) {
-            return resolvedType.fullname
-        } else {
-            return `${resolvedType.importName}.${resolvedType.fullname}`
+                if (result) {
+                    return result
+                }
+            }
+
+            throw new Error(`Cannot resolve type ${thingDesc.fullpath}`)
+        }
+
+        const node = this.findNode(namespace as string);
+        return this.resolveByNode(node, thingDesc, file, protoType);
+    }
+
+    async tryResolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> {
+        try {
+            return await this.resolveByNamespace(namespace, thingDesc, file, protoType);
+        } catch {
+            return null
         }
     }
 
-    tryResolveRelativeTypeName(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string), protoType?: string, ignorePreffixInCurrentFile = true) {
-        try {
-            return this.resolveRelativeTypeName(namespace, thingDesc, file, fileName, protoType ,ignorePreffixInCurrentFile)
-        } catch {
-            return null;
+    getRelativeTypeName(thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string {
+        const fileName_ = typeof fileName === 'function' ? fileName(file, this.projectContext) : fileName
+
+        if (thing.file === fileName_) {
+            return thing.fullname
+        } else {
+            return thing.fullimport
         }
     }
 
     findNode(namespace: string): ResolverNode {
         const stack = namespace.split('.');
+        const traversedNodes = [];
 
         let currentNode = this.registry;
         while (stack.length > 0) {
             const nodeName = stack.shift()!;
+            traversedNodes.push(nodeName);
 
             if (typeof currentNode[nodeName] === 'undefined') {
-                currentNode[nodeName] = { [ResolverSymbol]: new Map() }
+                currentNode[nodeName] = { [ResolverSymbol]: new Map(), [NodeNameSymbol]: traversedNodes.join('.') }
             }
 
             currentNode = currentNode[nodeName]
@@ -161,27 +201,75 @@ export class Resolver {
         return currentNode
     }
 
-    capture(): () => ResolvedThingImport[] {
-        this.isCaptured = true;
+    getCaptureContext(): IResolver & { stopCapture(): ResolvedThingImport[] } {
+        const captured: ResolvedThingImport[] = []
 
-        return () => {
-            this.isCaptured = false;
-            const result = this.captured;
-            this.captured = [];
+        const define = (namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing => {
+            return this.define(namespace, thingDesc, thingName, fileName)
+        }
+
+        const resolveByNode = async (node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
+            const result = await this.resolveByNode(node, thingDesc, file, protoType)
+            captured.push(result)
             return result;
+        }
+
+        const tryResolveByNode = async (node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> => {
+            const result = await this.tryResolveByNode(node, thingDesc, file, protoType)
+            if (result) {
+                captured.push(result)
+            }
+            return result;
+        }
+
+        const resolveByNamespace = async (namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
+            const result = await this.resolveByNamespace(namespace, thingDesc, file, protoType)
+            captured.push(result)
+            return result;
+        }
+
+        const tryResolveByNamespace = async (namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> => {
+            const result = await this.tryResolveByNamespace(namespace, thingDesc, file, protoType)
+            if (result) {
+                captured.push(result)
+            }
+            return result;
+        }
+
+        const getImports = (resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[] => {
+            return this.getImports(resolvedThings, file, fileName)
+        }
+
+        const getRelativeTypeName = (thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string => {
+            return this.getRelativeTypeName(thing, file, fileName)
+        }
+
+        const stopCapture = (): ResolvedThingImport[] => {
+            return captured;
+        }
+
+        return {
+            define,
+            resolveByNode,
+            tryResolveByNode,
+            resolveByNamespace,
+            tryResolveByNamespace,
+            getImports,
+            getRelativeTypeName,
+            stopCapture
         }
     }
 
-    getResolvedThingImport(thing: ResolvedThing, file: FileDescriptor): ResolvedThingImport {
+    private getResolvedThingImport(thing: ResolvedThing, file: FileDescriptor): ResolvedThingImport {
         const targetPath = path.dirname(this.projectContext.getProtoFilePath(thing.desc.fileDescriptor))
         const sourcePath = path.dirname(this.projectContext.getProtoFilePath(file))
         const pathPreffix = getPathPreffix(sourcePath, targetPath)
 
         return {
             ...thing,
-            fullImport: `${thing.id}.${thing.fullname}`,
-            importName: thing.id,
-            importPath: pathPreffix + '/' + path.basename(thing.file),
+            fullimport: `${thing.importId}.${thing.fullname}`,
+            importname: thing.importId,
+            importpath: pathPreffix + '/' + path.basename(thing.file),
         }
     }
 
@@ -192,8 +280,8 @@ export class Resolver {
         for (const thing of resolvedThings) {
             if (!imports.has(thing.file) && thing.file !== fileName_) {
                 imports.set(thing.file, {
-                    name: thing.importName,
-                    path: thing.importPath,
+                    name: thing.importname,
+                    path: thing.importpath,
                 })
             }
         }
