@@ -1,9 +1,14 @@
 import { FileDescriptor } from "@catfish/parser";
 import { Import, ProjectContext } from "./ProjectContext";
+import { BasePluginOptions } from "./Plugin";
+
+export interface BaseTemplates {}
+
+export type TemplatesBuilder<TPluginOptions extends BasePluginOptions, TTemplates extends BaseTemplates> = (t: TemplatesRegistry<TPluginOptions, TTemplates>) => void
 
 export class TemplatesRegistry<
-  TTemplates,
-  TPluginOptions extends Record<string, any>,
+  TPluginOptions extends BasePluginOptions,
+  TTemplates extends BaseTemplates,
 > {
   private registry: Record<string, any> = {}
 
@@ -11,14 +16,6 @@ export class TemplatesRegistry<
     private projectContext: ProjectContext,
     private opts: TPluginOptions,
   ) {}
-
-  def = (namespace: string) => {
-    return namespace;
-  }
-
-  use = (namespace: string) => {
-    return namespace;
-  }
 
   renderHeader = (file: FileDescriptor) => {
     const filePath = this.projectContext.getProtoFilePath(file);
@@ -47,8 +44,6 @@ export class TemplatesRegistry<
     name: TName,
     cb: (
       ctx: TTemplates[TName],
-      use: (namespace: string) => string,
-      def: (namespace: string) => string,
       opt: TPluginOptions
     ) => string
   ): void => {

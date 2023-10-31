@@ -2,10 +2,10 @@ import { MessageFieldDescriptor, MessageDescriptor, BaseDescriptor } from "@catf
 import { ProjectContext, TypeInfo } from "../../ProjectContext";
 import { findOption, snakeToCamel } from "../../utils";
 import { PluginOptions } from "./plugin";
-import { BasePluginContext, ContextsRegistry, ContextsRegistryCbArguments, ExtractPluginContextFlat, ExtractPluginContextI } from "../../PluginContext";
+import { BaseContextDefinition, ContextsRegistry, ContextExtendFnArguments, ExtractFlatContextDefinition, ExtractContextInput } from "../../PluginContext";
 
-export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
-export type PluginContextI = ExtractPluginContextI<ReturnType<typeof buildPluginContext>>;
+export type PluginContextFlatOut = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
+export type PluginContextI = ExtractContextInput<ReturnType<typeof buildPluginContext>>;
 
 export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
     return registry

@@ -1,98 +1,88 @@
-import { FileDescriptor, MessageDescriptor } from "@catfish/parser";
-import { ProtobufModelsPlugin, TemplateFn } from "../../src";
-import { PluginTemplatesRegistry } from "../../src/plugins/protobuf-models";
-import { MapFieldContext, MessageContext } from "../../src/plugins/protobuf-models/context";
+import { ProtobufModelsPlugin, TemplatesRegistry } from "../../src";
+import { ContextsRegistry, ExtractFlatContextDefinition } from "../../src/PluginContext";
+import { PluginTemplates, registerPluginTemplates } from "../../src/plugins/protobuf-models";
+
+export type ExtendedPluginContextFlatDefinition = ExtractFlatContextDefinition<ReturnType<typeof buildExtendedPluginContext>>;
 
 export type ExtendedPluginOptions = ProtobufModelsPlugin.PluginOptions & {
     enableHelloWorld: boolean
 }
 
-export type ExtendedModelClassTemplate = TemplateFn<ExtendedPluginTemplatesRegistry, ExtendedPluginOptions, { message: MessageContext }>
-export type HelloWorldTemplate = TemplateFn<ExtendedPluginTemplatesRegistry, ExtendedPluginOptions, { text: string }>;
-
-export type ExtendedPluginTemplatesRegistry = Omit<PluginTemplatesRegistry, "modelClass"> & {
-  modelClass: ExtendedModelClassTemplate
-  helloworld: HelloWorldTemplate
+export type ExtendedPluginTemplatesRegistry = Omit<PluginTemplates, 'modelClass'> & {
+  modelClass: { message: ExtendedPluginContextFlatDefinition['file.message'] }
+  helloworld: { message: ExtendedPluginContextFlatDefinition['file.message'] }
 }
 
-export const helloWorldTemplate: HelloWorldTemplate = (render, opts, ctx) => {
-  return opts.enableHelloWorld ? `
-    helloworld(): string {
-      return '${ctx.text}'
-    }
-  ` : ''
+export const buildExtendedPluginContext = <TPluginOptions extends ExtendedPluginOptions>(registry: ContextsRegistry<TPluginOptions>) => {
+  return ProtobufModelsPlugin.context.buildPluginContext(registry)
+    .extend('messages', async ({ ctx }) => ({
+      ...ctx,
+      helloMessage: `Hello, ${ctx.classThing.fullname}`
+    }))
 }
 
-export const extendedModelClassTemplate: ExtendedModelClassTemplate = (render, opts, ctx) => `
-  export class ${ctx.message.className} {
-    ${render('modelClassFields', {
-      message: ctx.message
-    })}
+export const registerExtendedPluginTemplates = <TPluginOptions extends ExtendedPluginOptions, TPluginTemplatesRegistry extends ExtendedPluginTemplatesRegistry>(r: TemplatesRegistry<TPluginOptions, TPluginTemplatesRegistry>) => {
+  registerPluginTemplates(r)
 
-    public static fields = [${ctx.message.fields.map(f => `'${f.name}'`).join(",")}]
+  r.register('helloworld', ({ message }, opts) => {
+    return opts.enableHelloWorld ? `
+      hello(): string {
+        return '${message.helloMessage}'
+      }
+    ` : ''
+  })
 
-    ${(ctx.message.fields.filter(f => ProtobufModelsPlugin.context.isMapField(f)) as MapFieldContext[]).map(f => {
-      return render('modelClassEncodeMap', { mapField: f })
-    }).join('\n')}
+  r.register('modelClass', ({ message }) => {
+    const maps = message.fields.filter(f => f.type === 'map') as ExtendedPluginContextFlatDefinition['file.message.map'][]
 
-    ${(ctx.message.fields.filter(f => ProtobufModelsPlugin.context.isMapField(f)) as MapFieldContext[]).map(f => {
-      return render('modelClassDecodeMap', { mapField: f })
-    }).join('\n')}
+    return `
+      export class ${message.classThing.name} {
+        ${r.render('modelClassFields', { message })}
+  
+        public static fields = [${message.fields.map(f => `'${f.fieldName}'`).join(",")}]
+  
+        ${maps.map(mapField => r.render('modelClassEncodeMap', { mapField })).join('\n')}
+  
+        ${maps.map(mapField => r.render('modelClassDecodeMap', { mapField })).join('\n')}
+  
+        public get fields() {
+          return ${message.classThing.name}.fields
+        }
+  
+        ${r.render('modelClassCtor', { message })}
+  
+        ${r.render('modelClassEncode', { message })}
+  
+        ${r.render('modelClassDecode', { message })}
+  
+        ${r.render('modelClassToJSON', { message })}
+  
+        ${r.render('modelClassFromJSON', { message })}
+  
+        serialize(): Uint8Array | Buffer {
+          const w = pjs.Writer.create();
+          return ${message.classThing.name}.encode(this, w).finish();
+        }
+  
+        deserialize(buffer: Uint8Array | Buffer): ${message.classThing.name} {
+          const r = new pjs.Reader(buffer);
+          return ${message.classThing.name}.decode(this, r, r.len);
+        }
+  
+        toJSON(): ${message.jsonIfaceThing.name} {
+          return ${message.classThing.name}.toJSON(this);
+        }
+  
+        fromJSON(obj: ${message.jsonIfaceThing.name}): ${message.classThing.name} {
+          return ${message.classThing.name}.fromJSON(this, obj);
+        }
+  
+        clone(): ${message.classThing.name} {
+          return new ${message.classThing.name}(this);
+        }
 
-    public get fields() {
-      return ${ctx.message.className}.fields
-    }
-
-    ${render('modelClassCtor', {
-      message: ctx.message
-    })}
-
-    ${render('modelClassEncode', {
-      message: ctx.message
-    })}
-
-    ${render('modelClassDecode', {
-      message: ctx.message
-    })}
-
-    ${render('modelClassToJSON', {
-      message: ctx.message
-    })}
-
-    ${render('modelClassFromJSON', {
-      message: ctx.message
-    })}
-
-    serialize(): Uint8Array | Buffer {
-      const w = pjs.Writer.create();
-      return ${ctx.message.className}.encode(this, w).finish();
-    }
-
-    deserialize(buffer: Uint8Array | Buffer): ${ctx.message.className} {
-      const r = new pjs.Reader(buffer);
-      return ${ctx.message.className}.decode(this, r, r.len);
-    }
-
-    toJSON(): ${ctx.message.jsonIfaceName} {
-      return ${ctx.message.className}.toJSON(this);
-    }
-
-    fromJSON(obj: ${ctx.message.jsonIfaceName}): ${ctx.message.className} {
-      return ${ctx.message.className}.fromJSON(this, obj);
-    }
-
-    clone(): ${ctx.message.className} {
-      return new ${ctx.message.className}(this);
-    }
-
-    ${render('helloworld', {
-      text: 'Hello, world'
-    })}
-  }
-`;
-
-export const extendedPluginTemplatesRegistry: ExtendedPluginTemplatesRegistry = {
-  ...ProtobufModelsPlugin.pluginTemplatesRegistry,
-  modelClass: extendedModelClassTemplate,
-  helloworld: helloWorldTemplate,
+        ${r.render('helloworld', { message })}
+      }
+    `;
+  })
 }

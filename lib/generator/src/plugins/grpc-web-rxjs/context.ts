@@ -1,7 +1,7 @@
 import { PluginOptions } from "./plugin";
-import { ContextsRegistry, ExtractPluginContextFlat } from "../../PluginContext";
+import { ContextsRegistry, ExtractFlatContextDefinition } from "../../PluginContext";
 
-export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
+export type PluginContextFlatOut = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
 
 export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
     return registry

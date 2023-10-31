@@ -3,13 +3,29 @@ import { getJsonTypeByTypeInfo, getTsTypeByTypeInfo, getWireTypeByTypeInfo, getP
 import { TypeInfo } from "../../ProjectContext";
 import { TypeMarker, snakeToCamel, upperCaseFirst } from "../../utils";
 import { PluginOptions } from "./plugin";
-import { ResolvedThingImport } from "../../ResolverV2";
-import { ContextsRegistry, ExtractPluginContextFlat, PluginContextBuilded } from "../../PluginContext";
+import { ContextsRegistry, ExtractContextDefinition, ExtractFlatContextDefinition } from "../../PluginContext";
 
-export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
+export type PluginContextFlatDefinition = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
+export type PluginContextDefinition = ExtractContextDefinition<ReturnType<typeof buildPluginContext>>;
 
-export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
+export const buildPluginContext = <TPluginOptions extends PluginOptions>(registry: ContextsRegistry<TPluginOptions>) => {
     return registry
+        .extend('typeinfos', async ({ ctx, use }) => {
+            const enumThing = await (ctx.descriptor && ctx.descriptor instanceof EnumDescriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsTypeThing = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const jsonTypeThing = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.usagename ?? '';
+            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.usagename ?? '';
+
+            return {
+                ...ctx,
+                defaultValue: getDefaultValue(ctx, tsType, ctx.typeMarker, ctx.protoType),
+                pjsFn: getPjsFnNameByTypeInfo(ctx),
+                tsType,
+                jsonType,
+                enumType: enumThing?.usagename,
+            }
+        })
         .extend('messages', async ({ ctx, def }) => ({
             ...ctx,
             classThing: def('model.class', ctx.desc, `${ctx.desc.name}`),
@@ -46,22 +62,6 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
             keyTag: getTag(1, getWireTypeByTypeInfo(ctx.keyTypeInfo)),
             valueTag: getTag(2, getWireTypeByTypeInfo(ctx.valueTypeInfo)),
         }))
-        .extend('typeinfos', async ({ ctx, use }) => {
-            const enumThing = await (ctx.descriptor && ctx.descriptor instanceof EnumDescriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const tsTypeThing = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const jsonTypeThing = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.usagename ?? '';
-            const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.usagename ?? '';
-
-            return {
-                ...ctx,
-                defaultValue: getDefaultValue(ctx, tsType, ctx.typeMarker, ctx.protoType),
-                pjsFn: getPjsFnNameByTypeInfo(ctx),
-                tsType,
-                jsonType,
-                enumType: enumThing?.usagename,
-            }
-        })
 }
 
 export const getDefaultValue = (typeInfo: TypeInfo, tsType: string, typeMarker: TypeMarker, fullType: string | null) => {

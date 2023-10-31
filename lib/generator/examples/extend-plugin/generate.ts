@@ -1,5 +1,5 @@
 import { Project, ProtobufModelsPlugin } from "../../src";
-import { extendedPluginTemplatesRegistry } from "./extended-pugin";
+import { buildExtendedPluginContext, registerExtendedPluginTemplates } from "./extended-pugin";
 
 const project = new Project({
     protoDirPath: __dirname,
@@ -8,6 +8,7 @@ const project = new Project({
 
 project
     .load()
-    // TODO: any
-    .resgister(ProtobufModelsPlugin.plugin as any, { enableHelloWorld: true }, extendedPluginTemplatesRegistry)
+
+    // TODO: fix as any
+    .resgister(ProtobufModelsPlugin.plugin as any, { enableHelloWorld: true }, registerExtendedPluginTemplates as any, buildExtendedPluginContext)
     .generate();

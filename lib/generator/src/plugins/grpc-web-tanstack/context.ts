@@ -1,9 +1,9 @@
 import { MessageDescriptor, MessageFieldDescriptor, MethodDescriptor } from "@catfish/parser";
 import { PluginOptions } from "./plugin";
 import { findOption } from "../../utils";
-import { ContextsRegistry, ExtractPluginContextFlat } from "../../PluginContext";
+import { ContextsRegistry, ExtractFlatContextDefinition } from "../../PluginContext";
 
-export type PluginContextFlatOut = ExtractPluginContextFlat<ReturnType<typeof buildPluginContext>>;
+export type PluginContextFlatOut = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
 
 export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
     return registry
