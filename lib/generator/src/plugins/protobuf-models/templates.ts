@@ -1,5 +1,5 @@
 import { Import } from "../../ProjectContext";
-import { TemplatesRegistry } from "../../Templates";
+import { TemplatesBuilder, TemplatesRegistry } from "../../Templates";
 import { PluginContextFlatDefinition } from "./context";
 import { PluginOptions } from "./plugin";
 
@@ -24,71 +24,71 @@ export type PluginTemplates = {
   enum: { enm: PluginContextFlatDefinition['file.enum'] },
 }
 
-export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TPluginTemplates extends PluginTemplates>(r: TemplatesRegistry<TPluginOptions, TPluginTemplates>) => {
-  r.register('main', ({ file, imports }) => `
-    ${r.renderHeader(file.desc)}
+export const registerPluginTemplates: TemplatesBuilder<PluginOptions, PluginTemplates> = (tr) => {
+  tr.register('main', ({ file, imports }) => `
+    ${tr.renderHeader(file.desc)}
 
-    ${r.renderImports(imports)}
+    ${tr.renderImports(imports)}
 
     import * as pjs from "protobufjs/minimal"
     import * as runtime from "@catfish/runtime"
 
-    ${r.render('recursive', {
+    ${tr.render('recursive', {
       messages: file.messages,
       enums: file.enums,
     })}
   `)
 
-  r.register('recursive', ({ messages, enums }) => {
+  tr.register('recursive', ({ messages, enums }) => {
     return messages.map((message) => {
-      const oneofs = message.fields.filter(f => f.type === 'map') as PluginContextFlatDefinition['file.message.oneof'][]
+      const oneofs = message.fields.filter(f => f.type === 'oneof') as PluginContextFlatDefinition['file.message.oneof'][]
 
       return `
-        ${ enums.map((enm) => r.render('enum', { enm })).join('\n') }
+        ${enums.map((enm) => tr.render('enum', { enm })).join('\n')}
 
         ${oneofs.map(oneof => `type ${oneof.typeThing.name} = ${oneof.fields.map(f => `{ ${f.fieldName}: ${f.typeInfo.tsType} }`).join(' | ')} | undefined;`)}
 
         ${oneofs.map(f => `type ${f.jsonTypeThing.name} = ${f.fields.map(f => `{ ${f.fieldName}: ${f.typeInfo.jsonType} }`).join(' | ')} | undefined;`)}
 
-        ${r.render('jsonIface', { message })}
+        ${tr.render('jsonIface', { message })}
 
-        ${r.render('modelClass', { message })}
+        ${tr.render('modelClass', { message })}
 
         ${(message.messages.length > 0 || message.enums.length > 0) ? `
           export namespace ${message.classThing.name} {
-            ${r.render('recursive', { messages: message.messages, enums: message.enums })}
+            ${tr.render('recursive', { messages: message.messages, enums: message.enums })}
           }
         ` : ''}
     `}).join('\n')
   })
 
 
-  r.register('modelClass', ({ message }) => {
+  tr.register('modelClass', ({ message }) => {
     const maps = message.fields.filter(f => f.type === 'map') as PluginContextFlatDefinition['file.message.map'][]
 
     return `
       export class ${message.classThing.name} {
-        ${r.render('modelClassFields', { message })}
+        ${tr.render('modelClassFields', { message })}
   
         public static fields = [${message.fields.map(f => `'${f.fieldName}'`).join(",")}]
   
-        ${maps.map(mapField => r.render('modelClassEncodeMap', { mapField })).join('\n')}
+        ${maps.map(mapField => tr.render('modelClassEncodeMap', { mapField })).join('\n')}
   
-        ${maps.map(mapField => r.render('modelClassDecodeMap', { mapField })).join('\n')}
+        ${maps.map(mapField => tr.render('modelClassDecodeMap', { mapField })).join('\n')}
   
         public get fields() {
           return ${message.classThing.name}.fields
         }
   
-        ${r.render('modelClassCtor', { message })}
+        ${tr.render('modelClassCtor', { message })}
   
-        ${r.render('modelClassEncode', { message })}
+        ${tr.render('modelClassEncode', { message })}
   
-        ${r.render('modelClassDecode', { message })}
+        ${tr.render('modelClassDecode', { message })}
   
-        ${r.render('modelClassToJSON', { message })}
+        ${tr.render('modelClassToJSON', { message })}
   
-        ${r.render('modelClassFromJSON', { message })}
+        ${tr.render('modelClassFromJSON', { message })}
   
         serialize(): Uint8Array | Buffer {
           const w = pjs.Writer.create();
@@ -115,7 +115,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     `;
   })
 
-  r.register('jsonIface', ({ message }) => `
+  tr.register('jsonIface', ({ message }) => `
     export interface ${message.jsonIfaceThing.name} {
       ${message.fields.map((field) => {
         if (field.type === 'map') {
@@ -133,13 +133,13 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   `);
 
-  r.register('enum', ({ enm }) => `
+  tr.register('enum', ({ enm }) => `
     export enum ${enm.desc.name} {
-      ${enm.fields.map((field) => `${field.enmDesc.name} = ${field.enmDesc.index},`).join('\n')}
+      ${enm.fields.map((field) => `${field.enmFieldDesc.name} = ${field.enmFieldDesc.index},`).join('\n')}
     }
   `);
 
-  r.register('modelClassCtor', ({ message }) => {
+  tr.register('modelClassCtor', ({ message }) => {
     return `
       constructor(obj?: ${message.classThing.name}) {
         if (!obj) return;
@@ -150,7 +150,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
               if (field.type === 'map') {
                 return `
                   const entries = Array.from(obj.${field.fieldName}.entries());
-                  const copy = entries.map(([key, val]) => [key, ${r.render('cloneField', { typeInfo: field.valueTypeInfo, variable: 'val' })}]);
+                  const copy = entries.map(([key, val]) => [key, ${tr.render('cloneField', { typeInfo: field.valueTypeInfo, variable: 'val' })}]);
                   this.${field.fieldName} = new Map(copy);
                 `
               }
@@ -161,7 +161,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                     ${field.fields.map(f => {
                       return `
                         case (obj.${field.fieldName}.${f.fieldName} !== undefined):
-                          this.${field.fieldName} = { ${f.fieldName}: ${r.render('cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.fieldName}.${f.fieldName}` })} };
+                          this.${field.fieldName} = { ${f.fieldName}: ${tr.render('cloneField', { typeInfo: f.typeInfo, variable: `obj.${field.fieldName}.${f.fieldName}` })} };
                           break;
                       `
                     }).join('\n')}
@@ -171,10 +171,10 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
   
               if (field.type === 'field') {
                 if (field.msgFieldDesc.repeated) {
-                  return `this.${field.fieldName} =  obj.${field.fieldName}.map(val => ${r.render('cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
+                  return `this.${field.fieldName} =  obj.${field.fieldName}.map(val => ${tr.render('cloneField', { typeInfo: field.typeInfo, variable: 'val' })});`
                 }
   
-                return `this.${field.fieldName} = ${r.render('cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.fieldName}` })};`
+                return `this.${field.fieldName} = ${tr.render('cloneField', { typeInfo: field.typeInfo, variable: `obj.${field.fieldName}` })};`
               }
             })()}
           }`
@@ -184,7 +184,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
   })
 
 
-  r.register('modelClassFields', ({ message }) => {
+  tr.register('modelClassFields', ({ message }) => {
     return message.fields.map((field) => {
       if (field.type === 'map') {
         return `${field.fieldName}: Map<${field.keyTypeInfo.tsType}, ${field.valueTypeInfo.tsType}> = new Map();`
@@ -204,7 +204,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }).join('\n')
   })
 
-  r.register('modelClassEncode', ({ message }) => {
+  tr.register('modelClassEncode', ({ message }) => {
     return `
       public static encode(m: ${message.classThing.name}, w: pjs.Writer): pjs.Writer {
         ${message.fields.map(field => {
@@ -223,7 +223,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                   return `
                     case (m.${field.fieldName}?.${f.fieldName} !== undefined):
                       w.uint32(${f.fieldTag});
-                      ${r.render('encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.fieldName}.${f.fieldName}` })}
+                      ${tr.render('encodeField', { typeInfo: f.typeInfo, writer: 'w', variable: `m.${field.fieldName}.${f.fieldName}` })}
                       break;
                   `
                 }).join('\n')}
@@ -243,7 +243,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                       w.uint32(${field.fieldTag});
                       w.uint32(m.${field.fieldName}.length);
                       for (let item of m.${field.fieldName}) {
-                        ${r.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
+                        ${tr.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
                       }
                     }
                   `
@@ -255,7 +255,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                     if (m.${field.fieldName}.length > 0) {
                       for (let item of m.${field.fieldName}) {
                         w.uint32(${field.fieldTag});
-                        ${r.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
+                        ${tr.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `item` })}
                       }
                     }
                   `
@@ -266,7 +266,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
               // ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
               if (m.${field.fieldName} !== undefined) {
                 w.uint32(${field.fieldTag});
-                ${r.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.fieldName}` })}
+                ${tr.render('encodeField', { typeInfo: field.typeInfo, writer: 'w', variable: `m.${field.fieldName}` })}
               }
             `
           }
@@ -277,7 +277,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     `
   })
 
-  r.register('modelClassDecodeMap', ({ mapField }) => `
+  tr.register('modelClassDecodeMap', ({ mapField }) => `
     // map<${mapField.keyTypeInfo.protoType}, ${mapField.valueTypeInfo.protoType}> ${mapField.desc.name} = ${mapField.desc.fieldNumber}
     public static ${mapField.decodeMethodName}(r: pjs.Reader, length: number): [${mapField.keyTypeInfo.tsType}, ${mapField.valueTypeInfo.tsType}] {
       const l = r.pos + length;
@@ -287,10 +287,10 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
         const tag = r.uint32();
         switch (tag) {
           case ${mapField.keyTag}:
-            k = ${r.render('decodeField', { typeInfo: mapField.keyTypeInfo })}
+            k = ${tr.render('decodeField', { typeInfo: mapField.keyTypeInfo })}
             continue;
           case ${mapField.valueTag}:
-            v = ${r.render('decodeField', { typeInfo: mapField.valueTypeInfo, variable: `new ${mapField.valueTypeInfo.tsType}()` })}
+            v = ${tr.render('decodeField', { typeInfo: mapField.valueTypeInfo, variable: `new ${mapField.valueTypeInfo.tsType}()` })}
             continue;
         }
       }
@@ -299,23 +299,23 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   `)
 
-  r.register('modelClassEncodeMap', ({ mapField }) => `
+  tr.register('modelClassEncodeMap', ({ mapField }) => `
     // map<${mapField.keyTypeInfo.protoType}, ${mapField.valueTypeInfo.protoType}> ${mapField.desc.name} = ${mapField.desc.fieldNumber}
     public static ${mapField.encodeMethodName}(m: Map<${mapField.keyTypeInfo.tsType}, ${mapField.valueTypeInfo.tsType}>, w: pjs.Writer): pjs.Writer {
       for (const [key, val] of m) {
         w.uint32(${mapField.tag});
         const w2 = w.fork();
         w.uint32(${mapField.keyTag});
-        ${r.render('encodeField', { typeInfo: mapField.keyTypeInfo, writer: 'w', variable: 'key' })}
+        ${tr.render('encodeField', { typeInfo: mapField.keyTypeInfo, writer: 'w', variable: 'key' })}
         w.uint32(${mapField.valueTag});
-        ${r.render('encodeField', { typeInfo: mapField.valueTypeInfo, writer: 'w2', variable: 'val' })}
+        ${tr.render('encodeField', { typeInfo: mapField.valueTypeInfo, writer: 'w2', variable: 'val' })}
         w2.ldelim();
       }
       return w;
     }
   `)
 
-  r.register('modelClassDecode', ({ message }) => `
+  tr.register('modelClassDecode', ({ message }) => `
     public static decode(m: ${message.classThing.name}, r: pjs.Reader, length: number): ${message.classThing.name} {
       const l = r.pos + length;
       while (r.pos < l) {
@@ -341,7 +341,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                 ${field.fields.map(f => {
                   return `
                     case ${f.fieldTag}:
-                      m.${field.fieldName} = { ${f.fieldName}: ${r.render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.tsType}()` })} };
+                      m.${field.fieldName} = { ${f.fieldName}: ${tr.render('decodeField', { typeInfo: f.typeInfo, variable: `new ${f.typeInfo.tsType}()` })} };
                       break;
                   `
                 }).join('\n')}
@@ -360,7 +360,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                       case ${field.fieldTag}: {
                         const l = r.uint32();
                         for (let i = 0; i < l; i++) {
-                          m.${field.fieldName}.push(${r.render('decodeField', { typeInfo: field.typeInfo })})
+                          m.${field.fieldName}.push(${tr.render('decodeField', { typeInfo: field.typeInfo })})
                         }
                         continue;
                       }
@@ -371,7 +371,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                     return `
                       // repeated ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
                       case ${field.fieldTag}:
-                        m.${field.fieldName}.push(${r.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })})
+                        m.${field.fieldName}.push(${tr.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })})
                         continue;
                     `
                 }
@@ -380,7 +380,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
               return `
                 // ${field.typeInfo.protoType} ${field.msgFieldDesc.name} = ${field.msgFieldDesc.fieldNumber}
                 case ${field.fieldTag}:
-                  m.${field.fieldName} = ${r.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })}
+                  m.${field.fieldName} = ${tr.render('decodeField', { typeInfo: field.typeInfo, variable: `new ${field.typeInfo.tsType}()` })}
                   continue;
               `
             }
@@ -396,13 +396,13 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   `)
 
-  r.register('modelClassToJSON', ({ message }) => `
+  tr.register('modelClassToJSON', ({ message }) => `
     public static toJSON(m: ${message.classThing.name}): ${message.jsonIfaceThing.name} {
       const obj = {};
 
       ${message.fields.map((field) => {
         if (field.type === 'map') {
-          return `obj['${field.fieldName}'] = runtime.convertMapToRecord(m.${field.fieldName}, (val) => ${r.render('toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+          return `obj['${field.fieldName}'] = runtime.convertMapToRecord(m.${field.fieldName}, (val) => ${tr.render('toJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
         }
 
         if (field.type === 'oneof') {
@@ -412,7 +412,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
               ${field.fields.map(f => {
                 return `
                   case (m.${field.fieldName}?.${f.fieldName} !== undefined):
-                    obj['${field.fieldName}'] = { ${f.fieldName}: ${r.render('toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.fieldName}.${f.fieldName}` })} };
+                    obj['${field.fieldName}'] = { ${f.fieldName}: ${tr.render('toJsonValue', { typeInfo: f.typeInfo, variable: `m.${field.fieldName}.${f.fieldName}` })} };
                     break;
                 `
               }).join('\n')}
@@ -422,7 +422,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
 
         if (field.type === 'field') {
           if (field.msgFieldDesc.repeated) {
-            return `obj['${field.fieldName}'] = m.${field.fieldName}.map(val => ${r.render('toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
+            return `obj['${field.fieldName}'] = m.${field.fieldName}.map(val => ${tr.render('toJsonValue', { typeInfo: field.typeInfo, variable: `val` })});`
           }
 
           let result = ''
@@ -430,7 +430,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
             result += `if (m.${field.fieldName} !== undefined) {`
           }
 
-          result += `obj['${field.fieldName}'] = ${r.render('toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.fieldName}` })};`
+          result += `obj['${field.fieldName}'] = ${tr.render('toJsonValue', { typeInfo: field.typeInfo, variable: `m.${field.fieldName}` })};`
 
           if (field.msgFieldDesc.optional) {
             result += `}`
@@ -444,12 +444,12 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   `)
 
-  r.register('modelClassFromJSON', ({ message }) => {
+  tr.register('modelClassFromJSON', ({ message }) => {
     return `
       public static fromJSON(m: ${message.classThing.name}, obj: ${message.jsonIfaceThing.name}): ${message.classThing.name} {
         ${message.fields.map((field) => {
           if (field.type === 'map') {
-            return `m.${field.fieldName} = runtime.convertRecordToMap(obj.${field.fieldName}, (val) => ${r.render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
+            return `m.${field.fieldName} = runtime.convertRecordToMap(obj.${field.fieldName}, (val) => ${tr.render('fromJsonValue', { typeInfo: field.valueTypeInfo, variable: 'val' })});`
           }
   
           if (field.type === 'oneof') {
@@ -460,7 +460,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
                   ${field.fields.map(f => {
                     return `
                       case (obj.${field.fieldName}?.${f.fieldName} !== undefined):
-                        return { ${f.fieldName}: ${r.render('fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.fieldName}?.${f.fieldName}` })} }
+                        return { ${f.fieldName}: ${tr.render('fromJsonValue', { typeInfo: f.typeInfo, variable: `obj.${field.fieldName}?.${f.fieldName}` })} }
                     `
                   }).join('\n')}
                 }
@@ -470,7 +470,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
   
           if (field.type === 'field') {
             if (field.msgFieldDesc.repeated) {
-              return `m.${field.fieldName} = obj.${field.fieldName}.map((val) => ${r.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
+              return `m.${field.fieldName} = obj.${field.fieldName}.map((val) => ${tr.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `val` })});`
             }
   
             let result = ''
@@ -478,7 +478,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
               result += `if (obj.${field.fieldName} !== undefined) {`
             }
   
-            result += `m.${field.fieldName} = ${r.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.fieldName}` })}`
+            result += `m.${field.fieldName} = ${tr.render('fromJsonValue', { typeInfo: field.typeInfo!, variable: `obj.${field.fieldName}` })}`
   
             if (field.msgFieldDesc.optional) {
               result += `}`
@@ -493,7 +493,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     `
   })
 
-  r.register('cloneField', ({ typeInfo, variable }) => {
+  tr.register('cloneField', ({ typeInfo, variable }) => {
     switch (typeInfo.typeMarker) {
       case "FixedSmall":
       case "String":
@@ -508,7 +508,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   })
   
-  r.register('fromJsonValue', ({ typeInfo, variable }) => {
+  tr.register('fromJsonValue', ({ typeInfo, variable }) => {
     switch (typeInfo.typeMarker) {
       case "FixedSmall":
       case "String":
@@ -524,7 +524,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   })
   
-  r.register('toJsonValue', ({ typeInfo, variable }) => {
+  tr.register('toJsonValue', ({ typeInfo, variable }) => {
     switch (typeInfo.typeMarker) {
       case "String":
       case "FixedSmall":
@@ -540,7 +540,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   })
   
-  r.register('decodeField', ({ typeInfo, variable }) => {
+  tr.register('decodeField', ({ typeInfo, variable }) => {
     switch (typeInfo.typeMarker) {
       case "FixedSmall":
       case "FixedBig":
@@ -553,7 +553,7 @@ export const registerPluginTemplates = <TPluginOptions extends PluginOptions, TP
     }
   })
   
-  r.register('encodeField', ({ typeInfo, writer, variable }) => {
+  tr.register('encodeField', ({ typeInfo, writer, variable }) => {
     switch (typeInfo.typeMarker) {
       case "FixedSmall":
       case "FixedBig":

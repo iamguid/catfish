@@ -7,9 +7,9 @@
 // package: simple_service
 // file: list-pagination.proto
 
-import * as ifb77c5d8e59310d885fc4baad0f1fb4a from "././list-pagination_grpc_rxjs.ts";
-import * as ibb4ec9a82008b43ae7458e3d53713799 from "././list-pagination_grpc.ts";
-import * as i57b033e2b69dc7dff8a274f7cedaded5 from "././list-pagination_models.ts";
+import * as id057de6b677b5cc8fc92fe38157d70d3 from "././list-pagination_grpc_rxjs.ts";
+import * as i5d738324e2189d8e9a1c3974d34f5a95 from "././list-pagination_grpc.ts";
+import * as i20f35e630daf44dbfa4c3f68f5399d8c from "././list-pagination_models.ts";
 
 import * as rxjs from "rxjs";
 import * as runtime from "@catfish/runtime";
@@ -20,24 +20,24 @@ declare module "././list-pagination_grpc.ts" {
     createListBooksAsyncPaginator(
       itemsPerPage: number
     ): runtime.asyncPaginator.Paginator<
-      i57b033e2b69dc7dff8a274f7cedaded5.Book,
-      ListBooksRequestParameters,
+      i20f35e630daf44dbfa4c3f68f5399d8c.Book,
+      ListBooksParameters,
       ListBooksResponse
     >;
   }
 }
 
-ibb4ec9a82008b43ae7458e3d53713799.BooksServiceClient.prototype.createListBooksAsyncPaginator =
+i5d738324e2189d8e9a1c3974d34f5a95.BooksServiceClient.prototype.createListBooksAsyncPaginator =
   function (
-    this: ibb4ec9a82008b43ae7458e3d53713799.BooksServiceClient,
+    this: i5d738324e2189d8e9a1c3974d34f5a95.BooksServiceClient,
     itemsPerPage: number
   ) {
     const fetcher: runtime.asyncPaginator.PageFetcher<
-      ListBooksRequestParameters,
-      i57b033e2b69dc7dff8a274f7cedaded5.ListBooksResponse
+      ListBooksParameters,
+      i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksResponse
     > = (itemsPerPage, pageToken, parameters) => {
       return this.ListBooks(
-        new i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequest().fromJSON({
+        new i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequest().fromJSON({
           ...parameters,
           pageSize: itemsPerPage,
           pageToken: pageToken,
@@ -55,8 +55,8 @@ ibb4ec9a82008b43ae7458e3d53713799.BooksServiceClient.prototype.createListBooksAs
 // #endregion
 
 // #region gRPC rxjs Based Extensions
-export type ListBooksRequestParameters = Omit<
-  i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequestJSON,
+export type ListBooksParameters = Omit<
+  i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequestJSON,
   "pageSize" | "pageToken"
 >;
 
@@ -64,29 +64,29 @@ declare module "././list-pagination_grpc_rxjs.ts" {
   export interface BooksServiceRxjsClient {
     createListBooksRxjsPaginator(
       itemsPerPage: number,
-      parameters$: Observable<ListBooksRequestParameters>,
+      parameters$: Observable<ListBooksParameters>,
       nextPage$: Observable<void>,
       reload$: Observable<void>
     ): rxjs.Observable<
-      runtime.rxjsPaginator.PaginatorData<i57b033e2b69dc7dff8a274f7cedaded5.Book>
+      runtime.rxjsPaginator.PaginatorData<i20f35e630daf44dbfa4c3f68f5399d8c.Book>
     >;
   }
 }
 
-ifb77c5d8e59310d885fc4baad0f1fb4a.BooksServiceRxjsClient.prototype.createListBooksRxjsPaginator =
+id057de6b677b5cc8fc92fe38157d70d3.BooksServiceRxjsClient.prototype.createListBooksRxjsPaginator =
   function (
-    this: ifb77c5d8e59310d885fc4baad0f1fb4a.BooksServiceRxjsClient,
+    this: id057de6b677b5cc8fc92fe38157d70d3.BooksServiceRxjsClient,
     itemsPerPage: number,
-    parameters$: Observable<ListBooksRequestParameters>,
+    parameters$: Observable<ListBooksParameters>,
     nextPage$: Observable<void>,
     reload$: Observable<void>
   ) {
     const fetcher: runtime.rxjsPaginator.PageFetcher<
-      ListBooksRequestParameters,
-      i57b033e2b69dc7dff8a274f7cedaded5.ListBooksResponse
+      ListBooksParameters,
+      i20f35e630daf44dbfa4c3f68f5399d8c.Book
     > = (itemsPerPage, pageToken, parameters) => {
       return this.ListBooks(
-        new i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequest().fromJSON({
+        new i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequest().fromJSON({
           ...parameters,
           pageSize: itemsPerPage,
           pageToken: pageToken,

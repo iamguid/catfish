@@ -89,7 +89,8 @@ export type ContextExtendFnArguments<
     file: FileDescriptor,
     def: (namespace: string, desc: BaseDescriptor, thingName: string) => ResolvedThing,
     use: (namespace: string | string[], desc: BaseDescriptor, protoType?: string) => Promise<ResolvedThingImport & { usagename: string }>,
-    type: (protoType: string) => TContextDefinition['typeinfos'],
+    tryUse: (namespace: string | string[], desc: BaseDescriptor, protoType?: string) => Promise<(ResolvedThingImport & { usagename: string } | null)>,
+    type: (protoType: string) => Promise<TContextDefinition['typeinfos']>,
     opt: TPluginOptions
 }
 
@@ -176,8 +177,8 @@ export class ContextsRegistry<
 
         const buildMessage = async (message: MessageDescriptor): Promise<TContextBuildResult['messages'][0]> => {
             const baseCtx = await this.buildMessage(resolver_, message)
-            const messages = await Promise.all(message.messages.map(msg => buildMessage(msg)))
             const enums = await Promise.all(message.enums.map(enm => buildEnum(enm)))
+            const messages = await Promise.all(message.messages.map(msg => buildMessage(msg)))
             const fields = await Promise.all(message.fields.map(field => buildField(message, field)))
 
             return {
@@ -304,13 +305,24 @@ export class ContextsRegistry<
             }
         }
 
-        const type = (protoType: string) => {
+        const tryUse = async (namespace: string | string[], desc: BaseDescriptor, protoType?: string): Promise<(ResolvedThingImport & { usagename: string }) | null> => {
+            const thing = await resolver.tryResolveByNamespace(namespace, desc, this.file, protoType)
+            if (thing) {
+                return {
+                    ...thing,
+                    usagename: resolver.getRelativeTypeName(thing, this.file, this.fileName)
+                }
+            }
+            return null
+        }
+
+        const type = async (protoType: string) => {
             return this.buildTypeInfo(resolver, protoType)
         }
 
         let lastResult = intialResult
         for (const method of chain) {
-            lastResult = await method({ctx: lastResult as any, prj: this.projectContext, file: this.file, use, def, type, opt: this.opts})
+            lastResult = await method({ctx: lastResult as any, prj: this.projectContext, file: this.file, use, tryUse, def, type, opt: this.opts})
         }
         return lastResult
     }

@@ -20,7 +20,9 @@ export interface ResolvedThingImport extends ResolvedThing {
 export interface IResolverV2 {
     define(namespace: string, thingDesc: BaseDescriptor, thingName: string | ((desc: BaseDescriptor) => string), fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): ResolvedThing
     resolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
+    tryResolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null>
     resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport>
+    tryResolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null>
     getImports(resolvedThings: ResolvedThingImport[], file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): Import[]
     getRelativeTypeName(thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string
 }
@@ -99,7 +101,7 @@ export class ResolverV2 implements IResolverV2 {
                 if (!isResolved) {
                     reject(new Error(`Cannot resolve type ${resultType}`))
                 }
-            }, 5000)
+            }, 100)
 
             const checkThingTask = setTimeout(() => {
                 const things = node[ResolverSymbol].get(resultType)
@@ -136,16 +138,38 @@ export class ResolverV2 implements IResolverV2 {
         })
     }
 
+    async tryResolveByNode(node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> {
+        try {
+            return await this.resolveByNode(node, thingDesc, file, protoType);
+        } catch {
+            return null
+        }
+    }
+
     async resolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> {
         if (Array.isArray(namespace)) {
             for (const ns of namespace) {
                 const node = this.findNode(ns);
-                return this.resolveByNode(node, thingDesc, file, protoType);
+                const result = await this.tryResolveByNode(node, thingDesc, file, protoType);
+
+                if (result) {
+                    return result
+                }
             }
+
+            throw new Error(`Cannot resolve type ${thingDesc.fullpath}`)
         }
 
         const node = this.findNode(namespace as string);
         return this.resolveByNode(node, thingDesc, file, protoType);
+    }
+
+    async tryResolveByNamespace(namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> {
+        try {
+            return await this.resolveByNamespace(namespace, thingDesc, file, protoType);
+        } catch {
+            return null
+        }
     }
 
     getRelativeTypeName(thing: ResolvedThingImport, file: FileDescriptor, fileName: string | ((desc: FileDescriptor, ctx: ProjectContext) => string)): string {
@@ -190,9 +214,25 @@ export class ResolverV2 implements IResolverV2 {
             return result;
         }
 
+        const tryResolveByNode = async (node: ResolverNode, thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> => {
+            const result = await this.tryResolveByNode(node, thingDesc, file, protoType)
+            if (result) {
+                captured.push(result)
+            }
+            return result;
+        }
+
         const resolveByNamespace = async (namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport> => {
             const result = await this.resolveByNamespace(namespace, thingDesc, file, protoType)
             captured.push(result)
+            return result;
+        }
+
+        const tryResolveByNamespace = async (namespace: string | string[], thingDesc: BaseDescriptor, file: FileDescriptor, protoType?: string): Promise<ResolvedThingImport | null> => {
+            const result = await this.tryResolveByNamespace(namespace, thingDesc, file, protoType)
+            if (result) {
+                captured.push(result)
+            }
             return result;
         }
 
@@ -211,7 +251,9 @@ export class ResolverV2 implements IResolverV2 {
         return {
             define,
             resolveByNode,
+            tryResolveByNode,
             resolveByNamespace,
+            tryResolveByNamespace,
             getImports,
             getRelativeTypeName,
             stopCapture

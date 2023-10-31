@@ -118,7 +118,7 @@ export enum SimpleEnum {
   BAZ = 3,
 }
 
-type test_oneofOneofType =
+type testOneofOneofJSONType =
   | { oneofInt32: number }
   | { oneofUint64: number }
   | { oneofString: string }
@@ -127,7 +127,7 @@ type test_oneofOneofType =
   | { oneofMessage: SimpleMessage }
   | undefined;
 
-type test_oneofOneofJSONType =
+type testOneofOneofType =
   | { oneofInt32: number }
   | { oneofUint64: number }
   | { oneofString: string }
@@ -138,12 +138,12 @@ type test_oneofOneofJSONType =
 
 export interface OneofTypesJSON {
   fInt32: number;
-  testOneof?: test_oneofOneofJSONType = undefined;
+  testOneof?: OneofTypes.testOneofOneofType = undefined;
 }
 
 export class OneofTypes {
   fInt32: number = 0;
-  testOneof?: test_oneofOneofType = undefined;
+  testOneof?: OneofTypes.testOneofOneofJSONType = undefined;
 
   public static fields = ["fInt32", "testOneof"];
 

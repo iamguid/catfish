@@ -1,19 +1,19 @@
 import { PluginOptions } from "./plugin";
 import { Import } from "../../ProjectContext";
 import { TemplatesRegistry } from "../../Templates";
-import { PluginContextFlatOut } from "./context";
+import { PluginContextFlatDefinition } from "./context";
 
 export type PluginTemplatesRegistry = {
-  main: { file: PluginContextFlatOut['file'], imports: Import[] },
-  extensions: { file: PluginContextFlatOut['file'] },
-  extensionsTanStack: { service: PluginContextFlatOut['file.service'] },
-  useMutatorIfaceMethod: { method: PluginContextFlatOut['file.service.method'] },
-  useMutatorMethod: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
-  useQueryIfaceMethod: { method: PluginContextFlatOut['file.service.method'] },
-  useQueryMethod: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
+  main: { file: PluginContextFlatDefinition['file'], imports: Import[] },
+  extensions: { file: PluginContextFlatDefinition['file'] },
+  extensionsTanStack: { service: PluginContextFlatDefinition['file.service'] },
+  useMutatorIfaceMethod: { method: PluginContextFlatDefinition['file.service.method'] },
+  useMutatorMethod: { service: PluginContextFlatDefinition['file.service'], method: PluginContextFlatDefinition['file.service.method'] },
+  useQueryIfaceMethod: { method: PluginContextFlatDefinition['file.service.method'] },
+  useQueryMethod: { service: PluginContextFlatDefinition['file.service'], method: PluginContextFlatDefinition['file.service.method'] },
 }
 
-export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
+export const registerPluginTemplates = (t: TemplatesRegistry<PluginOptions, PluginTemplatesRegistry>) => {
   t.register('main', ({ file, imports }) => `
     ${t.renderHeader(file.desc)}
 

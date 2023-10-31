@@ -1,6 +1,6 @@
 import xhrmock from "xhr-mock";
 import { SimpleServiceClient, SimpleServiceDefinition } from "./simple-rpc_grpc";
-import { SimpleMessage } from "./simple-rpc_models";
+import { SimpleRequest, SimpleResponse } from "./simple-rpc_models";
 import { collectClientReadableStream, createGrpcResponseBody } from "../../../../../tests/GrpcWebTestUtils";
 
 describe("Unary RPC service", () => {
@@ -8,11 +8,12 @@ describe("Unary RPC service", () => {
     afterEach(() => xhrmock.teardown());
 
     it("Unary method", async () => {
-        const requestMessage = new SimpleMessage();
+        const requestMessage = new SimpleRequest();
         requestMessage.fInt32 = 42;
 
-        const responseMessage = new SimpleMessage();
-        responseMessage.fInt32 = 43;
+        const responseMessage = new SimpleResponse();
+        responseMessage.data = new SimpleResponse.Data()
+        responseMessage.data.test = 'test'
         
         xhrmock.post(SimpleServiceDefinition.UnaryMethod.getName(), {
             headers: { 'content-type': 'application/grpc' },
@@ -22,15 +23,16 @@ describe("Unary RPC service", () => {
 
         const client = new SimpleServiceClient('');
         const response = await client.UnaryMethod(requestMessage, null);
-        expect(response.fInt32).toBe(43);
+        expect(response.data.test).toBe('test');
     })
 
     it("Server streaming method", async () => {
-        const requestMessage = new SimpleMessage();
+        const requestMessage = new SimpleRequest();
         requestMessage.fInt32 = 42;
 
-        const responseMessage = new SimpleMessage();
-        responseMessage.fInt32 = 43;
+        const responseMessage = new SimpleResponse();
+        responseMessage.data = new SimpleResponse.Data()
+        responseMessage.data.test = 'test'
 
         xhrmock.post(SimpleServiceDefinition.ServerStreamMethod.getName(), {
             headers: { 'content-type': 'application/grpc' },

@@ -3,7 +3,7 @@ import { Subject, takeUntil } from "rxjs";
 import { rxjsPaginator } from "@catfish/runtime";
 
 import "./list-pagination_catfish";
-import { ListBooksRequestParameters } from "./list-pagination_catfish";
+import { ListBooksParameters } from "./list-pagination_catfish";
 import { BooksServiceRxjsClient } from "./list-pagination_grpc_rxjs";
 import { BooksServiceClient, BooksServiceDefinition } from "./list-pagination_grpc";
 import { Book, BookJSON, ListBooksResponse } from "./list-pagination_models";
@@ -115,7 +115,7 @@ describe("Catfish extensions", () => {
 
         const client = new BooksServiceRxjsClient('')
 
-        const parameters$ = new Subject<ListBooksRequestParameters>();
+        const parameters$ = new Subject<ListBooksParameters>();
         const nextPage$ = new Subject<void>();
         const reload$ = new Subject<void>();
         const destroy$ = new Subject<void>();

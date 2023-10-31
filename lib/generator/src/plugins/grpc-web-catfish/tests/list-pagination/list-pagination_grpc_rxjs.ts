@@ -7,19 +7,19 @@
 // package: simple_service
 // file: list-pagination.proto
 
-import * as ibb4ec9a82008b43ae7458e3d53713799 from "././list-pagination_grpc.ts";
-import * as i57b033e2b69dc7dff8a274f7cedaded5 from "././list-pagination_models.ts";
+import * as i20f35e630daf44dbfa4c3f68f5399d8c from "././list-pagination_models.ts";
+import * as i5d738324e2189d8e9a1c3974d34f5a95 from "././list-pagination_grpc.ts";
 
 import * as runtime from "@catfish/runtime";
 import * as rxjs from "rxjs";
 import * as grpc from "grpc-web";
 
-// #region BooksService
-export class BooksServiceRxjsClient extends ibb4ec9a82008b43ae7458e3d53713799.BooksServiceClient {
+// #region simple_service.BooksService
+export class BooksServiceRxjsClient extends i5d738324e2189d8e9a1c3974d34f5a95.BooksServiceClient {
   ListBooks(
-    request: i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequest,
+    request: i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequest,
     metadata: grpc.Metadata | null
-  ): rxjs.Observable<i57b033e2b69dc7dff8a274f7cedaded5.ListBooksResponse> {
+  ): rxjs.Observable<i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksResponse> {
     return rxjs.defer(() => rxjs.from(super.ListBooks(request, metadata)));
   }
 }

@@ -22,9 +22,9 @@ export interface PluginOutput {
 export type Plugin<
     TPluginOptions extends BasePluginOptions,
     TPluginTemplatesType extends BaseTemplates,
-    TPluginContext extends BaseContextDefinition,
-    TTemplatesBuilder = (t: TemplatesRegistry<TPluginTemplatesType, TPluginOptions>) => void,
-    TPluginContextBuilder = (c: ContextsRegistry<TPluginOptions, BaseContextDefinition>) => ContextsRegistry<TPluginOptions, TPluginContext>
+    TPluginContextDefinition extends BaseContextDefinition,
+    TTemplatesBuilder = (tr: TemplatesRegistry<TPluginOptions, TPluginTemplatesType>) => void,
+    TPluginContextBuilder = (cr: ContextsRegistry<TPluginOptions, BaseContextDefinition>) => ContextsRegistry<TPluginOptions, TPluginContextDefinition>
 > = (
     projectContext: ProjectContext,
     projectOptions: ProjectOptions,

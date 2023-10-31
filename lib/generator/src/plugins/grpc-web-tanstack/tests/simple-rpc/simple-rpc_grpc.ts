@@ -7,7 +7,7 @@
 // package: simple_service
 // file: simple-rpc.proto
 
-import * as i491401f258b329f5890cc04ac1fccd82 from "././simple-rpc_models.ts";
+import * as i20f35e630daf44dbfa4c3f68f5399d8c from "././simple-rpc_models.ts";
 
 import * as runtime from "@catfish/runtime";
 import * as grpc from "grpc-web";
@@ -17,22 +17,22 @@ export const SimpleServiceDefinition = {
   GetMethod: new grpc.MethodDescriptor(
     "/simple_service.SimpleService/GetMethod",
     grpc.MethodType.UNARY,
-    i491401f258b329f5890cc04ac1fccd82.SimpleRequest,
-    i491401f258b329f5890cc04ac1fccd82.SimpleResponse,
-    (message: i491401f258b329f5890cc04ac1fccd82.SimpleRequest) =>
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleRequest,
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleResponse,
+    (message: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleRequest) =>
       message.serialize(),
     (bytes: Uint8Array) =>
-      new i491401f258b329f5890cc04ac1fccd82.SimpleResponse().deserialize(bytes)
+      new i20f35e630daf44dbfa4c3f68f5399d8c.SimpleResponse().deserialize(bytes)
   ),
   UpdateMethod: new grpc.MethodDescriptor(
     "/simple_service.SimpleService/UpdateMethod",
     grpc.MethodType.UNARY,
-    i491401f258b329f5890cc04ac1fccd82.SimpleRequest,
-    i491401f258b329f5890cc04ac1fccd82.SimpleResponse,
-    (message: i491401f258b329f5890cc04ac1fccd82.SimpleRequest) =>
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleRequest,
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleResponse,
+    (message: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleRequest) =>
       message.serialize(),
     (bytes: Uint8Array) =>
-      new i491401f258b329f5890cc04ac1fccd82.SimpleResponse().deserialize(bytes)
+      new i20f35e630daf44dbfa4c3f68f5399d8c.SimpleResponse().deserialize(bytes)
   ),
 } as const;
 
@@ -61,9 +61,9 @@ export class SimpleServiceClient {
   }
 
   GetMethod(
-    request: i491401f258b329f5890cc04ac1fccd82.SimpleRequest,
+    request: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleRequest,
     metadata: grpc.Metadata | null
-  ): Promise<i491401f258b329f5890cc04ac1fccd82.SimpleResponse> {
+  ): Promise<i20f35e630daf44dbfa4c3f68f5399d8c.SimpleResponse> {
     return this.client.unaryCall(
       this.hostname + "/simple_service.SimpleService/GetMethod",
       request,
@@ -73,9 +73,9 @@ export class SimpleServiceClient {
   }
 
   UpdateMethod(
-    request: i491401f258b329f5890cc04ac1fccd82.SimpleRequest,
+    request: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleRequest,
     metadata: grpc.Metadata | null
-  ): Promise<i491401f258b329f5890cc04ac1fccd82.SimpleResponse> {
+  ): Promise<i20f35e630daf44dbfa4c3f68f5399d8c.SimpleResponse> {
     return this.client.unaryCall(
       this.hostname + "/simple_service.SimpleService/UpdateMethod",
       request,

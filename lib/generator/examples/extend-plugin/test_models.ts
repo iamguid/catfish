@@ -78,7 +78,7 @@ export class TestMessage {
     return new TestMessage(this);
   }
 
-  helloworld(): string {
-    return "Hello, world";
+  hello(): string {
+    return "Hello, TestMessage";
   }
 }

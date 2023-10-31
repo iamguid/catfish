@@ -7,22 +7,22 @@
 // package: simple_service
 // file: list-pagination.proto
 
-import * as i57b033e2b69dc7dff8a274f7cedaded5 from "././list-pagination_models.ts";
+import * as i20f35e630daf44dbfa4c3f68f5399d8c from "././list-pagination_models.ts";
 
 import * as runtime from "@catfish/runtime";
 import * as grpc from "grpc-web";
 
-// #region BooksService
+// #region simple_service.BooksService
 export const BooksServiceDefinition = {
   ListBooks: new grpc.MethodDescriptor(
     "/simple_service.BooksService/ListBooks",
     grpc.MethodType.UNARY,
-    i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequest,
-    i57b033e2b69dc7dff8a274f7cedaded5.ListBooksResponse,
-    (message: i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequest) =>
+    i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequest,
+    i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksResponse,
+    (message: i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequest) =>
       message.serialize(),
     (bytes: Uint8Array) =>
-      new i57b033e2b69dc7dff8a274f7cedaded5.ListBooksResponse().deserialize(
+      new i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksResponse().deserialize(
         bytes
       )
   ),
@@ -53,9 +53,9 @@ export class BooksServiceClient {
   }
 
   ListBooks(
-    request: i57b033e2b69dc7dff8a274f7cedaded5.ListBooksRequest,
+    request: i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksRequest,
     metadata: grpc.Metadata | null
-  ): Promise<i57b033e2b69dc7dff8a274f7cedaded5.ListBooksResponse> {
+  ): Promise<i20f35e630daf44dbfa4c3f68f5399d8c.ListBooksResponse> {
     return this.client.unaryCall(
       this.hostname + "/simple_service.BooksService/ListBooks",
       request,

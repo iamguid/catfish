@@ -1,18 +1,14 @@
-import { MessageFieldDescriptor, MessageDescriptor, BaseDescriptor } from "@catfish/parser";
-import { ProjectContext, TypeInfo } from "../../ProjectContext";
+import { MessageFieldDescriptor, MessageDescriptor } from "@catfish/parser";
+import { TypeInfo } from "../../ProjectContext";
 import { findOption, snakeToCamel } from "../../utils";
 import { PluginOptions } from "./plugin";
-import { BaseContextDefinition, ContextsRegistry, ContextExtendFnArguments, ExtractFlatContextDefinition, ExtractContextInput } from "../../PluginContext";
+import { ContextsRegistry, ExtractFlatContextDefinition, ExtractContextDefinition } from "../../PluginContext";
 
-export type PluginContextFlatOut = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
-export type PluginContextI = ExtractContextInput<ReturnType<typeof buildPluginContext>>;
+export type PluginContextFlatDefinition = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
+export type PluginContextDefinition = ExtractContextDefinition<ReturnType<typeof buildPluginContext>>;
 
 export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
     return registry
-        .extend('typeinfos', async ({ ctx }) => ({
-            ...ctx,
-            name: snakeToCamel(ctx.descriptor?.name ?? ''),
-        }))
         .extend('services', async ({ ctx, use }) => ({
             ...ctx,
             rxjsClientThing: await use('grpcrxjs.client', ctx.desc),
@@ -44,6 +40,10 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
             const request = validateRequest(ctx.requestTypeInfo)
             const messageTypeThing = await use('model.class', ctx.requestTypeInfo.descriptor!)
             const messageJSONTypeThing = await use('model.jsonIface', ctx.requestTypeInfo.descriptor!)
+            const pageTokenFieldTypeInfo = await type(request.pageTokenFieldDesc.type)
+            const pageTokenFieldName = snakeToCamel(request.pageTokenFieldDesc.name)
+            const pageSizeFieldTypeInfo = await type(request.pageSizeFieldDesc.type)
+            const pageSizeFieldName = snakeToCamel(request.pageSizeFieldDesc.name)
 
             return {
                 ...ctx,
@@ -51,8 +51,10 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
                 parametersTypeName: `${ctx.methodDesc.name}Parameters`,
                 messageTypeThing, 
                 messageJSONTypeThing,
-                pageTokenFieldTypeInfo: type(request.pageTokenFieldDesc.type),
-                pageSizeFieldTypeInfo: type(request.pageSizeFieldDesc.type),
+                pageTokenFieldTypeInfo,
+                pageTokenFieldName,
+                pageSizeFieldTypeInfo,
+                pageSizeFieldName,
             }
         })
         .extend('responses', async ({ ctx, use, type }) => {
@@ -64,18 +66,26 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
             }
 
             const response = validateResponse(ctx.responseTypeInfo)
+            const responseName = snakeToCamel(ctx.responseTypeInfo.descriptor?.name ?? '')
             const messageTypeThing = await use('model.class', ctx.responseTypeInfo.descriptor!)
             const messageJSONTypeThing = await use('model.jsonIface', ctx.responseTypeInfo.descriptor!)
-            const dataFieldTypeThing = await use('model.class', response.dataFieldDesc)
+            const dataFieldTypeInfo = await type(response.dataFieldDesc.type);
+            const dataFieldTypeThing = await use('model.class', dataFieldTypeInfo.descriptor!)
+            const dataFieldName = snakeToCamel(response.dataFieldDesc.name)
+            const nextPageTokenFieldTypeInfo = await type(response.nextPageTokenFieldDesc.type)
+            const nextPageTokenFieldName = snakeToCamel(response.nextPageTokenFieldDesc.name)
 
             return {
                 ...ctx,
                 type: t,
+                responseName,
                 messageTypeThing,
                 messageJSONTypeThing,
-                dataFieldTypeInfo: type(response.dataFieldDesc.type),
+                dataFieldTypeInfo,
                 dataFieldTypeThing,
-                nextPageTokenFieldTypeInfo: type(response.nextPageTokenFieldDesc.type)
+                dataFieldName,
+                nextPageTokenFieldTypeInfo,
+                nextPageTokenFieldName
             }
         })
 }

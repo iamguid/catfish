@@ -7,7 +7,7 @@
 // package: simple_service
 // file: simple-rpc.proto
 
-import * as i05f5fe8fe1733385e835a2d7c0a21127 from "././simple-rpc_models.ts";
+import * as i20f35e630daf44dbfa4c3f68f5399d8c from "././simple-rpc_models.ts";
 
 import * as runtime from "@catfish/runtime";
 import * as grpc from "grpc-web";
@@ -17,22 +17,22 @@ export const SimpleServiceDefinition = {
   UnaryMethod: new grpc.MethodDescriptor(
     "/simple_service.SimpleService/UnaryMethod",
     grpc.MethodType.UNARY,
-    i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
-    i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
-    (message: i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage) =>
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage,
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage,
+    (message: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage) =>
       message.serialize(),
     (bytes: Uint8Array) =>
-      new i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage().deserialize(bytes)
+      new i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage().deserialize(bytes)
   ),
   ServerStreamMethod: new grpc.MethodDescriptor(
     "/simple_service.SimpleService/ServerStreamMethod",
     grpc.MethodType.SERVER_STREAMING,
-    i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
-    i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
-    (message: i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage) =>
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage,
+    i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage,
+    (message: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage) =>
       message.serialize(),
     (bytes: Uint8Array) =>
-      new i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage().deserialize(bytes)
+      new i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage().deserialize(bytes)
   ),
 } as const;
 
@@ -61,9 +61,9 @@ export class SimpleServiceClient {
   }
 
   UnaryMethod(
-    request: i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
+    request: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage,
     metadata: grpc.Metadata | null
-  ): Promise<i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage> {
+  ): Promise<i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage> {
     return this.client.unaryCall(
       this.hostname + "/simple_service.SimpleService/UnaryMethod",
       request,
@@ -73,9 +73,9 @@ export class SimpleServiceClient {
   }
 
   ServerStreamMethod(
-    request: i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage,
+    request: i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage,
     metadata: grpc.Metadata | null
-  ): grpc.ClientReadableStream<i05f5fe8fe1733385e835a2d7c0a21127.SimpleMessage> {
+  ): grpc.ClientReadableStream<i20f35e630daf44dbfa4c3f68f5399d8c.SimpleMessage> {
     return this.client.serverStreaming(
       this.hostname + "/simple_service.SimpleService/ServerStreamMethod",
       request,

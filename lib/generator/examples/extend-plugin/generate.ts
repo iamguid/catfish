@@ -10,5 +10,5 @@ project
     .load()
 
     // TODO: fix as any
-    .resgister(ProtobufModelsPlugin.plugin as any, { enableHelloWorld: true }, registerExtendedPluginTemplates as any, buildExtendedPluginContext)
+    .resgister(ProtobufModelsPlugin.plugin, { enableHelloWorld: true }, registerExtendedPluginTemplates, buildExtendedPluginContext)
     .generate();

@@ -45,7 +45,7 @@ export class Project {
         TExtendedPluginTemplatesType extends BaseTemplates,
         TExtendedPluginContextRegistryType extends BaseContextDefinition,
     >(
-        plugin: Plugin<TPluginOptions, TExtendedPluginTemplatesType, TExtendedPluginContextRegistryType>,
+        plugin: Plugin<any, any, any>,
         options?: TPluginOptions,
         templatesBuilder?: (t: TemplatesRegistry<TPluginOptions, TExtendedPluginTemplatesType>) => void,
         constextBuilder?: (c: ContextsRegistry<TPluginOptions, BaseContextDefinition>) => ContextsRegistry<TPluginOptions, TExtendedPluginContextRegistryType>

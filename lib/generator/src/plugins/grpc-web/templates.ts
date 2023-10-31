@@ -1,18 +1,18 @@
 import { Import } from "../../ProjectContext";
-import { TemplatesRegistry } from "../../Templates";
-import { PluginContextFlatOut } from "./context";
+import { TemplatesBuilder, TemplatesRegistry } from "../../Templates";
+import { PluginContextFlatDefinition } from "./context";
 import { PluginOptions } from "./plugin";
 
 export type PluginTemplatesRegistry = {
-  main: { file: PluginContextFlatOut['file'], imports: Import[] },
-  services: { services: PluginContextFlatOut['file.service'][] },
-  serviceDefinition: { service: PluginContextFlatOut['file.service'] },
-  clientStubClass: { service: PluginContextFlatOut['file.service'] },
-  clientStubClassMethod: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
-  methodStreamType: { method: PluginContextFlatOut['file.service.method'] },
+  main: { file: PluginContextFlatDefinition['file'], imports: Import[] },
+  services: { services: PluginContextFlatDefinition['file.service'][] },
+  serviceDefinition: { service: PluginContextFlatDefinition['file.service'] },
+  clientStubClass: { service: PluginContextFlatDefinition['file.service'] },
+  clientStubClassMethod: { service: PluginContextFlatDefinition['file.service'], method: PluginContextFlatDefinition['file.service.method'] },
+  methodStreamType: { method: PluginContextFlatDefinition['file.service.method'] },
 }
 
-export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
+export const registerPluginTemplates: TemplatesBuilder<PluginOptions, PluginTemplatesRegistry> = (t) => {
   t.register('main', ({ file, imports }) => `
     ${t.renderHeader(file.desc)}
 

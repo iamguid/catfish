@@ -1,30 +1,30 @@
-import { ProtobufModelsPlugin, TemplatesRegistry } from "../../src";
-import { ContextsRegistry, ExtractFlatContextDefinition } from "../../src/PluginContext";
-import { PluginTemplates, registerPluginTemplates } from "../../src/plugins/protobuf-models";
+import { ProtobufModelsPlugin, TemplatesBuilder } from "../../src";
+import { ContextsRegistry, ExtractContextDefinition, ExtractFlatContextDefinition } from "../../src/PluginContext";
 
 export type ExtendedPluginContextFlatDefinition = ExtractFlatContextDefinition<ReturnType<typeof buildExtendedPluginContext>>;
+export type ExtendedPluginContextDefinition = ExtractContextDefinition<ReturnType<typeof buildExtendedPluginContext>>;
 
 export type ExtendedPluginOptions = ProtobufModelsPlugin.PluginOptions & {
     enableHelloWorld: boolean
 }
 
-export type ExtendedPluginTemplatesRegistry = Omit<PluginTemplates, 'modelClass'> & {
+export type ExtendedPluginTemplatesRegistry = ProtobufModelsPlugin.PluginTemplates & {
   modelClass: { message: ExtendedPluginContextFlatDefinition['file.message'] }
   helloworld: { message: ExtendedPluginContextFlatDefinition['file.message'] }
 }
 
-export const buildExtendedPluginContext = <TPluginOptions extends ExtendedPluginOptions>(registry: ContextsRegistry<TPluginOptions>) => {
-  return ProtobufModelsPlugin.context.buildPluginContext(registry)
+export const buildExtendedPluginContext = (cr: ContextsRegistry<ExtendedPluginOptions>) => {
+  return ProtobufModelsPlugin.context.buildPluginContext(cr)
     .extend('messages', async ({ ctx }) => ({
       ...ctx,
       helloMessage: `Hello, ${ctx.classThing.fullname}`
     }))
 }
 
-export const registerExtendedPluginTemplates = <TPluginOptions extends ExtendedPluginOptions, TPluginTemplatesRegistry extends ExtendedPluginTemplatesRegistry>(r: TemplatesRegistry<TPluginOptions, TPluginTemplatesRegistry>) => {
-  registerPluginTemplates(r)
+export const registerExtendedPluginTemplates: TemplatesBuilder<ExtendedPluginOptions, ExtendedPluginTemplatesRegistry> = (tr) => {
+  ProtobufModelsPlugin.registerPluginTemplates(tr as any)
 
-  r.register('helloworld', ({ message }, opts) => {
+  tr.register('helloworld', ({ message }, opts) => {
     return opts.enableHelloWorld ? `
       hello(): string {
         return '${message.helloMessage}'
@@ -32,32 +32,32 @@ export const registerExtendedPluginTemplates = <TPluginOptions extends ExtendedP
     ` : ''
   })
 
-  r.register('modelClass', ({ message }) => {
+  tr.register('modelClass', ({ message }) => {
     const maps = message.fields.filter(f => f.type === 'map') as ExtendedPluginContextFlatDefinition['file.message.map'][]
 
     return `
       export class ${message.classThing.name} {
-        ${r.render('modelClassFields', { message })}
+        ${tr.render('modelClassFields', { message })}
   
         public static fields = [${message.fields.map(f => `'${f.fieldName}'`).join(",")}]
   
-        ${maps.map(mapField => r.render('modelClassEncodeMap', { mapField })).join('\n')}
+        ${maps.map(mapField => tr.render('modelClassEncodeMap', { mapField })).join('\n')}
   
-        ${maps.map(mapField => r.render('modelClassDecodeMap', { mapField })).join('\n')}
+        ${maps.map(mapField => tr.render('modelClassDecodeMap', { mapField })).join('\n')}
   
         public get fields() {
           return ${message.classThing.name}.fields
         }
   
-        ${r.render('modelClassCtor', { message })}
+        ${tr.render('modelClassCtor', { message })}
   
-        ${r.render('modelClassEncode', { message })}
+        ${tr.render('modelClassEncode', { message })}
   
-        ${r.render('modelClassDecode', { message })}
+        ${tr.render('modelClassDecode', { message })}
   
-        ${r.render('modelClassToJSON', { message })}
+        ${tr.render('modelClassToJSON', { message })}
   
-        ${r.render('modelClassFromJSON', { message })}
+        ${tr.render('modelClassFromJSON', { message })}
   
         serialize(): Uint8Array | Buffer {
           const w = pjs.Writer.create();
@@ -81,7 +81,7 @@ export const registerExtendedPluginTemplates = <TPluginOptions extends ExtendedP
           return new ${message.classThing.name}(this);
         }
 
-        ${r.render('helloworld', { message })}
+        ${tr.render('helloworld', { message })}
       }
     `;
   })

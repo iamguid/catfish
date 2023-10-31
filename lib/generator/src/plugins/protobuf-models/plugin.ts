@@ -1,5 +1,5 @@
 import { FileDescriptor } from "@catfish/parser";
-import { BasePluginOptions, PluginOutputFile } from "../../Plugin";
+import { BasePluginOptions, PluginOutputFile, Plugin } from "../../Plugin";
 import { ProjectContext } from "../../ProjectContext";
 import { BaseTemplates, TemplatesBuilder, TemplatesRegistry } from "../../Templates";
 import { replaceProtoSuffix } from "../../utils";
@@ -12,34 +12,28 @@ export const fileNameBuilder = (file: FileDescriptor, ctx: ProjectContext) => re
 
 export interface PluginOptions extends BasePluginOptions {}
 
-export const plugin = async <
-    TPluginOptions extends PluginOptions,
-    TPluginTemplates extends PluginTemplates,
-    TPluginContextDefintion extends PluginContextDefinition,
-    TTemplatesBuilder extends TemplatesBuilder<TPluginOptions, TPluginTemplates>,
-    TContextBuilder extends ContextBuilder<TPluginOptions, TPluginContextDefintion>,
->(
-    projectContext: ProjectContext,
-    projectOptions: ProjectOptions,
-    pluginOptions?: TPluginOptions,
-    templatesBuilder?: TTemplatesBuilder,
-    contextBuilder?: TContextBuilder
+export const plugin: Plugin<PluginOptions, PluginTemplates, PluginContextDefinition> = async (
+    projectContext,
+    projectOptions,
+    pluginOptions?,
+    templatesBuilder?,
+    contextBuilder?
 ) => {
     const result: PluginOutputFile[] = []
 
-    const pluginOptions_ = pluginOptions ?? ({} as TPluginOptions);
+    const pluginOptions_ = pluginOptions ?? {};
     const templatesBuilder_ = templatesBuilder ?? registerPluginTemplates
     const contextBuilder_ = contextBuilder ?? buildPluginContext
 
     // Build templates registry
-    const templatesRegistry = new TemplatesRegistry<TPluginOptions, TPluginTemplates>(projectContext, pluginOptions_)
+    const templatesRegistry = new TemplatesRegistry<PluginOptions, PluginTemplates>(projectContext, pluginOptions_)
     templatesBuilder_(templatesRegistry)
 
     const files = projectContext.getFiles();
 
     await Promise.all(files.map(async (file) => {
         // Build context
-        const contextsRegistry = new ContextsRegistry<TPluginOptions, TPluginContextDefintion>(projectContext, file, fileNameBuilder(file, projectContext), pluginOptions_)
+        const contextsRegistry = new ContextsRegistry<PluginOptions, PluginContextDefinition>(projectContext, file, fileNameBuilder(file, projectContext), pluginOptions_)
         const context = contextBuilder_(contextsRegistry);
 
         // Capture usages

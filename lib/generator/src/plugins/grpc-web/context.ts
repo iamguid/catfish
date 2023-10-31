@@ -1,8 +1,9 @@
 import { PluginOptions } from "./plugin";
 import { snakeToCamel, upperCaseFirst } from "../../utils";
-import { ExtractFlatContextDefinition, ContextsRegistry } from "../../PluginContext";
+import { ExtractFlatContextDefinition, ContextsRegistry, ExtractContextDefinition } from "../../PluginContext";
 
-export type PluginContextFlatOut = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
+export type PluginContextFlatDefinition = ExtractFlatContextDefinition<ReturnType<typeof buildPluginContext>>;
+export type PluginContextDefinition = ExtractContextDefinition<ReturnType<typeof buildPluginContext>>;
 
 export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
     return registry

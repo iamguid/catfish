@@ -1,19 +1,19 @@
 import { Import } from "../../ProjectContext";
-import { TemplatesRegistry } from "../../Templates";
+import { TemplatesBuilder, TemplatesRegistry } from "../../Templates";
 import { findOption } from "../../utils";
-import { PluginContextFlatOut } from "./context";
+import { PluginContextFlatDefinition } from "./context";
 import { PluginOptions } from "./plugin";
 
 export type PluginTemplatesRegistry = {
-  main: { file: PluginContextFlatOut['file'], imports: Import[] },
-  extensions: { file: PluginContextFlatOut['file'] },
-  rxjsBasedExtensions: { service: PluginContextFlatOut['file.service'] },
-  rxjsBasedPaginationExtension: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
-  grpcBasedExtensions: { service: PluginContextFlatOut['file.service'] },
-  grpcBasedPaginationExtension: { service: PluginContextFlatOut['file.service'], method: PluginContextFlatOut['file.service.method'] },
+  main: { file: PluginContextFlatDefinition['file'], imports: Import[] },
+  extensions: { file: PluginContextFlatDefinition['file'] },
+  rxjsBasedExtensions: { service: PluginContextFlatDefinition['file.service'] },
+  rxjsBasedPaginationExtension: { service: PluginContextFlatDefinition['file.service'], method: PluginContextFlatDefinition['file.service.method'] },
+  grpcBasedExtensions: { service: PluginContextFlatDefinition['file.service'] },
+  grpcBasedPaginationExtension: { service: PluginContextFlatDefinition['file.service'], method: PluginContextFlatDefinition['file.service.method'] },
 }
 
-export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegistry, PluginOptions>) => {
+export const registerPluginTemplates: TemplatesBuilder<PluginOptions, PluginTemplatesRegistry> = (t) => {
   t.register('main', ({ file, imports }) => `
     ${t.renderHeader(file.desc)}
 
@@ -52,7 +52,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
 
     return `
       export type ${method.request.parametersTypeName} = 
-        Omit<${method.request.messageJSONTypeThing}, '${method.request.pageSizeFieldTypeInfo.name}' | '${method.request.pageTokenFieldTypeInfo.name}'>
+        Omit<${method.request.messageJSONTypeThing.usagename}, '${method.request.pageSizeFieldName}' | '${method.request.pageTokenFieldName}'>
 
       declare module '${service.rxjsClientThing.importpath}' {
         export interface ${service.rxjsClientThing.name} {
@@ -75,16 +75,16 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
         const fetcher: runtime.rxjsPaginator.PageFetcher<${method.request.parametersTypeName}, ${method.response.dataFieldTypeThing.usagename}> = (itemsPerPage, pageToken, parameters) => {
           return this.${method.methodDesc.name}(new ${method.request.messageTypeThing.usagename}().fromJSON({
             ...parameters,
-            ${method.request.pageSizeFieldTypeInfo.name}: itemsPerPage,
-            ${method.request.pageTokenFieldTypeInfo.name}: pageToken,
+            ${method.request.pageSizeFieldName}: itemsPerPage,
+            ${method.request.pageTokenFieldName}: pageToken,
           }))
         }
 
         return runtime.rxjsPaginator.createPaginator(
           itemsPerPage,
           fetcher,
-          (resp) => resp.${method.response.nextPageTokenFieldTypeInfo.name},
-          (resp) => resp.${method.response.dataFieldTypeInfo.name},
+          (resp) => resp.${method.response.nextPageTokenFieldName},
+          (resp) => resp.${method.response.dataFieldName},
           parameters$,
           nextPage$,
           reload$,
@@ -114,7 +114,7 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
             runtime.asyncPaginator.Paginator<
               ${method.response.dataFieldTypeThing.usagename},
               ${method.request.parametersTypeName},
-              ${method.response.responseTypeInfo.name},
+              ${method.response.responseName},
             >;
         }
       }
@@ -126,16 +126,16 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
         const fetcher: runtime.asyncPaginator.PageFetcher<${method.request.parametersTypeName}, ${method.response.messageTypeThing.usagename}> = (itemsPerPage, pageToken, parameters) => {
           return this.${method.methodDesc.name}(new ${method.request.messageTypeThing.usagename}().fromJSON({
             ...parameters,
-            ${method.request.pageSizeFieldTypeInfo.name}: itemsPerPage,
-            ${method.request.pageTokenFieldTypeInfo.name}: pageToken,
+            ${method.request.pageSizeFieldName}: itemsPerPage,
+            ${method.request.pageTokenFieldName}: pageToken,
           }))
         }
 
         return runtime.asyncPaginator.createPaginator(
           itemsPerPage,
           fetcher,
-          (resp) => resp.${method.response.nextPageTokenFieldTypeInfo.name},
-          (resp) => resp.${method.response.dataFieldTypeInfo.name},
+          (resp) => resp.${method.response.nextPageTokenFieldName},
+          (resp) => resp.${method.response.dataFieldName},
         );
       }
     `

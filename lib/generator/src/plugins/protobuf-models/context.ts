@@ -10,10 +10,10 @@ export type PluginContextDefinition = ExtractContextDefinition<ReturnType<typeof
 
 export const buildPluginContext = <TPluginOptions extends PluginOptions>(registry: ContextsRegistry<TPluginOptions>) => {
     return registry
-        .extend('typeinfos', async ({ ctx, use }) => {
-            const enumThing = await (ctx.descriptor && ctx.descriptor instanceof EnumDescriptor ? use('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const tsTypeThing = await (ctx.descriptor ? use('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
-            const jsonTypeThing = await( ctx.descriptor ? use('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+        .extend('typeinfos', async ({ ctx, tryUse }) => {
+            const enumThing = await (ctx.descriptor ? tryUse('model.enum', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const tsTypeThing = await (ctx.descriptor ? tryUse('model.class', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
+            const jsonTypeThing = await ( ctx.descriptor ? tryUse('model.jsonIface', ctx.descriptor, ctx.protoType) ?? Promise.resolve(null) : Promise.resolve(null));
             const tsType = getTsTypeByTypeInfo(ctx) ?? tsTypeThing?.usagename ?? '';
             const jsonType = getJsonTypeByTypeInfo(ctx) ?? jsonTypeThing?.usagename ?? '';
 
@@ -56,8 +56,8 @@ export const buildPluginContext = <TPluginOptions extends PluginOptions>(registr
             fieldName: snakeToCamel(ctx.desc.name),
             encodeMethodName: `encode${upperCaseFirst(snakeToCamel(ctx.desc.name))}`,
             decodeMethodName: `decode${upperCaseFirst(snakeToCamel(ctx.desc.name))}`,
-            keyThing: await use(['model.class', 'model.enum'], ctx.desc, ctx.desc.keyType),
-            valueThing: await use(['model.class', 'model.enum'], ctx.desc, ctx.desc.valueType),
+            keyThing: await (ctx.keyTypeInfo.descriptor ? use(['model.class', 'model.enum'], ctx.keyTypeInfo.descriptor) : Promise.resolve(null)),
+            valueThing: await (ctx.valueTypeInfo.descriptor ? use(['model.class', 'model.enum'], ctx.valueTypeInfo.descriptor) : Promise.resolve(null)),
             tag: getTag(ctx.desc.fieldNumber, 2),
             keyTag: getTag(1, getWireTypeByTypeInfo(ctx.keyTypeInfo)),
             valueTag: getTag(2, getWireTypeByTypeInfo(ctx.valueTypeInfo)),
