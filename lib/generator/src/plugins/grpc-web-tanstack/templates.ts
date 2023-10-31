@@ -90,35 +90,35 @@ export const registerPluginTemplates = (t: TemplatesRegistry<PluginTemplatesRegi
   })
 
   t.register('useQueryIfaceMethod', ({ method }) => {
-    if (method.type === 'query') {
-      return `
-        ${method.useQueryMethodName}(): rq.UseQueryOptions<
-          () => Promise<${method.response.responseTypeInfo.thing!.usagename}>,
-          grpc.RpcError,
-          ${method.response.responseTypeInfo.thing!.usagename},
-          ['${method.dataFieldJsonThing.usagename}', ${method.dataFieldJsonThing.usagename}]
-        >
-      `
+    if (method.type !== 'query') {
+      throw new Error('Invalid method type')
     }
 
-    throw new Error('Invalid method type')
+    return `
+      ${method.useQueryMethodName}(): rq.UseQueryOptions<
+        () => Promise<${method.response.responseTypeInfo.thing!.usagename}>,
+        grpc.RpcError,
+        ${method.response.responseTypeInfo.thing!.usagename},
+        ['${method.response.dataFieldJsonThing.usagename}', ${method.response.dataFieldJsonThing.usagename}]
+      >
+    `
   })
 
   t.register('useQueryMethod', ({ service, method }) => {
-    if (method.type === 'query') {
-      return `
-        ${service.grpcClientThing.usagename}.prototype.${method.useQueryMethodName} = function (
-          this: ${service.grpcClientThing.usagename},
-          request: ${method.request.requestTypeInfo.thing!.usagename}
-        ) {
-          return {
-            queryKey: ['${method.dataFieldJsonThing!.usagename}', request.toJSON()],
-            queryFn: () => this.${method.methodDesc.name}(request),
-          }
-        }
-      `
+    if (method.type !== 'query') {
+      throw new Error('Invalid method type')
     }
 
-    throw new Error('Invalid method type')
+    return `
+      ${service.grpcClientThing.usagename}.prototype.${method.useQueryMethodName} = function (
+        this: ${service.grpcClientThing.usagename},
+        request: ${method.request.requestTypeInfo.thing!.usagename}
+      ) {
+        return {
+          queryKey: ['${method.response.dataFieldJsonThing!.usagename}', request.toJSON()],
+          queryFn: () => this.${method.methodDesc.name}(request),
+        }
+      }
+    `
   })
 }
