@@ -34,41 +34,55 @@ Plugin contains at least 4 main files: `plugin.ts`, `context.ts`, `templates.ts`
 There is an example of typical plugin structure:
 
 ```typescript
-export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry, PluginContextDefinition> = async (projectContext, projectOptions, pluginOptions, registerTemplates, buildContext) = {
+// File name builder function that we will use for output file path
+export const fileNameBuilder = (file: FileDescriptor, ctx: ProjectContext) => replaceProtoSuffix(ctx.getProtoFilePath(file), 'list.ts');
+
+// Plugin options
+export interface PluginOptions extends BasePluginOptions {}
+
+export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry, PluginContextDefinition> = async (projectContext, projectOptions, pluginOptions, registerTemplates, buildContext) => {
+    // Define result variable with result files array
     const result: PluginOutputFile[] = []
 
-    const pluginOptions_ = pluginOptions ?? ({} as PluginOptions);
+    // Define defaults
+    const pluginOptions_ = pluginOptions ?? ({} as PluginOptions );
     const registerTemplates_ = registerTemplates ?? registerPluginTemplates
     const buildContext_ = buildContext ?? buildPluginContext
 
-    // Initialize templates
+    // Register templates in templates registry
     const templatesRegistry = new TemplatesRegistry<PluginOptions, PluginTemplatesRegistry>(projectContext, pluginOptions_)
     registerTemplates_(templatesRegistry)
 
+    // Get all files descriptors from project context
     const files = projectContext.getFiles();
 
-    // For each file
+    // We use await because context build is async operation, it is needed for type resolution
     await Promise.all(files.map(async (file) => {
-        // Build context
+        // Create context registry and build context
         const contextsRegistry = new ContextsRegistry(projectContext, file, fileNameBuilder(file, projectContext), pluginOptions_)
         const context = buildContext_(contextsRegistry);
 
-        // Capture usages for imports generation
+        // Capture usages for generate imports, that we will put in top of the file,
+        // all usages in context will be captured per file
         const captureContext = projectContext.resolver.getCaptureContext()
         const fileContext = await context.build(captureContext)
         const usedThings = captureContext.stopCapture();
 
-        // Render main template
+        // Render file template
         const resultFilePath = fileNameBuilder(file, projectContext);
         const imports = projectContext.resolver.getImports(usedThings, file, resultFilePath)
-        const resultFileContent = templatesRegistry.render('main', { file: fileContext, imports });
+        const messages = extractAllMessages(fileContext);
+        const resultFileContent = templatesRegistry.render('main', { file: fileContext, imports, messages });
 
+        // Store result file to output files
         result.push({ path: resultFilePath, content: resultFileContent });
     }))
 
-    // Return generated files
+    // Return result
     return { files: result }
 }
+
+// ...
 ```
 
 ### `context.ts`
@@ -82,21 +96,16 @@ export type PluginContextFlatDefinition = ExtractFlatContextDefinition<ReturnTyp
 export type PluginContextDefinition = ExtractContextDefinition<ReturnType<typeof buildPluginContext>>;
 
 // Method for extending context
-export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) => {
-    return registry
-        // Expose fields serviceDefinitionThing and clientClassThing to all services in templates
-        .extend('services', async ({ ctx, def }) => ({
+export const buildPluginContext = (cr: ContextsRegistry<PluginOptions>) => {
+    return cr
+        // Expose fields thing and path to all messages
+        .extend('messages', async ({ ctx, use }) => ({
             ...ctx,
-            serviceDefinitionThing: def('grpc.definition', ctx.desc, `${upperCaseFirst(snakeToCamel(ctx.desc.name))}Definition`),
-            clientClassThing: def('grpc.client', ctx.desc, `${upperCaseFirst(snakeToCamel(ctx.desc.name))}Client`),
-        }))
-        // Expose fields methodName and path to all services methods in templates
-        .extend('methods', async ({ ctx }) => ({
-            ...ctx,
-            methodName: snakeToCamel(ctx.methodDesc.name),
-            path: `/${ctx.serviceDesc.fullpath}/${ctx.methodDesc.name}`,
+            thing: await use('model.class', ctx.desc),
+            path: ctx.desc.fullpath
         }))
 }
+
 ```
 
 ### `templates.ts`
@@ -105,37 +114,31 @@ export const buildPluginContext = (registry: ContextsRegistry<PluginOptions>) =>
 There is an example of templates:
 
 ```typescript
-// Special type that will use in TemplatesRegistry to define which template which context will use
+// Templates types (name and context that will be propogated to template function)
 export type PluginTemplatesRegistry = {
-  main: { file: PluginContextFlatDefinition['file'], imports: Import[] },
-  services: { services: PluginContextFlatDefinition['file.service'][] },
+  main: { file: PluginContextFlatDefinition['file'], imports: Import[], messages: PluginContextDefinition['messages'][] },
+  listType: { messages: PluginContextDefinition['messages'][] },
 }
 
-// Method for templates registration
-export const registerPluginTemplates = (t: TemplatesRegistry<PluginOptions, PluginTemplatesRegistry>) => {
-  t.register('main', ({ file, imports }) => `
+export const registerPluginTemplates: TemplatesBuilder<PluginOptions, PluginTemplatesRegistry> = (t) => {
+  // Template function main
+  t.register('main', ({ file, imports, messages }) => `
     ${t.renderHeader(file.desc)}
 
     ${t.renderImports(imports)}
 
-    import * as runtime from "@catfish/runtime"
-    import * as rxjs from 'rxjs';
-    import * as grpc from 'grpc-web';
+    ${t.render('listType', { messages })} 
+  `)
 
-    ${t.render('services', { services: file.services })}
-  `);
-
-  t.register('services', ({ services }) => {
-    let result = '';
-
-    for (const service of services) {
-      result += `// #region ${service.desc.fullpath}`
-      result += t.render('clientStubClass', { service })
-      result += `// #endregion`
+  // Template function listType
+  t.register('listType', ({ messages }) => `
+    type Messages = {
+      ${messages.map(message => `'${message.path}': ${message.thing.usagename}`)}
     }
-
-    return result;
-  })
+  `)
+}
 ```
 
 Everything that you define in `context.ts` will be propagated to templates context
+
+See full [example](https://github.com/iamguid/catfish/tree/main/lib/generator/examples/messages-list) for more details

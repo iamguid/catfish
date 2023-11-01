@@ -53,6 +53,7 @@ export const plugin: Plugin<PluginOptions, PluginTemplatesRegistry, PluginContex
     return { files: result }
 }
 
+// Flatten messages
 const extractAllMessages = (file: PluginContextFlatDefinition['file']) => {
     const result: PluginContextDefinition['messages'][] = []
 
