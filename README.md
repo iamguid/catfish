@@ -29,7 +29,7 @@ Plugin contains at least 4 main files: `plugin.ts`, `context.ts`, `templates.ts`
 
 
 ### `plugin.ts`
-`plugin.ts` - the main entry point of plugin. That file should export only one method `plugin` and return result files.
+`plugin.ts` - the main entry point of plugin. That file should export only one method `plugin` and method should return result files.
 
 There is an example of typical plugin structure:
 
